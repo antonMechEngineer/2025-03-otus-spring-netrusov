@@ -11,8 +11,9 @@
             <util:constant static-field="java.lang.System.out"/>
         </constructor-arg>
     </bean>
-    <bean id="appProperties" class="ru.otus.hw.config.TestFileNameProvider">
-        <constructor-arg value="src/main/resources/questions.csv"/>
+
+    <bean id="appProperties" class="ru.otus.hw.config.AppProperties">
+        <constructor-arg value="hw01/src/main/resources/questions.csv"/>
     </bean>
     <bean id="csvQuestionDao" class="ru.otus.hw.dao.CsvQuestionDao">
         <constructor-arg ref="appProperties"/>

@@ -17,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
 
+    private static final int NUMBER_SKIP_LINES = 1;
+
     private final TestFileNameProvider fileNameProvider;
 
     @Override
@@ -25,17 +27,16 @@ public class CsvQuestionDao implements QuestionDao {
         try (Reader reader = new FileReader(fileNameProvider.getTestFileName())) {
             CsvToBean<QuestionDto> csvToBean = new CsvToBeanBuilder<QuestionDto>(reader)
                     .withType(QuestionDto.class)
+                    .withSkipLines(NUMBER_SKIP_LINES)
                     .build();
-            List<QuestionDto> questionDtoList = csvToBean.parse();
-            questionDtoList.forEach(qd -> questions.add(qd.toDomainObject()));
+            csvToBean.parse().forEach(qd -> questions.add(qd.toDomainObject()));
         } catch (IOException e) {
-            throw new QuestionReadException("Error file reading!");
+            throw new QuestionReadException("Error file reading!", e);
         }
         // Использовать CsvToBean
         // https://opencsv.sourceforge.net/#collection_based_bean_fields_one_to_many_mappings
         // Использовать QuestionReadException
         // Про ресурсы: https://mkyong.com/java/java-read-a-file-from-resources-folder/
-
         return questions;
     }
 }
