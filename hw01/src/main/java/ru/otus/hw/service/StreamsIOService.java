@@ -1,6 +1,7 @@
 package ru.otus.hw.service;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 
 public class StreamsIOService implements IOService {
     private final PrintStream printStream;
@@ -17,6 +18,6 @@ public class StreamsIOService implements IOService {
 
     @Override
     public void printFormattedLine(String s, Object... args) {
-        printStream.printf(s + "%n", args);
+        printStream.printf(s + "%s%n", Arrays.toString(args));
     }
 }

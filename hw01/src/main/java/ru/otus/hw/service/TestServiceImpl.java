@@ -16,10 +16,8 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void executeTest() {
-        ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printLine("Please answer the questions below");
         List<Question> allQuestion = questionDao.findAll();
-        allQuestion.forEach(q -> ioService.printLine(q.toString()));
-        // Получить вопросы из дао и вывести их с вариантами ответов
+        ioService.printFormattedLine("", allQuestion);
     }
 }

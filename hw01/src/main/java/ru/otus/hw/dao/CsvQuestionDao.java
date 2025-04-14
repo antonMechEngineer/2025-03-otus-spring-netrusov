@@ -8,14 +8,17 @@ import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
+
+    private static final String READING_ERROR_DESCRIPTION = "Error file reading!";
 
     private static final int NUMBER_SKIP_LINES = 1;
 
@@ -24,19 +27,19 @@ public class CsvQuestionDao implements QuestionDao {
     @Override
     public List<Question> findAll() {
         List<Question> questions = new ArrayList<>();
-        try (Reader reader = new FileReader(fileNameProvider.getTestFileName())) {
+        InputStream inputStream = getClass().getResourceAsStream(fileNameProvider.getTestFileName());
+        if (inputStream == null) {
+            throw new QuestionReadException(READING_ERROR_DESCRIPTION);
+        }
+        try (Reader reader = new InputStreamReader(inputStream)) {
             CsvToBean<QuestionDto> csvToBean = new CsvToBeanBuilder<QuestionDto>(reader)
                     .withType(QuestionDto.class)
                     .withSkipLines(NUMBER_SKIP_LINES)
                     .build();
             csvToBean.parse().forEach(qd -> questions.add(qd.toDomainObject()));
         } catch (IOException e) {
-            throw new QuestionReadException("Error file reading!", e);
+            throw new QuestionReadException(READING_ERROR_DESCRIPTION, e);
         }
-        // Использовать CsvToBean
-        // https://opencsv.sourceforge.net/#collection_based_bean_fields_one_to_many_mappings
-        // Использовать QuestionReadException
-        // Про ресурсы: https://mkyong.com/java/java-read-a-file-from-resources-folder/
         return questions;
     }
 }
