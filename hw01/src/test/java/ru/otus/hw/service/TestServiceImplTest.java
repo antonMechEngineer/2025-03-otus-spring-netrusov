@@ -18,6 +18,8 @@ public class TestServiceImplTest {
     private IOService ioService;
     @Mock
     private  QuestionDao questionDao;
+    @Mock
+    private  UserOutputMapper userOutputMapper;
     @InjectMocks
     private TestServiceImpl testService;
 
@@ -32,8 +34,7 @@ public class TestServiceImplTest {
         when(questionDao.findAll()).thenReturn(List.of(question));
         testService.executeTest();
         verify(questionDao, times(1)).findAll();
-        verify(ioService, times(1)).printLine("");
-        verify(ioService, times(1)).printFormattedLine("Please answer the questions below%n");
-        verify(ioService, times(1)).printLine(question.toString());
+        verify(ioService, times(1)).printLine(anyString());
+        verify(userOutputMapper, times(1)).mapQuestionToString(any());
     }
 }

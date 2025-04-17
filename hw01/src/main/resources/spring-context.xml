@@ -21,6 +21,9 @@
     <bean id="serviceImpl" class="ru.otus.hw.service.TestServiceImpl">
         <constructor-arg ref="ioService"/>
         <constructor-arg ref="csvQuestionDao"/>
+        <constructor-arg ref="userOutputMapper"/>
+    </bean>
+    <bean id="userOutputMapper" class="ru.otus.hw.service.UserOutputMapperImpl">
     </bean>
     <bean id="testRunnerServiceImpl" class="ru.otus.hw.service.TestRunnerServiceImpl">
         <constructor-arg ref="serviceImpl"/>

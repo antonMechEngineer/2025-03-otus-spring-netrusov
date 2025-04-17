@@ -14,10 +14,12 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
+    private final UserOutputMapper userOutputMapper;
+
     @Override
     public void executeTest() {
         ioService.printLine("Please answer the questions below");
         List<Question> allQuestion = questionDao.findAll();
-        ioService.printFormattedLine("", allQuestion);
+        allQuestion.forEach(q -> ioService.printLine(userOutputMapper.mapQuestionToString(q)));
     }
 }

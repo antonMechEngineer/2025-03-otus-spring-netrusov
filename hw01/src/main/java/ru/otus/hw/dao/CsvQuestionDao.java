@@ -35,6 +35,7 @@ public class CsvQuestionDao implements QuestionDao {
             CsvToBean<QuestionDto> csvToBean = new CsvToBeanBuilder<QuestionDto>(reader)
                     .withType(QuestionDto.class)
                     .withSkipLines(NUMBER_SKIP_LINES)
+                    .withSeparator(';')
                     .build();
             csvToBean.parse().forEach(qd -> questions.add(qd.toDomainObject()));
         } catch (IOException e) {
