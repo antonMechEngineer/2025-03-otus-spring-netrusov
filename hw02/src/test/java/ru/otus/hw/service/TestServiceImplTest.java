@@ -19,7 +19,8 @@ public class TestServiceImplTest {
     private IOService ioService;
     @Mock
     private  QuestionDao questionDao;
-
+    @Mock
+    private  UserOutputMapper userOutputMapper;
     @InjectMocks
     private TestServiceImpl testService;
 
@@ -37,5 +38,6 @@ public class TestServiceImplTest {
         testService.executeTestFor(student);
         verify(questionDao, times(1)).findAll();
         verify(ioService, times(1)).readIntForRange(anyInt(), anyInt(), anyString());
+        verify(userOutputMapper, times(1)).mapQuestionToString(any());
     }
 }

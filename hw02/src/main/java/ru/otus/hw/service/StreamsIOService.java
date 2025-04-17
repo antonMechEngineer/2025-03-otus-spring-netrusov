@@ -2,12 +2,10 @@ package ru.otus.hw.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.domain.Question;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 @Service
 public class StreamsIOService implements IOService {
@@ -31,15 +29,7 @@ public class StreamsIOService implements IOService {
 
     @Override
     public void printFormattedLine(String s, Object... args) {
-        for (Object arg : args) {
-            if (arg instanceof Question question) {
-                printStream.printf("Question - %s\n", question.text());
-                IntStream.range(1, question.answers().size() + 1).forEach(i ->
-                        printStream.printf("Answer variant № %d: %s\n", i, question.answers().get(i - 1).text()));
-            } else {
-                printStream.printf("", arg.toString());
-            }
-        }
+        printStream.printf(s + "%n", args);
     }
 
     @Override

@@ -9,7 +9,10 @@ import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +44,5 @@ public class CsvQuestionDao implements QuestionDao {
             throw new QuestionReadException(READING_ERROR_DESCRIPTION, e);
         }
         return questions;
-
     }
 }

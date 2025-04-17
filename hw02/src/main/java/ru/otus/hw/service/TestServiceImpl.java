@@ -14,6 +14,8 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
+    private final UserOutputMapper userOutputMapper;
+
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
@@ -21,7 +23,7 @@ public class TestServiceImpl implements TestService {
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
         for (var question : questions) {
-            ioService.printFormattedLine("", question);
+            ioService.printLine(userOutputMapper.mapQuestionToString(question));
             ioService.printLine("Input answer variant number: ");
             int currentAnswer = ioService.readIntForRange(1, question.answers().size() + 1,
                     "Invalid answer number entered!");

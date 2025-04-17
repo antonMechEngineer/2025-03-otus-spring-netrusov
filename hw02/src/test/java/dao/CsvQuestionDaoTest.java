@@ -1,31 +1,35 @@
 package dao;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.otus.hw.dao.QuestionDao;
-import ru.otus.hw.service.IOService;
-import ru.otus.hw.service.TestServiceImpl;
+import ru.otus.hw.config.TestFileNameProvider;
+import ru.otus.hw.dao.CsvQuestionDao;
+import ru.otus.hw.domain.Question;
+
+import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 class CsvQuestionDaoTest {
 
     @Mock
-    private IOService ioService;
-    @Mock
-    private QuestionDao questionDao;
+    private TestFileNameProvider testFileNameProvider;
 
     @InjectMocks
-    private TestServiceImpl testService;
+    private CsvQuestionDao csvQuestionDao;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testFindAll(){
-
+    void testFindAll() {
+        when(testFileNameProvider.getTestFileName()).thenReturn("/questions.csv");
+        List<Question> questions = csvQuestionDao.findAll();
+        Assertions.assertFalse(questions.isEmpty());
     }
-
 }
