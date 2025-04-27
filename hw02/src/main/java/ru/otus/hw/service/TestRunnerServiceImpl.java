@@ -23,10 +23,9 @@ public class TestRunnerServiceImpl implements TestRunnerService {
             var testResult = testService.executeTestFor(student);
             resultService.showResult(testResult);
         } catch (QuestionReadException exception) {
-            exception.printStackTrace();
-            ioService.printLine("Ошибка чтения вопросов!");
+            ioService.printLine("Error reading of questions!");
         } catch (Throwable e) {
-            ioService.printLine("Неизвестная ошибка при выполнении!");
+            ioService.printLine("Unknown error!");
         }
     }
 }
