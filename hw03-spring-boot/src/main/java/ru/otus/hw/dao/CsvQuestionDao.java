@@ -8,7 +8,6 @@ import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
-import ru.otus.hw.service.LocalizedMessagesService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,11 +20,11 @@ import java.util.List;
 @Component
 public class CsvQuestionDao implements QuestionDao {
 
+    private static final String ERROR_READING_MESSAGE = "Error file reading!";
+
     private static final int NUMBER_SKIP_LINES = 1;
 
     private final TestFileNameProvider fileNameProvider;
-
-    private final LocalizedMessagesService localizedMessagesService;
 
     @Override
     public List<Question> findAll() {
@@ -33,7 +32,7 @@ public class CsvQuestionDao implements QuestionDao {
         String fileName = fileNameProvider.getTestFileName();
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
         if (inputStream == null) {
-            throw new QuestionReadException(localizedMessagesService.getMessage("CsvQuestionDao.error"));
+            throw new QuestionReadException(ERROR_READING_MESSAGE);
         }
         try (Reader reader = new InputStreamReader(inputStream)) {
             CsvToBean<QuestionDto> csvToBean = new CsvToBeanBuilder<QuestionDto>(reader)
@@ -44,7 +43,7 @@ public class CsvQuestionDao implements QuestionDao {
             List<QuestionDto> questionDtos = csvToBean.parse();
             questionDtos.forEach(qd -> questions.add(qd.toDomainObject()));
         } catch (IOException e) {
-            throw new QuestionReadException(localizedMessagesService.getMessage("CsvQuestionDao.error"), e);
+            throw new QuestionReadException(ERROR_READING_MESSAGE, e);
         }
         return questions;
     }
