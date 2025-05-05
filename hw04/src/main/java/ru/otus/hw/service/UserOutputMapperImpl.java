@@ -3,6 +3,7 @@ package ru.otus.hw.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.domain.Question;
+
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,14 +17,14 @@ public class UserOutputMapperImpl implements UserOutputMapper {
     public String mapQuestionToString(Question question) {
         String answers = IntStream.range(1, question.answers().size() + 1)
                 .mapToObj(i ->
-                        String.format("%s № %d: %s\n",
-                                localizedMessagesService.getMessage("UserOutputMapper.Answer.variant"),
+                        localizedMessagesService.getMessage("UserOutputMapper.Answer.variant",
                                 i,
-                                question.answers().get(i - 1).text()))
+                                question.answers().get(i - 1).text(),
+                                "\n"))
                 .collect(Collectors.joining());
-        return String.format("%s: %s\n%s",
-                localizedMessagesService.getMessage("UserOutputMapper.question"),
+        return localizedMessagesService.getMessage("UserOutputMapper.question",
                 question.text(),
+                "\n",
                 answers);
     }
 }
