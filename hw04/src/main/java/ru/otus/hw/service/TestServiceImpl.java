@@ -25,8 +25,8 @@ public class TestServiceImpl implements TestService {
         var testResult = new TestResult(student);
         for (var question: questions) {
             ioService.printLine(userOutputMapper.mapQuestionToString(question));
-            ioService.printFormattedLineLocalized("TestService.input.answer.variant");
-            int currentAnswer = ioService.readIntForRangeLocalized(1, question.answers().size() + 1,
+            int currentAnswer = ioService.readIntForRangeWithPromptLocalized(1, question.answers().size() + 1,
+                    "TestService.input.answer.variant",
                     "TestService.invalid.answer.number");
             boolean isAnswerValid = question.answers().get(currentAnswer - 1).isCorrect();
             testResult.applyAnswer(question, isAnswerValid);
