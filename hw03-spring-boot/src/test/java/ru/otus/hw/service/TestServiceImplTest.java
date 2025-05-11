@@ -11,6 +11,7 @@ import ru.otus.hw.domain.Question;
 import ru.otus.hw.domain.Student;
 
 import java.util.List;
+
 import static org.mockito.Mockito.*;
 
 public class TestServiceImplTest {
@@ -34,10 +35,10 @@ public class TestServiceImplTest {
         Question question = new Question("test", List.of(new Answer("ans", true)));
         Student student = new Student("a", "b");
         when(questionDao.findAll()).thenReturn(List.of(question));
-        when(ioService.readIntForRangeLocalized(anyInt(), anyInt(), anyString())).thenReturn(1);
+        when(ioService.readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString())).thenReturn(1);
         testService.executeTestFor(student);
         verify(questionDao, times(1)).findAll();
-        verify(ioService, times(1)).readIntForRangeLocalized(anyInt(), anyInt(), anyString());
+        verify(ioService, times(1)).readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(),  anyString());
         verify(userOutputMapper, times(1)).mapQuestionToString(any());
     }
 }
