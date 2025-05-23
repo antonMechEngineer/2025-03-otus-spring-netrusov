@@ -40,4 +40,32 @@ public class CommentServiceImplTest {
         Assertions.assertFalse(comments.isEmpty());
         Assertions.assertDoesNotThrow(() -> comments.forEach(c -> commentConverter.commentToString(c)));
     }
+
+    @DisplayName("Проверка безопасности ленивого поля - книги")
+    @Test
+    void checkLazyFieldCommentGettingById() {
+        Comment comment = commentService.findById(FIRST_COMMENT_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(comment::getBook);
+    }
+
+    @DisplayName("Проверка безопасности equals")
+    @Test
+    void checkEqualsCommentGettingById() {
+        Comment comment = commentService.findById(FIRST_COMMENT_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(() -> comment.equals(comment));
+    }
+
+    @DisplayName("Проверка безопасности hashcode")
+    @Test
+    void checkHashCodeCommentGettingById() {
+        Comment comment = commentService.findById(FIRST_COMMENT_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(comment::hashCode);
+    }
+
+    @DisplayName("Проверка безопасности toString")
+    @Test
+    void checkToStringCommentGettingById() {
+        Comment comment = commentService.findById(FIRST_COMMENT_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(comment::toString);
+    }
 }

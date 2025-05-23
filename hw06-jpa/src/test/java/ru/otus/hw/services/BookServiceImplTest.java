@@ -61,4 +61,39 @@ public class BookServiceImplTest {
         Book book = bookService.update(1,"1", 1, 1);
         Assertions.assertDoesNotThrow(() -> bookConverter.bookToString(book));
     }
+
+    @DisplayName("Проверка безопасности ленивого поля - автора")
+    @Test
+    void checkLazyFieldAuthorBookGettingById() {
+        Book book = bookService.findById(FIRST_BOOK_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(book::getAuthor);
+    }
+
+    @DisplayName("Проверка безопасности ленивого поля - жанра")
+    @Test
+    void checkLazyFieldGenreBookGettingById() {
+        Book book = bookService.findById(FIRST_BOOK_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(book::getGenre);
+    } 
+
+    @DisplayName("Проверка безопасности equals")
+    @Test
+    void checkEqualsBookGettingById() {
+        Book book = bookService.findById(FIRST_BOOK_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(() -> book.equals(book));
+    }
+
+    @DisplayName("Проверка безопасности hashcode")
+    @Test
+    void checkHashCodeBookGettingById() {
+        Book book = bookService.findById(FIRST_BOOK_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(book::hashCode);
+    }
+
+    @DisplayName("Проверка безопасности toString")
+    @Test
+    void checkToStringBookGettingById() {
+        Book book = bookService.findById(FIRST_BOOK_ID).orElseThrow();
+        Assertions.assertDoesNotThrow(book::toString);
+    }
 }
