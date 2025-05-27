@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Book;
 
 import java.util.List;
+import java.util.Objects;
 
 @DisplayName("Репозиторий книг")
 @DataJpaTest
@@ -17,6 +18,8 @@ import java.util.List;
 public class JpaBookRepositoryTest {
 
     private static final long FIRST_BOOK_ID = 1L;
+    private static final List<Long> ALL_BOOK_IDS = List.of(FIRST_BOOK_ID, 2L, 3L);
+    private static final long INSERTED_BOOK_ID = 4L;
 
     @Autowired
     private JpaBookRepository jpaBookRepository;
@@ -27,16 +30,16 @@ public class JpaBookRepositoryTest {
     @DisplayName("загрузка книги по id")
     @Test
     void findBookById() {
-        Book actualBook = jpaBookRepository.findById(FIRST_BOOK_ID).orElseThrow();
-        Book expectedBook = testEntityManager.find(Book.class, FIRST_BOOK_ID);
+        var actualBook = jpaBookRepository.findById(FIRST_BOOK_ID).orElseThrow();
+        var expectedBook = testEntityManager.find(Book.class, FIRST_BOOK_ID);
         Assertions.assertEquals(expectedBook, actualBook);
     }
 
     @DisplayName("загрузка всех книг")
     @Test
     void findAllBooks() {
-        List<Book> actualBooks = jpaBookRepository.findAll();
-        List<Book> expectedBooks = testEntityManager.getEntityManager().createQuery("SELECT b FROM Book b", Book.class).getResultList();
+        var actualBooks = jpaBookRepository.findAll();
+        var expectedBooks = ALL_BOOK_IDS.stream().map(id -> testEntityManager.find(Book.class, id)).toList();
         Assertions.assertEquals(expectedBooks, actualBooks);
     }
 
@@ -44,11 +47,11 @@ public class JpaBookRepositoryTest {
     @Test
     void insertBook() {
         String insertedTitle = "savedBook";
-        Book savedBook = new Book();
-        savedBook.setTitle(insertedTitle);
-        jpaBookRepository.save(savedBook);
-        List<Book> allBooks = testEntityManager.getEntityManager().createQuery("SELECT b FROM Book b", Book.class).getResultList();
-        Assertions.assertTrue(allBooks.stream().anyMatch(b -> b.getTitle().equals(insertedTitle)));
+        Book expectedBook = new Book();
+        expectedBook.setTitle(insertedTitle);
+        jpaBookRepository.save(expectedBook);
+        var actualBook = testEntityManager.find(Book.class, INSERTED_BOOK_ID);
+        Assertions.assertEquals(expectedBook, actualBook);
     }
 
     @DisplayName("редактирование существующей книги")
@@ -56,10 +59,10 @@ public class JpaBookRepositoryTest {
     void updateBook() {
         String updatedTitle = "updatedBook";
         Book book = testEntityManager.find(Book.class, FIRST_BOOK_ID);
-        int numberBooksBeforeUpdate = testEntityManager.getEntityManager().createQuery("SELECT b FROM Book b", Book.class).getResultList().size();
+        int numberBooksBeforeUpdate = ALL_BOOK_IDS.stream().map(id -> testEntityManager.find(Book.class, id)).toList().size();
         book.setTitle(updatedTitle);
         jpaBookRepository.save(book);
-        List<Book> allBooks = testEntityManager.getEntityManager().createQuery("SELECT b FROM Book b", Book.class).getResultList();
+        var allBooks = ALL_BOOK_IDS.stream().map(id -> testEntityManager.find(Book.class, id)).toList();
         Assertions.assertTrue(allBooks.stream().anyMatch(b -> b.getTitle().equals(updatedTitle)));
         Assertions.assertEquals(numberBooksBeforeUpdate, allBooks.size());
     }
@@ -67,11 +70,8 @@ public class JpaBookRepositoryTest {
     @DisplayName("удаление существующей книги")
     @Test
     void deleteBook() {
-        int numberBooksBeforeDelete = testEntityManager.getEntityManager().createQuery("SELECT b FROM Book b", Book.class).getResultList().size();
         jpaBookRepository.deleteById(FIRST_BOOK_ID);
-        List<Book> allBooks = testEntityManager.getEntityManager().createQuery("SELECT b FROM Book b", Book.class).getResultList();
-        Assertions.assertFalse(allBooks.stream().anyMatch(b -> b.getId() == FIRST_BOOK_ID));
-        Assertions.assertEquals(numberBooksBeforeDelete, allBooks.size() + 1);
+        var allBooks = ALL_BOOK_IDS.stream().map(id -> testEntityManager.find(Book.class, id)).toList();
+        Assertions.assertFalse(allBooks.stream().filter(Objects::nonNull).anyMatch(b -> b.getId() == FIRST_BOOK_ID));
     }
-
 }

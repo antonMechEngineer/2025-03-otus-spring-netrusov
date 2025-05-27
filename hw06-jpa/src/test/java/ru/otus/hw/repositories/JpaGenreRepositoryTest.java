@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @Import(JpaGenreRepository.class)
 public class JpaGenreRepositoryTest {
     private static final long FIRST_GENRE_ID = 1L;
+    private static final List<Long> ALL_GENRE_IDS = List.of(FIRST_GENRE_ID, 2L, 3L);
 
     @Autowired
     private JpaGenreRepository jpaGenreRepository;
@@ -26,17 +28,16 @@ public class JpaGenreRepositoryTest {
     @DisplayName("загрузка жанра по id")
     @Test
     void findAuthorById(){
-        Genre actualGenre = jpaGenreRepository.findById(FIRST_GENRE_ID).orElseThrow();
-        Genre expectedGenre = testEntityManager.find(Genre.class, FIRST_GENRE_ID);
+        var actualGenre = jpaGenreRepository.findById(FIRST_GENRE_ID).orElseThrow();
+        var expectedGenre = testEntityManager.find(Genre.class, FIRST_GENRE_ID);
         Assertions.assertEquals(expectedGenre, actualGenre);
     }
 
     @DisplayName("загрузка всех авторов")
     @Test
     void findAllAuthors(){
-        List<Genre> actualGenres = jpaGenreRepository.findAll();
-        List<Genre> expectedAuthors = testEntityManager.getEntityManager().createQuery("SELECT g FROM Genre g", Genre.class).getResultList();
+        var actualGenres = jpaGenreRepository.findAll();
+        var expectedAuthors = ALL_GENRE_IDS.stream().map(id -> testEntityManager.find(Genre.class, id)).toList();
         Assertions.assertEquals(expectedAuthors, actualGenres);
     }
-
 }

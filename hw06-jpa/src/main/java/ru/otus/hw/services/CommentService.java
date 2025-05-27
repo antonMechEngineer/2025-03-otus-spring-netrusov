@@ -11,4 +11,10 @@ public interface CommentService {
 
     List<Comment> findByBook(long bookId);
 
+    Comment insert(String payloadComment, long bookId);
+
+    Comment update(long id, String payloadComment, long bookId);
+
+    void deleteById(long id);
+
 }

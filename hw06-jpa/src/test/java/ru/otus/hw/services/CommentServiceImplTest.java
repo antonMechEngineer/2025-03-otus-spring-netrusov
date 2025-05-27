@@ -6,15 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.CommentConverter;
 import ru.otus.hw.models.Comment;
+import ru.otus.hw.repositories.JpaBookRepository;
 import ru.otus.hw.repositories.JpaCommentRepository;
 
 import java.util.List;
 
 @DisplayName("Сервис комментариев")
 @DataJpaTest
-@Import({CommentConverter.class, CommentServiceImpl.class, JpaCommentRepository.class})
+@Import({CommentConverter.class, CommentServiceImpl.class, JpaCommentRepository.class, JpaBookRepository.class})
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class CommentServiceImplTest {
 
     private static final long FIRST_COMMENT_ID = 1L;
@@ -39,6 +43,20 @@ public class CommentServiceImplTest {
         List<Comment> comments = commentService.findByBook(FIRST_BOOK_ID);
         Assertions.assertFalse(comments.isEmpty());
         Assertions.assertDoesNotThrow(() -> comments.forEach(c -> commentConverter.commentToString(c)));
+    }
+
+    @DisplayName("Сохранение комментария")
+    @Test
+    void processBookInserting() {
+        Comment comment = commentService.insert("1", 1);
+        Assertions.assertDoesNotThrow(() -> commentConverter.commentToString(comment));
+    }
+
+    @DisplayName("Обновление комментария")
+    @Test
+    void processBookUpdating() {
+        Comment comment = commentService.update(1,"1", 1);
+        Assertions.assertDoesNotThrow(() -> commentConverter.commentToString(comment));
     }
 
     @DisplayName("Проверка безопасности ленивого поля - книги")

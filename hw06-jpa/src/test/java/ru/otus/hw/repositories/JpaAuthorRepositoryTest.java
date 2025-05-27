@@ -16,6 +16,7 @@ import java.util.List;
 @Import(JpaAuthorRepository.class)
 public class JpaAuthorRepositoryTest {
     private static final long FIRST_AUTHOR_ID = 1L;
+    private static final List<Long> ALL_AUTHOR_IDS = List.of(FIRST_AUTHOR_ID, 2L, 3L);
 
     @Autowired
     private JpaAuthorRepository jpaAuthorRepository;
@@ -25,17 +26,17 @@ public class JpaAuthorRepositoryTest {
 
     @DisplayName("загрузка автора по id")
     @Test
-    void findAuthorById(){
-        Author actualAuthor = jpaAuthorRepository.findById(FIRST_AUTHOR_ID).orElseThrow();
-        Author expectedAuthor = testEntityManager.find(Author.class, FIRST_AUTHOR_ID);
+    void findAuthorById() {
+        var actualAuthor = jpaAuthorRepository.findById(FIRST_AUTHOR_ID).orElseThrow();
+        var expectedAuthor = testEntityManager.find(Author.class, FIRST_AUTHOR_ID);
         Assertions.assertEquals(expectedAuthor, actualAuthor);
     }
 
     @DisplayName("загрузка всех авторов")
     @Test
-    void findAllAuthors(){
-        List<Author> actualAuthors = jpaAuthorRepository.findAll();
-        List<Author> expectedAuthors = testEntityManager.getEntityManager().createQuery("SELECT a FROM Author a", Author.class).getResultList();
+    void findAllAuthors() {
+        var actualAuthors = jpaAuthorRepository.findAll();
+        var expectedAuthors = ALL_AUTHOR_IDS.stream().map(id -> testEntityManager.find(Author.class, id)).toList();
         Assertions.assertEquals(expectedAuthors, actualAuthors);
     }
 }

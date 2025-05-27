@@ -1,7 +1,6 @@
 package ru.otus.hw.repositories;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -23,13 +22,8 @@ public class JpaCommentRepository implements CommentRepository {
 
     @Override
     public Optional<Comment> findById(long id) {
-        TypedQuery<Comment> query = em.createQuery("SELECT c FROM Comment c WHERE c.id = :id", Comment.class);
-        query.setParameter("id", id);
-        try {
-            return Optional.of(query.getSingleResult());
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
+        Comment comment = em.find(Comment.class, id);
+        return comment == null ? Optional.empty() : Optional.of(comment);
     }
 
     @Override
@@ -39,5 +33,22 @@ public class JpaCommentRepository implements CommentRepository {
                 em.createQuery("SELECT c FROM Comment c WHERE c.book = :book", Comment.class);
         queryComments.setParameter("book", foundBook);
         return queryComments.getResultList();
+    }
+
+    @Override
+    public Comment save(Comment comment) {
+        if (comment.getId() == 0) {
+            em.persist(comment);
+            return comment;
+        }
+        return em.merge(comment);
+    }
+
+    @Override
+    public void deleteById(long id) {
+        Comment comment = em.find(Comment.class, id);
+        if (comment != null) {
+            em.remove(comment);
+        }
     }
 }

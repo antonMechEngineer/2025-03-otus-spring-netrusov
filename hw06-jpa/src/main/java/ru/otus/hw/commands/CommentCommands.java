@@ -28,5 +28,22 @@ public class CommentCommands {
         return commentService.findById(commentId).map(commentConverter::commentToString)
                 .orElse("Comment with id %d not found".formatted(commentId));
     }
+
+    @ShellMethod(value = "Insert comment", key = "cins")
+    public String insertComment(String payloadComment, long bookId) {
+        var savedComment = commentService.insert(payloadComment, bookId);
+        return commentConverter.commentToString(savedComment);
+    }
+
+    @ShellMethod(value = "Update comment", key = "cupd")
+    public String updateComment(long id, String payloadComment, long bookId) {
+        var savedComment = commentService.update(id, payloadComment, bookId);
+        return commentConverter.commentToString(savedComment);
+    }
+
+    @ShellMethod(value = "Delete comment by id", key = "cdel")
+    public void deleteComment(long id) {
+        commentService.deleteById(id);
+    }
 }
 

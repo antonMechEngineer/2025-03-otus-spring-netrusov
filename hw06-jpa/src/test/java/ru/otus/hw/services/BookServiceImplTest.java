@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.AuthorConverter;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.converters.GenreConverter;
@@ -23,6 +25,7 @@ import java.util.List;
         JpaBookRepository.class, JpaAuthorRepository.class, JpaGenreRepository.class,
         BookServiceImpl.class
 })
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class BookServiceImplTest {
 
     private static final long FIRST_BOOK_ID = 1L;
