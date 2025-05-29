@@ -12,7 +12,6 @@ import ru.otus.hw.converters.AuthorConverter;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.converters.GenreConverter;
 import ru.otus.hw.models.Book;
-
 import java.util.List;
 
 @DisplayName("Сервис книг")
