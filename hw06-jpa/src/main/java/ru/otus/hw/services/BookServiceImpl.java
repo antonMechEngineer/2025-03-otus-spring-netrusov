@@ -15,19 +15,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
 
     private final BookRepository bookRepository;
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Book> findById(long id) {
         return bookRepository.findById(id);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Book> findAll() {
         return bookRepository.findAll();

@@ -19,13 +19,11 @@ public class CommentServiceImpl implements CommentService {
 
     private final BookRepository bookRepository;
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Comment> findById(long id) {
         return commentRepository.findById(id);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Comment> findByBook(long bookId) {
         return commentRepository.findByBook(bookId);
