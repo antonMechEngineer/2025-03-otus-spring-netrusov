@@ -23,7 +23,7 @@ public class JpaCommentRepository implements CommentRepository {
     @Override
     public Optional<Comment> findById(long id) {
         Comment comment = em.find(Comment.class, id);
-        return comment == null ? Optional.empty() : Optional.of(comment);
+        return Optional.ofNullable(comment);
     }
 
     @Override
