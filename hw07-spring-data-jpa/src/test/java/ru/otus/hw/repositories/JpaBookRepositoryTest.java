@@ -59,12 +59,10 @@ public class JpaBookRepositoryTest {
     void updateBook() {
         String updatedTitle = "updatedBook";
         Book book = testEntityManager.find(Book.class, FIRST_BOOK_ID);
-        int numberBooksBeforeUpdate = ALL_BOOK_IDS.stream().map(id -> testEntityManager.find(Book.class, id)).toList().size();
         book.setTitle(updatedTitle);
         jpaBookRepository.save(book);
         var allBooks = ALL_BOOK_IDS.stream().map(id -> testEntityManager.find(Book.class, id)).toList();
         Assertions.assertTrue(allBooks.stream().anyMatch(b -> b.getTitle().equals(updatedTitle)));
-        Assertions.assertEquals(numberBooksBeforeUpdate, allBooks.size());
     }
 
     @DisplayName("удаление существующей книги")

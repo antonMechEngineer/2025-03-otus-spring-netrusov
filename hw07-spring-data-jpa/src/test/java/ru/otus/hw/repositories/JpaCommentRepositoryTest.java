@@ -64,12 +64,10 @@ public class JpaCommentRepositoryTest {
     void updateComment() {
         String updatedPayload = "updatedPayload";
         Comment comment = testEntityManager.find(Comment.class, FIRST_COMMENT_ID);
-        int numberCommentsBeforeUpdate = ALL_COMMENT_IDS.stream().map(id -> testEntityManager.find(Comment.class, id)).toList().size();
         comment.setPayloadComment(updatedPayload);
         jpaCommentRepository.save(comment);
         var allComments = ALL_COMMENT_IDS.stream().map(id -> testEntityManager.find(Comment.class, id)).toList();
         Assertions.assertTrue(allComments.stream().anyMatch(b -> b.getPayloadComment().equals(updatedPayload)));
-        Assertions.assertEquals(numberCommentsBeforeUpdate, allComments.size());
     }
 
     @DisplayName("удаление существующей книги")
