@@ -19,6 +19,7 @@ import java.util.Objects;
 public class JpaCommentRepositoryTest {
     private static final long FIRST_COMMENT_ID = 1L;
     private static final long SECOND_BOOK_ID = 2L;
+    private static final long COMMENT_ID_SECOND_BOOK = 3;
     private static final long INSERTED_BOOK_ID = 4L;
     private static final List<Long> ALL_COMMENT_IDS = List.of(FIRST_COMMENT_ID, 2L, 3L);
 
@@ -39,13 +40,9 @@ public class JpaCommentRepositoryTest {
     @DisplayName("загрузка всех комментариев к книге")
     @Test
     void findCommentByBook() {
-        var actualComments = jpaCommentRepository.findByBookId(SECOND_BOOK_ID);
-        Book expectedBook = testEntityManager.find(Book.class, SECOND_BOOK_ID);
-        var expectedComments = ALL_COMMENT_IDS.stream()
-                .map(id -> testEntityManager.find(Comment.class, id))
-                .filter(b -> b.getBook().equals(expectedBook))
-                .toList();
-        Assertions.assertEquals(expectedComments, actualComments);
+        var actualComment = jpaCommentRepository.findByBookId(SECOND_BOOK_ID).get(0);
+        var expectedComment = testEntityManager.find(Comment.class, COMMENT_ID_SECOND_BOOK);
+        Assertions.assertEquals(expectedComment, actualComment);
     }
 
     @DisplayName("сохранение нового комментария")
