@@ -6,8 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.Objects;
 
@@ -21,21 +21,12 @@ import java.util.Objects;
 public class Comment {
 
     @Id
-    private long id;
+    private String id;
 
     private String payloadComment;
 
-    private long bookId;
-
-    @Transient
+    @DocumentReference
     private Book book;
-
-    public Comment(long id, String payloadComment, Book book) {
-        this.id = id;
-        this.payloadComment = payloadComment;
-        this.book = book;
-        this.bookId = book.getId();
-    }
 
     @Override
     public boolean equals(Object o) {

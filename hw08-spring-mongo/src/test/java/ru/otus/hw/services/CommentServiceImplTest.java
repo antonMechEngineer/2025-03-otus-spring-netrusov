@@ -1,4 +1,5 @@
 package ru.otus.hw.services;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,20 +29,20 @@ public class CommentServiceImplTest {
     private Book book;
 
     @BeforeEach
-    void cleanDatabase(){
+    void cleanDatabase() {
         mongoTemplate.getDb().drop();
-        Genre genre =  new Genre(1, "123");
+        Genre genre = new Genre("1", "123");
         mongoTemplate.save(genre);
-        Author author = new Author(1, "123");
+        Author author = new Author("1", "123");
         mongoTemplate.save(author);
-        book = new Book(1, "123", author, genre);
+        book = new Book("1", "123", author, genre);
         mongoTemplate.save(book);
     }
 
     @DisplayName("загрузка комментария по id")
     @Test
     void findCommentById() {
-        var expectedComment = mongoTemplate.save(new Comment(1, "123", book));
+        var expectedComment = mongoTemplate.save(new Comment("1", "123", book));
         var actualComment = commentService.findById(1).orElseThrow();
         Assertions.assertEquals(expectedComment, actualComment);
     }
@@ -49,9 +50,9 @@ public class CommentServiceImplTest {
     @DisplayName("загрузка всех комментариев к книге")
     @Test
     void findCommentByBook() {
-        List<Comment> expectedAllComments = List.of(new Comment(1, "123", book));
+        List<Comment> expectedAllComments = List.of(new Comment("1", "123", book));
         expectedAllComments.forEach(c -> mongoTemplate.save(c));
-        List<Comment> actualAllComments = commentService.findByBook(book.getId());
+        List<Comment> actualAllComments = commentService.findByBook(Long.parseLong(book.getId()));
         Assertions.assertEquals(expectedAllComments, actualAllComments);
     }
 
@@ -59,26 +60,26 @@ public class CommentServiceImplTest {
     @Test
     void insertComment() {
         String expectedPayload = "123";
-        Long expectedBookId = 1L;
-        commentService.insert(expectedPayload, expectedBookId);
+        String expectedBookId = "1";
+        commentService.insert(expectedPayload, Long.parseLong(expectedBookId));
         Comment actualComment = mongoTemplate.findAll(Comment.class).get(0);
         Assertions.assertEquals(expectedPayload, actualComment.getPayloadComment());
-        Assertions.assertEquals(expectedBookId, actualComment.getBookId());
+        Assertions.assertEquals(expectedBookId, actualComment.getBook().getId());
     }
 
     @DisplayName("редактирование существующего комментария")
     @Test
     void updateComment() {
-        mongoTemplate.save(new Comment(1, "123", book));
+        mongoTemplate.save(new Comment("1", "123", book));
         String expectedPayload = "345";
-        commentService.update(1, expectedPayload, book.getId());
-        Assertions.assertEquals(expectedPayload,  mongoTemplate.findAll(Comment.class).get(0).getPayloadComment());
+        commentService.update(1, expectedPayload, Long.parseLong(book.getId()));
+        Assertions.assertEquals(expectedPayload, mongoTemplate.findAll(Comment.class).get(0).getPayloadComment());
     }
 
     @DisplayName("удаление существующего комментария")
     @Test
     void deleteComment() {
-        mongoTemplate.save(new Comment(1, "123", book));
+        mongoTemplate.save(new Comment("1", "123", book));
         commentService.deleteById(1);
         Assertions.assertTrue(mongoTemplate.findAll(Comment.class).isEmpty());
     }

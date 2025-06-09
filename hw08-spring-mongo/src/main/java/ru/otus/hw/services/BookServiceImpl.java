@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
@@ -27,7 +26,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> findById(long id) {
-        return bookRepository.findById(id);
+        return bookRepository.findById(String.valueOf(id));
     }
 
     @Override
@@ -47,20 +46,23 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(long id) {
-        commentRepository.findByBookId(id).stream().map(Comment::getBookId).forEach(commentRepository::deleteById);
-        bookRepository.deleteById(id);
+        commentRepository.deleteByBookId(String.valueOf(id));
+        bookRepository.deleteById(String.valueOf(id));
     }
 
     private Book save(long id, String title, long authorId, long genreId) {
-        if (id > 0) {
-            bookRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-        }
-        var author = authorRepository.findById(authorId)
+        Book book;
+        var author = authorRepository.findById(String.valueOf(authorId))
                 .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        var genre = genreRepository.findById(genreId)
+        var genre = genreRepository.findById(String.valueOf(genreId))
                 .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(authorId)));
-        var book = new Book(id, title, author, genre);
+        if (id > 0) {
+            bookRepository.findById(String.valueOf(id))
+                    .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
+            book = new Book(String.valueOf(id), title, author, genre);
+        } else {
+            book = new Book(null, title, author, genre);
+        }
         return bookRepository.save(book);
     }
 }

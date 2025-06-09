@@ -20,18 +20,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Optional<Comment> findById(long id) {
-        return commentRepository.findById(id);
+        return commentRepository.findById(String.valueOf(id));
     }
 
 
     @Override
     public List<Comment> findByBook(long bookId) {
-        return commentRepository.findByBookId(bookId);
+        return commentRepository.findByBookId(String.valueOf(bookId));
     }
 
     @Override
     public void deleteById(long id) {
-        commentRepository.deleteById(id);
+        commentRepository.deleteById(String.valueOf(id));
     }
 
     @Override
@@ -46,12 +46,12 @@ public class CommentServiceImpl implements CommentService {
 
     private Comment save(long id, String payloadComment, long bookId) {
         if (id > 0) {
-            commentRepository.findById(id)
+            commentRepository.findById(String.valueOf(id))
                     .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
         }
-        var book = bookRepository.findById(bookId)
+        var book = bookRepository.findById(String.valueOf(bookId))
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
-        var comment = new Comment(id, payloadComment, book);
+        var comment = new Comment(String.valueOf(id), payloadComment, book);
         return commentRepository.save(comment);
     }
 }

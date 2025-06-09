@@ -31,7 +31,7 @@ public class AuthorServiceImplTest {
     @DisplayName("загрузка всех авторов")
     @Test
     void findAllAuthors() {
-        List<Author> expectedAllAuthors = List.of(new Author(1, "author1"), new Author(2, "author2"));
+        List<Author> expectedAllAuthors = List.of(new Author("1", "author1"), new Author("2", "author2"));
         expectedAllAuthors.forEach(a -> mongoTemplate.save(a));
         List<Author> actualAllAuthors = authorService.findAll();
         Assertions.assertEquals(expectedAllAuthors, actualAllAuthors);

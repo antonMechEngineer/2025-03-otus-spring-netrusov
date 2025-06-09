@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
@@ -33,7 +31,7 @@ public class GenreServiceImplTest {
     @DisplayName("загрузка всех жанров")
     @Test
     void findAllAuthors() {
-        List<Genre> expectedAllGenres = List.of(new Genre(1, "genre1"), new Genre(2, "genre2"));
+        List<Genre> expectedAllGenres = List.of(new Genre("1", "genre1"), new Genre("2", "genre2"));
         expectedAllGenres.forEach(g -> mongoTemplate.save(g));
         List<Genre> actualAllGenres = genreService.findAll();
         Assertions.assertEquals(expectedAllGenres, actualAllGenres);

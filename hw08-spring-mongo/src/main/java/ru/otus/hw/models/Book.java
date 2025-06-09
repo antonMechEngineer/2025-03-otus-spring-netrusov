@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.Objects;
 
@@ -14,32 +15,20 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "books")
 public class Book {
 
     @Id
-    private long id;
+    private String id;
 
     private String title;
 
-    private long authorId;
-
-    private long genreId;
-
-    @Transient
+    @DocumentReference
     private Author author;
 
-    @Transient
+    @DocumentReference
     private Genre genre;
-
-    public Book(long id, String title, Author author, Genre genre) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.genre = genre;
-        this.authorId = author.getId();
-        this.genreId = genre.getId();
-    }
 
     @Override
     public boolean equals(Object o) {
