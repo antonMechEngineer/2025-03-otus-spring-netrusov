@@ -43,7 +43,7 @@ public class CommentServiceImplTest {
     @Test
     void findCommentById() {
         var expectedComment = mongoTemplate.save(new Comment("1", "123", book));
-        var actualComment = commentService.findById(1).orElseThrow();
+        var actualComment = commentService.findById("1").orElseThrow();
         Assertions.assertEquals(expectedComment, actualComment);
     }
 
@@ -52,7 +52,7 @@ public class CommentServiceImplTest {
     void findCommentByBook() {
         List<Comment> expectedAllComments = List.of(new Comment("1", "123", book));
         expectedAllComments.forEach(c -> mongoTemplate.save(c));
-        List<Comment> actualAllComments = commentService.findByBook(Long.parseLong(book.getId()));
+        List<Comment> actualAllComments = commentService.findByBook(book.getId());
         Assertions.assertEquals(expectedAllComments, actualAllComments);
     }
 
@@ -61,7 +61,7 @@ public class CommentServiceImplTest {
     void insertComment() {
         String expectedPayload = "123";
         String expectedBookId = "1";
-        commentService.insert(expectedPayload, Long.parseLong(expectedBookId));
+        commentService.insert(expectedPayload, expectedBookId);
         Comment actualComment = mongoTemplate.findAll(Comment.class).get(0);
         Assertions.assertEquals(expectedPayload, actualComment.getPayloadComment());
         Assertions.assertEquals(expectedBookId, actualComment.getBook().getId());
@@ -72,7 +72,7 @@ public class CommentServiceImplTest {
     void updateComment() {
         mongoTemplate.save(new Comment("1", "123", book));
         String expectedPayload = "345";
-        commentService.update(1, expectedPayload, Long.parseLong(book.getId()));
+        commentService.update("1", expectedPayload, book.getId());
         Assertions.assertEquals(expectedPayload, mongoTemplate.findAll(Comment.class).get(0).getPayloadComment());
     }
 
@@ -80,7 +80,7 @@ public class CommentServiceImplTest {
     @Test
     void deleteComment() {
         mongoTemplate.save(new Comment("1", "123", book));
-        commentService.deleteById(1);
+        commentService.deleteById("1");
         Assertions.assertTrue(mongoTemplate.findAll(Comment.class).isEmpty());
     }
 }

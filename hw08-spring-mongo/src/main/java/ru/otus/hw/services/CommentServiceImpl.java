@@ -19,38 +19,38 @@ public class CommentServiceImpl implements CommentService {
     private final BookRepository bookRepository;
 
     @Override
-    public Optional<Comment> findById(long id) {
+    public Optional<Comment> findById(String id) {
         return commentRepository.findById(String.valueOf(id));
     }
 
 
     @Override
-    public List<Comment> findByBook(long bookId) {
+    public List<Comment> findByBook(String bookId) {
         return commentRepository.findByBookId(String.valueOf(bookId));
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(String id) {
         commentRepository.deleteById(String.valueOf(id));
     }
 
     @Override
-    public Comment insert(String payloadComment, long bookId) {
-        return save(0, payloadComment, bookId);
+    public Comment insert(String payloadComment, String bookId) {
+        return save(null, payloadComment, bookId);
     }
 
     @Override
-    public Comment update(long id, String payloadComment, long bookId) {
+    public Comment update(String id, String payloadComment, String bookId) {
         return save(id, payloadComment, bookId);
     }
 
-    private Comment save(long id, String payloadComment, long bookId) {
-        if (id > 0) {
-            commentRepository.findById(String.valueOf(id))
+    private Comment save(String id, String payloadComment, String bookId) {
+        if (id != null) {
+            commentRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
         }
-        var book = bookRepository.findById(String.valueOf(bookId))
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
+        var book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
         var comment = new Comment(String.valueOf(id), payloadComment, book);
         return commentRepository.save(comment);
     }

@@ -45,7 +45,7 @@ public class BookServiceImplTest {
     void findBookById() {
         var expectedBook = new Book("1", "123", author, genre);
         mongoTemplate.save(expectedBook);
-        var actualBook = bookService.findById(1).orElseThrow();
+        var actualBook = bookService.findById("1").orElseThrow();
         Assertions.assertEquals(expectedBook, actualBook);
     }
 
@@ -62,7 +62,7 @@ public class BookServiceImplTest {
     @Test
     void insertBook() {
         String expectedTitle = "123";
-        bookService.insert(expectedTitle, Long.parseLong(author.getId()), Long.parseLong(genre.getId()));
+        bookService.insert(expectedTitle, author.getId(), genre.getId());
         Book actualBook = mongoTemplate.findAll(Book.class).get(0);
         Assertions.assertEquals(expectedTitle, actualBook.getTitle());
     }
@@ -73,7 +73,7 @@ public class BookServiceImplTest {
         var expectedBook = new Book("1", "123", author, genre);
         mongoTemplate.save(expectedBook);
         String expectedTitle = "345";
-        bookService.update(1, expectedTitle, Long.parseLong(author.getId()), Long.parseLong(genre.getId()));
+        bookService.update("1", expectedTitle, author.getId(), genre.getId());
         Assertions.assertEquals(expectedTitle, mongoTemplate.findAll(Book.class).get(0).getTitle());
     }
 
@@ -82,7 +82,7 @@ public class BookServiceImplTest {
     void deleteBook() {
         var expectedBook = new Book("1", "123", author, genre);
         mongoTemplate.save(expectedBook);
-        bookService.deleteById(1);
+        bookService.deleteById("1");
         Assertions.assertTrue(mongoTemplate.findAll(Book.class).isEmpty());
     }
 
@@ -92,7 +92,7 @@ public class BookServiceImplTest {
         var book = new Book("1", "123", author, genre);
         mongoTemplate.save(book);
         mongoTemplate.save(new Comment("1", "123", book));
-        bookService.deleteById(1);
+        bookService.deleteById("1");
         Assertions.assertTrue(mongoTemplate.findAll(Comment.class).isEmpty());
     }
 
@@ -100,8 +100,8 @@ public class BookServiceImplTest {
     @Test
     void doubleSaveBookWithoutException() {
         String expectedTitle = "123";
-        bookService.insert(expectedTitle, Long.parseLong(author.getId()), Long.parseLong(genre.getId()));
-        bookService.insert(expectedTitle + "4", Long.parseLong(author.getId()), Long.parseLong(genre.getId()));
+        bookService.insert(expectedTitle, author.getId(), genre.getId());
+        bookService.insert(expectedTitle + "4", author.getId(), genre.getId());
         Book actualBook = mongoTemplate.findAll(Book.class).get(0);
         Assertions.assertEquals(expectedTitle, actualBook.getTitle());
     }

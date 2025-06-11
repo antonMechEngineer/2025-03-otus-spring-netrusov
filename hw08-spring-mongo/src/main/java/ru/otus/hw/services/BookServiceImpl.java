@@ -25,7 +25,7 @@ public class BookServiceImpl implements BookService {
     private final AuthorRepository authorRepository;
 
     @Override
-    public Optional<Book> findById(long id) {
+    public Optional<Book> findById(String id) {
         return bookRepository.findById(String.valueOf(id));
     }
 
@@ -35,31 +35,31 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book insert(String title, long authorId, long genreId) {
-        return save(0, title, authorId, genreId);
+    public Book insert(String title, String authorId, String genreId) {
+        return save(null, title, authorId, genreId);
     }
 
     @Override
-    public Book update(long id, String title, long authorId, long genreId) {
+    public Book update(String id, String title, String authorId, String genreId) {
         return save(id, title, authorId, genreId);
     }
 
     @Override
-    public void deleteById(long id) {
-        commentRepository.deleteByBookId(String.valueOf(id));
-        bookRepository.deleteById(String.valueOf(id));
+    public void deleteById(String id) {
+        commentRepository.deleteByBookId(id);
+        bookRepository.deleteById(id);
     }
 
-    private Book save(long id, String title, long authorId, long genreId) {
+    private Book save(String id, String title, String authorId, String genreId) {
         Book book;
-        var author = authorRepository.findById(String.valueOf(authorId))
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        var genre = genreRepository.findById(String.valueOf(genreId))
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(authorId)));
-        if (id > 0) {
-            bookRepository.findById(String.valueOf(id))
-                    .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-            book = new Book(String.valueOf(id), title, author, genre);
+        var author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %s not found".formatted(authorId)));
+        var genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %s not found".formatted(authorId)));
+        if (id != null) {
+            bookRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
+            book = new Book(id, title, author, genre);
         } else {
             book = new Book(null, title, author, genre);
         }
