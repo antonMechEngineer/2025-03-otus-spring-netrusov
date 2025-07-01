@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Browse book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+            .comments tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+    </style>
+</head>
+<body>
+
+<form id="browse-form" action="editBook.html" th:method="get" th:action="@{/browseBook(id=${book.id})}"
+      th:object="${book}">
+    <h3>Book Info:</h3>
+    <div class="row">
+        <label for="id">ID:</label>
+        <input id="id" type="text" value="1" th:value="*{id}"/>
+    </div>
+    <div class="row">
+        <label for="book-title">Title:</label>
+        <input id="book-title" name="title" type="text" value="Default title" th:value="*{title}"/>
+    </div>
+    <div class="row">
+        <label for="book-author">Author:</label>
+        <input id="book-author" name="author" type="text" value="Default author fullName"
+               th:value="*{author.fullName}"/>
+    </div>
+    <div class="row">
+        <label for="book-genre">Genre:</label>
+        <input id="book-genre" name="genre" type="text" value="Default genre name" th:value="*{genre.name}"/>
+    </div>
+
+    <h3>Comments for the book:</h3>
+    <table class="comments">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Comment</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="comment : ${comments}" th:object="${comment}">
+            <td th:number="*{id}">1</td>
+            <td th:text="*{payloadComment}">Default comment</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <a href="allBooks.html" th:href="@{/books}">
+            <button type="button">Go to book's list</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>

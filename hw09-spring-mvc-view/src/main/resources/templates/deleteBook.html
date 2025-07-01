@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Are you sure delete the book:</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="delete-form" action="deleteBook.html" th:method="post" th:action="@{/deleteBook(id=${book.id})}"
+      th:object="${book}">
+    <h3>Deleted Book Info:</h3>
+
+    <div class="row">
+        <label for="id">ID:</label>
+        <input id="id" readonly="readonly" type="text" value="1" th:value="*{id}"/>
+    </div>
+
+    <div class="row">
+        <label for="book-title">Title:</label>
+        <input id="book-title" readonly="readonly" name="title" type="text" value="Default title" th:value="*{title}"/>
+    </div>
+    <div class="row">
+        <label for="book-author">AuthorID:</label>
+        <input id="book-author" readonly="readonly" name="author" type="text" value="1" th:value="*{author.id}"/>
+    </div>
+    <div class="row">
+        <label for="book-genre">GenreID:</label>
+        <input id="book-genre" readonly="readonly" name="genre" type="text" value="1" th:value="*{genre.id}"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Delete</button>
+        <a href="allBooks.html" th:href="@{/books}"><button type="button">Go to book's list</button></a>
+    </div>
+</form>
+
+</body>
+</html>
