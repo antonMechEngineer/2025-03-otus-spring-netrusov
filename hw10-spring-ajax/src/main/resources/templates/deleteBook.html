@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Are you sure delete the book?</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="delete-form">
+    <h3>Deleted Book Info:</h3>
+
+    <div class="row">
+        <label for="id">ID:</label>
+        <input id="id" readonly type="text"/>
+    </div>
+
+    <div class="row">
+        <label for="book-title">Title:</label>
+        <input id="book-title" readonly type="text"/>
+    </div>
+
+    <div class="row">
+        <label for="book-author">AuthorID:</label>
+        <input id="book-author" readonly type="text"/>
+    </div>
+
+    <div class="row">
+        <label for="book-genre">GenreID:</label>
+        <input id="book-genre" readonly type="text"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Delete</button>
+        <a href="/books"><button type="button">Go to book's list</button></a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const params = new URLSearchParams(window.location.search);
+        const bookId = params.get('id');
+        try {
+            const response = await fetch(`/api/books/${bookId}`);
+            if (!response.ok) {
+                throw new Error('Ошибка загрузки книги');
+            }
+            const book = await response.json();
+            document.getElementById('id').value = book.id;
+            document.getElementById('book-title').value = book.title;
+            document.getElementById('book-author').value = book.authorId;
+            document.getElementById('book-genre').value = book.genreId;
+            document.getElementById('delete-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const delResponse = await fetch(`/api/books/${bookId}`, {
+                    method: 'DELETE'
+                });
+
+                if (delResponse.ok) {
+                    alert('Книга успешно удалена!');
+                    window.location.href = "/books";
+                } else {
+                    alert('Ошибка удаления книги');
+                }
+            });
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+</script>
+</body>
+</html>

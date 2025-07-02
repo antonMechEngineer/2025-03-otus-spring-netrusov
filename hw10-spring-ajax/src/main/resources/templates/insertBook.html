@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Insert book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="insert-form">
+    <h3>New Book Info:</h3>
+    <div class="row">
+        <label for="book-title-input">Title:</label>
+        <input id="book-title-input" name="title" type="text" placeholder="Enter book title here..." required/>
+    </div>
+    <div class="row">
+        <label for="author-select">Author:</label>
+        <select id="author-select" name="author-id">
+        </select>
+    </div>
+    <div class="row">
+        <label for="genre-select">Genre:</label>
+        <select id="genre-select" name="genre-id">
+        </select>
+    </div>
+    <div class="row">
+        <button type="submit">Save</button>
+        <a href="/books"><button type="button">Go to book's list</button></a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const authorsResponse = await fetch('/api/authors');
+            if (!authorsResponse.ok) {
+                throw new Error('Ошибка загрузки авторов');
+            }
+            const authors = await authorsResponse.json();
+            authors.forEach((author) => {
+                const option = document.createElement('option');
+                option.value = author.id;
+                option.text = author.fullName;
+                document.getElementById('author-select').appendChild(option);
+            });
+            const genresResponse = await fetch('/api/genres');
+            if (!genresResponse.ok) {
+                throw new Error('Ошибка загрузки жанров');
+            }
+            const genres = await genresResponse.json();
+            genres.forEach((genre) => {
+                const option = document.createElement('option');
+                option.value = genre.id;
+                option.text = genre.name;
+                document.getElementById('genre-select').appendChild(option);
+            });
+            document.getElementById('insert-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = {
+                    title: document.getElementById('book-title-input').value,
+                    authorId: document.getElementById('author-select').value,
+                    genreId: document.getElementById('genre-select').value
+                };
+                const postResponse = await fetch('/api/books', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (postResponse.ok) {
+                    alert('Книга успешно создана!');
+                    window.location.href = "/books";
+                } else {
+                    alert('Ошибка сохранения книги');
+                }
+            });
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+</script>
+</body>
+</html>
