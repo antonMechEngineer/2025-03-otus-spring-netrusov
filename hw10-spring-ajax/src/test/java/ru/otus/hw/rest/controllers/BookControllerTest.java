@@ -17,7 +17,9 @@ import ru.otus.hw.models.Comment;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.rest.BookController;
 import ru.otus.hw.rest.GlobalExceptionHandler;
+import ru.otus.hw.rest.dto.AuthorDto;
 import ru.otus.hw.rest.dto.BookDto;
+import ru.otus.hw.rest.dto.GenreDto;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
 
@@ -62,12 +64,12 @@ class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].title").value("Book 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].authorFullName").value("Author 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].genreName").value("Genre"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].author.fullName").value("Author 1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].genre.name").value("Genre"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").value(2L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[1].title").value("Book 2"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].authorFullName").value("Author 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].genreName").value("Genre"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].author.fullName").value("Author 1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].genre.name").value("Genre"));
     }
 
     @Test
@@ -81,15 +83,15 @@ class BookControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Book 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorFullName").value("Author 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.genreName").value("Genre"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.fullName").value("Author 1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.genre.name").value("Genre"));
     }
 
     @Test
     void testCreateBook() throws Exception {
-        BookDto requestBook = new BookDto(0, "New Book", 1L, 1L, "", "");
+        BookDto requestBook = new BookDto(0, "New Book", new AuthorDto(1L, ""), new GenreDto(1L, ""));
         Book mockBook = new Book(1, "New Book", new Author(1L, "Author New"), new Genre(1L, "Genre New"));
-        given(bookService.insert(requestBook.getTitle(), requestBook.getAuthorId(), requestBook.getGenreId()))
+        given(bookService.insert(requestBook.getTitle(), requestBook.getAuthor().getId(), requestBook.getGenre().getId()))
                 .willReturn(mockBook);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
                         .content(objectMapper.writeValueAsBytes(requestBook))
@@ -99,16 +101,16 @@ class BookControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("New Book"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorFullName").value("Author New"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.genreName").value("Genre New"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.fullName").value("Author New"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.genre.name").value("Genre New"));
     }
 
     @Test
     void testUpdateBook() throws Exception {
-        BookDto updatedBook = new BookDto(1L, "Updated Book", 1L, 1L, "Author Updated", "Genre Updated");
+        BookDto updatedBook = new BookDto(1L, "Updated Book", new AuthorDto(1L, "Author Updated"), new GenreDto(1L, "Genre Updated"));
         Book mockBook = new Book(1, "Updated Book", new Author(1L, "Author Updated"), new Genre(1L, "Genre Updated"));
         given(bookService.findById(1L)).willReturn(Optional.of(mockBook));
-        given(bookService.update(updatedBook.getId(), updatedBook.getTitle(), updatedBook.getAuthorId(), updatedBook.getGenreId()))
+        given(bookService.update(updatedBook.toDomainObject()))
                 .willReturn(mockBook);
         mockMvc.perform(MockMvcRequestBuilders.put("/api/books/1")
                         .content(objectMapper.writeValueAsBytes(updatedBook))
@@ -118,8 +120,8 @@ class BookControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Updated Book"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorFullName").value("Author Updated"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.genreName").value("Genre Updated"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author.fullName").value("Author Updated"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.genre.name").value("Genre Updated"));
     }
 
     @Test

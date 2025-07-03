@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration(classes = AuthorController.class)
 @WebMvcTest(controllers = AuthorController.class)
 @Import(GlobalExceptionHandler.class)
 class AuthorControllerTest {

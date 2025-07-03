@@ -76,8 +76,8 @@
             const book = await bookResponse.json();
             document.getElementById('id').value = book.id;
             document.getElementById('book-title').value = book.title;
-            document.getElementById('book-author').value = book.authorFullName || '';
-            document.getElementById('book-genre').value = book.genreName || '';
+            document.getElementById('book-author').value = book.author.fullName || '';
+            document.getElementById('book-genre').value = book.genre.name || '';
             const commentsResponse = await fetch(`/api/books/${bookId}/comments`);
             if (!commentsResponse.ok) {
                 throw new Error('Ошибка загрузки комментариев');

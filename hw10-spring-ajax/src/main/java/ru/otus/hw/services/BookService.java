@@ -12,7 +12,7 @@ public interface BookService {
 
     Book insert(String title, long authorId, long genreId);
 
-    Book update(long id, String title, long authorId, long genreId);
+    Book update(Book book);
 
     void deleteById(long id);
 }

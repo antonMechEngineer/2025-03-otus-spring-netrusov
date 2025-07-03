@@ -8,54 +8,18 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.converters.CommentConverter;
 import ru.otus.hw.models.Comment;
-
-import java.util.List;
 
 @DisplayName("Сервис комментариев")
 @DataJpaTest
-@Import({CommentServiceImpl.class, CommentConverter.class})
+@Import({CommentServiceImpl.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class CommentServiceImplTest {
 
     private static final long FIRST_COMMENT_ID = 1L;
-    private static final long FIRST_BOOK_ID = 1L;
-
-    @Autowired
-    private CommentConverter commentConverter;
 
     @Autowired
     private CommentService commentService;
-
-    @DisplayName("Обработка полученного комментария по его id")
-    @Test
-    void processCommentGettingById() {
-        Comment comment = commentService.findById(FIRST_COMMENT_ID).orElseThrow();
-        Assertions.assertDoesNotThrow(() -> commentConverter.commentToString(comment));
-    }
-
-    @DisplayName("Обработка списка комментариев для книги")
-    @Test
-    void processCommentsByBookId() {
-        List<Comment> comments = commentService.findByBook(FIRST_BOOK_ID);
-        Assertions.assertFalse(comments.isEmpty());
-        Assertions.assertDoesNotThrow(() -> comments.forEach(c -> commentConverter.commentToString(c)));
-    }
-
-    @DisplayName("Сохранение комментария")
-    @Test
-    void processBookInserting() {
-        Comment comment = commentService.insert("1", 1);
-        Assertions.assertDoesNotThrow(() -> commentConverter.commentToString(comment));
-    }
-
-    @DisplayName("Обновление комментария")
-    @Test
-    void processBookUpdating() {
-        Comment comment = commentService.update(1,"1", 1);
-        Assertions.assertDoesNotThrow(() -> commentConverter.commentToString(comment));
-    }
 
     @DisplayName("Проверка безопасности ленивого поля - книги")
     @Test

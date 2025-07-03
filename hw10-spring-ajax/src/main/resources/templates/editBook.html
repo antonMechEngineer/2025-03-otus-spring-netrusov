@@ -39,14 +39,12 @@
     <div class="row">
         <label for="author-select">Author:</label>
         <select id="author-select" name="author-id">
-            <!-- Данные появятся динамически -->
         </select>
     </div>
 
     <div class="row">
         <label for="genre-select">Genre:</label>
         <select id="genre-select" name="genre-id">
-            <!-- Данные появятся динамически -->
         </select>
     </div>
 
@@ -60,6 +58,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const params = new URLSearchParams(window.location.search);
         const bookId = params.get('id');
+
         try {
             const bookResponse = await fetch(`/api/books/${bookId}`);
             if (!bookResponse.ok) {
@@ -68,6 +67,7 @@
             const book = await bookResponse.json();
             document.getElementById('id-input').value = book.id;
             document.getElementById('book-title-input').value = book.title;
+
             const authorsResponse = await fetch('/api/authors');
             if (!authorsResponse.ok) {
                 throw new Error('Ошибка загрузки авторов');
@@ -79,6 +79,7 @@
                 option.text = author.fullName;
                 document.getElementById('author-select').appendChild(option);
             });
+
             const genresResponse = await fetch('/api/genres');
             if (!genresResponse.ok) {
                 throw new Error('Ошибка загрузки жанров');
@@ -90,14 +91,29 @@
                 option.text = genre.name;
                 document.getElementById('genre-select').appendChild(option);
             });
+
             document.getElementById('edit-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
-                const formData = {
-                    id: document.getElementById('id-input').value,
-                    title: document.getElementById('book-title-input').value,
-                    authorId: document.getElementById('author-select').value,
-                    genreId: document.getElementById('genre-select').value
+
+                const authorSelect = document.getElementById('author-select');
+                const author = {
+                    id: Number.parseInt(authorSelect.value),
+                    fullName: authorSelect.options[authorSelect.selectedIndex].text
                 };
+
+                const genreSelect = document.getElementById('genre-select');
+                const genre = {
+                    id: Number.parseInt(genreSelect.value),
+                    name: genreSelect.options[genreSelect.selectedIndex].text
+                };
+
+                const formData = {
+                    id: book.id,
+                    title: document.getElementById('book-title-input').value,
+                    author: author,
+                    genre: genre
+                };
+
                 const putResponse = await fetch(`/api/books/${formData.id}`, {
                     method: 'PUT',
                     headers: {

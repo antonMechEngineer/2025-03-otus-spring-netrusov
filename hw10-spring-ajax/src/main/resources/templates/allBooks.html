@@ -32,8 +32,8 @@
     <tr>
         <th>ID</th>
         <th>Name</th>
-        <th>AuthorID</th>
-        <th>GenreID</th>
+        <th>Author</th>
+        <th>Genre</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -53,8 +53,8 @@
                 row.innerHTML = `
                     <td>${book.id}</td>
                     <td>${book.title}</td>
-                    <td>${book.authorId || '-'}</td>
-                    <td>${book.genreId || '-'}</td>
+                    <td>${book.author.fullName || '-'}</td>
+                    <td>${book.genre.name || '-'}</td>
                     <td>
                         <a href="/editBook?id=${book.id || '-'}">Edit</a>
                         <a href="/deleteBook?id=${book.id || '-'}">Delete</a>

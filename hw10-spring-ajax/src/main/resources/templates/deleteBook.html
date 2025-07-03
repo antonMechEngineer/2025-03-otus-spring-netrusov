@@ -65,8 +65,8 @@
             const book = await response.json();
             document.getElementById('id').value = book.id;
             document.getElementById('book-title').value = book.title;
-            document.getElementById('book-author').value = book.authorId;
-            document.getElementById('book-genre').value = book.genreId;
+            document.getElementById('book-author').value = book.author.fullName;
+            document.getElementById('book-genre').value = book.genre.name;
             document.getElementById('delete-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const delResponse = await fetch(`/api/books/${bookId}`, {
