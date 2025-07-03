@@ -1,14 +1,15 @@
 package ru.otus.hw.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.ui.Model;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import org.springframework.web.bind.annotation.GetMapping;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
@@ -37,9 +38,9 @@ public class BookController {
         return "allBooks";
     }
 
-    @GetMapping("/editBook")
-    public String editBookPage(@RequestParam("id") long id, Model model) {
-        Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
+    @GetMapping("/editBook/{id}")
+    public String editBookPage(@PathVariable long id, Model model) {
+        Book book = bookService.findById(id).orElseThrow(EntityNotFoundException::new);
         model.addAttribute("book", book);
         List<Author> authors = authorService.findAll();
         List<Genre> genres = genreService.findAll();
@@ -48,9 +49,9 @@ public class BookController {
         return "editBook";
     }
 
-    @PostMapping("/editBook")
+    @PostMapping("/editBook/{id}")
     public String updateBook(Book book) {
-        bookService.update(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        bookService.update(book);
         return "redirect:/books";
     }
 
@@ -70,22 +71,22 @@ public class BookController {
         return "redirect:/books";
     }
 
-    @GetMapping("/deleteBook")
-    public String deleteBookPage(@RequestParam("id") long id, Model model) {
-        Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
+    @GetMapping("/deleteBook/{id}")
+    public String deleteBookPage(@PathVariable long id, Model model) {
+        Book book = bookService.findById(id).orElseThrow(EntityNotFoundException::new);
         model.addAttribute("book", book);
         return "deleteBook";
     }
 
-    @PostMapping("/deleteBook")
-    public String deleteBook(Book book) {
-        bookService.deleteById(book.getId());
+    @PostMapping("/deleteBook/{id}")
+    public String deleteBook(@PathVariable long id) {
+        bookService.deleteById(id);
         return "redirect:/books";
     }
 
-    @GetMapping("/browseBook")
-    public String browseBookPage(@RequestParam("id") long id, Model model) {
-        Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
+    @GetMapping("/browseBook/{id}")
+    public String browseBookPage(@PathVariable long id, Model model) {
+        Book book = bookService.findById(id).orElseThrow(EntityNotFoundException::new);
         List<Comment> comments = commentService.findByBook(book.getId());
         model.addAttribute("book", book);
         model.addAttribute("comments", comments);

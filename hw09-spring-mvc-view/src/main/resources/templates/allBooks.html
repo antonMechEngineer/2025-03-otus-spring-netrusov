@@ -32,8 +32,8 @@
     <tr>
         <th>ID</th>
         <th>Name</th>
-        <th>AuthorID</th>
-        <th>GenreID</th>
+        <th>Author</th>
+        <th>Genre</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -41,12 +41,12 @@
     <tr th:each="book : ${books}" th:object="${book}">
         <td th:text="*{id}">"1"</td>
         <td th:text="*{title}">Default book</td>
-        <td th:text="*{genre.id}">"1"</td>
-        <td th:text="*{author.id}">"1"</td>
+        <td th:text="*{genre.name}">"Genre name"</td>
+        <td th:text="*{author.fullName}">"Author full name"</td>
         <td>
-            <a href="editBook.html" th:href="@{/editBook(id=*{id})}">Edit</a>
-            <a href="deleteBook.html" th:href="@{/deleteBook(id=*{id})}">Delete</a>
-            <a href="browseBook.html" th:href="@{/browseBook(id=*{id})}">Browse</a>
+            <a href="editBook.html" th:href="@{'/editBook/' + ${book.id}}">Edit</a>
+            <a href="deleteBook.html" th:href="@{'/deleteBook/' + ${book.id}}">Delete</a>
+            <a href="browseBook.html" th:href="@{'/browseBook/' + ${book.id}}">Browse</a>
         </td>
     </tr>
     </tbody>

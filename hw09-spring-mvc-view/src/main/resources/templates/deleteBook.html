@@ -24,7 +24,7 @@
 </head>
 <body>
 
-<form id="delete-form" action="deleteBook.html" th:method="post" th:action="@{/deleteBook(id=${book.id})}"
+<form id="delete-form" th:method="post" action="#"  th:action="@{'/deleteBook/' + ${book.id}}"
       th:object="${book}">
     <h3>Deleted Book Info:</h3>
 
@@ -38,12 +38,12 @@
         <input id="book-title" readonly="readonly" name="title" type="text" value="Default title" th:value="*{title}"/>
     </div>
     <div class="row">
-        <label for="book-author">AuthorID:</label>
-        <input id="book-author" readonly="readonly" name="author" type="text" value="1" th:value="*{author.id}"/>
+        <label for="book-author">Author:</label>
+        <input id="book-author" readonly="readonly" name="author" type="text" value="Author full name" th:value="*{author.fullName}"/>
     </div>
     <div class="row">
-        <label for="book-genre">GenreID:</label>
-        <input id="book-genre" readonly="readonly" name="genre" type="text" value="1" th:value="*{genre.id}"/>
+        <label for="book-genre">Genre:</label>
+        <input id="book-genre" readonly="readonly" name="genre" type="text" value="Genre name" th:value="*{genre.name}"/>
     </div>
 
     <div class="row">

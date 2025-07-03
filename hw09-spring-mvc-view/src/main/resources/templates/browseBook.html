@@ -29,7 +29,7 @@
 </head>
 <body>
 
-<form id="browse-form" action="editBook.html" th:method="get" th:action="@{/browseBook(id=${book.id})}"
+<form id="browse-form" th:method="get" action="#"  th:action="@{'/browseBook/' + ${book.id}}"
       th:object="${book}">
     <h3>Book Info:</h3>
     <div class="row">

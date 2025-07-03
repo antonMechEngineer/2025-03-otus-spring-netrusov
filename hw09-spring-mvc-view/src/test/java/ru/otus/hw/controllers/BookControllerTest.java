@@ -61,7 +61,7 @@ public class BookControllerTest {
         when(authorService.findAll()).thenReturn(List.of(author));
         when(genreService.findAll()).thenReturn(List.of(genre));
 
-        mvc.perform(get("/editBook").param("id", "1"))
+        mvc.perform(get("/editBook/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editBook"))
                 .andExpect(model().attribute("book", book))
@@ -88,7 +88,7 @@ public class BookControllerTest {
         when(bookService.findById(1L)).thenReturn(Optional.of(book));
         when(commentService.findByBook(1L)).thenReturn(comments);
 
-        mvc.perform(get("/browseBook").param("id", "1"))
+        mvc.perform(get("/browseBook/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("browseBook"))
                 .andExpect(model().attribute("book", book))

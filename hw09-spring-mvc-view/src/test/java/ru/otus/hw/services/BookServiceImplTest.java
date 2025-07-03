@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.AuthorConverter;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.converters.GenreConverter;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+
 import java.util.List;
 
 @DisplayName("Сервис книг")
@@ -53,7 +56,8 @@ public class BookServiceImplTest {
     @DisplayName("Обновление книги")
     @Test
     void processBookUpdating() {
-        Book book = bookService.update(1,"1", 1, 1);
+        Book book = bookService.update(
+                new Book(1, "1", new Author(1, "1"), new Genre(1, "1")));
         Assertions.assertDoesNotThrow(() -> bookConverter.bookToString(book));
     }
 
