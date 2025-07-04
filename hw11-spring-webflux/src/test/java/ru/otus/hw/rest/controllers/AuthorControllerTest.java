@@ -1,60 +1,62 @@
 package ru.otus.hw.rest.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.rest.AuthorController;
-import ru.otus.hw.rest.GlobalExceptionHandler;
 import ru.otus.hw.rest.dto.AuthorDto;
-import ru.otus.hw.services.AuthorService;
 
-import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.BDDMockito.given;
 
-@WebMvcTest(controllers = AuthorController.class)
-@Import(GlobalExceptionHandler.class)
-class AuthorControllerTest {
-
+@WebFluxTest(controllers = AuthorController.class)
+public class AuthorControllerTest {
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockBean
-    private AuthorService authorService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private AuthorRepository authorRepository;
 
     @Test
-    void testGetAllAuthorsWithExistingAuthors() throws Exception {
-        List<AuthorDto> expectedAuthors = Collections.singletonList(new AuthorDto(1L, "a"));
-        when(authorService.findAll()).thenReturn(expectedAuthors.stream().map(AuthorDto::toDomainObject).toList());
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/authors"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].fullName").value("a"));
+    void testGetAllAuthors_Success() {
+        List<Author> mockAuthors = List.of(
+                new Author(1L, "a"),
+                new Author(2L, "b"));
+
+        given(authorRepository.findAll()).willReturn(Flux.fromIterable(mockAuthors));
+        webTestClient.get()
+                .uri("/api/authors")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(AuthorDto.class)
+                .value(authors -> assertThat(authors.size()).isEqualTo(2))
+                .value(authors -> assertThat(authors.stream().anyMatch(a -> a.getFullName().equals("a"))).isTrue())
+                .value(authors -> assertThat(authors.stream().anyMatch(a -> a.getFullName().equals("b"))).isTrue());
     }
 
     @Test
-    void testGetAllAuthorsWhenNoAuthorsExist() throws Exception {
-        when(authorService.findAll()).thenReturn(Collections.emptyList());
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/authors"))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+    void testGetAllAuthors_Empty() {
+        given(authorRepository.findAll()).willReturn(Flux.empty());
+        webTestClient.get()
+                .uri("/api/authors")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(AuthorDto.class)
+                .isEqualTo(List.of());
     }
 }
+
+
+

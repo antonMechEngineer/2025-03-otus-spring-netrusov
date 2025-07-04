@@ -18,7 +18,7 @@ public class CommentDto {
         return new CommentDto(
                 comment.getId(),
                 comment.getPayloadComment(),
-                comment.getBook().getId() // Получаем только ID книги
+                comment.getBookId()
         );
     }
 

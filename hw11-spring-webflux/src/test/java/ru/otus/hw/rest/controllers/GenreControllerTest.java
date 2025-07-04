@@ -1,65 +1,63 @@
 package ru.otus.hw.rest.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.rest.GenreController;
-import ru.otus.hw.rest.GlobalExceptionHandler;
 import ru.otus.hw.rest.dto.GenreDto;
-import ru.otus.hw.services.GenreService;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@ContextConfiguration(classes = GenreController.class)
-@WebMvcTest(controllers = GenreController.class)
-@Import(GlobalExceptionHandler.class)
+import static org.mockito.BDDMockito.given;
+
+@WebFluxTest(controllers = GenreController.class)
 class GenreControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockBean
-    private GenreService genreService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private GenreRepository genreRepository;
 
     @Test
-    void testGetAllGenresWhenGenresExist() throws Exception {
-        List<GenreDto> expectedGenres = Arrays.asList(new GenreDto(1L, "a"), new GenreDto(2L, "b"));
-        given(genreService.findAll()).willReturn(Arrays.asList(expectedGenres.get(0).toDomainObject(), expectedGenres.get(1).toDomainObject()));
+    void testGetAllGenres_Success() {
+        List<Genre> mockGenres = List.of(
+                new Genre(1L, "a"),
+                new Genre(2L, "b"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/genres"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("a"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").value(2L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("b"));
+        given(genreRepository.findAll()).willReturn(Flux.fromIterable(mockGenres));
+
+        webTestClient.get()
+                .uri("/api/genres")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(GenreDto.class)
+                .value(genres -> assertThat(genres.size()).isEqualTo(2))
+                .value(genres -> assertThat(genres.stream().anyMatch(g -> g.getName().equals("a"))).isTrue())
+                .value(genres -> assertThat(genres.stream().anyMatch(g -> g.getName().equals("b"))).isTrue());
     }
 
     @Test
-    void testGetAllGenresWhenNoGenresExist() throws Exception {
-        given(genreService.findAll()).willReturn(Collections.emptyList());
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/genres"))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+    void testGetAllGenres_Empty() {
+        given(genreRepository.findAll()).willReturn(Flux.empty());
+
+        webTestClient.get()
+                .uri("/api/genres")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(GenreDto.class)
+                .isEqualTo(List.of());
     }
 }

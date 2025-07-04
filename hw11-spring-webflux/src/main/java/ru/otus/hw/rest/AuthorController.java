@@ -3,24 +3,19 @@ package ru.otus.hw.rest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.otus.hw.exceptions.EntityNotFoundException;
+import reactor.core.publisher.Flux;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.rest.dto.AuthorDto;
-import ru.otus.hw.services.AuthorService;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class AuthorController {
 
-    private final AuthorService authorService;
+    private final AuthorRepository authorRepository;
 
     @GetMapping("/api/authors")
-    public List<AuthorDto> getAllAuthors() {
-        List<AuthorDto> authors = authorService.findAll().stream().map(AuthorDto::toDto).toList();
-        if (authors.isEmpty()) {
-            throw new EntityNotFoundException("Authors not found!");
-        }
-        return authors;
+    public Flux<AuthorDto> getAllAuthors() {
+        return authorRepository.findAll()
+                .map(AuthorDto::toDto);
     }
 }

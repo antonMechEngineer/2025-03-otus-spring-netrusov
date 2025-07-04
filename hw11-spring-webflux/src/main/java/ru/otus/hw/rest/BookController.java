@@ -1,7 +1,6 @@
 package ru.otus.hw.rest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,64 +10,98 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
+import ru.otus.hw.repositories.BookRepositoryCustom;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.dto.CommentDto;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
 
 @RequiredArgsConstructor
 @RestController
 public class BookController {
 
-    private final BookService bookService;
+    private final BookRepository bookRepository;
 
-    private final CommentService commentService;
+    private final AuthorRepository authorRepository;
 
+    private final GenreRepository genreRepository;
+
+    private final CommentRepository commentRepository;
+
+    private final BookRepositoryCustom bookRepositoryCustom;
 
     @GetMapping("/api/books")
-    public ResponseEntity<List<BookDto>> findAllBooks() {
-        return ResponseEntity.ok(bookService.findAll().stream().map(BookDto::toDto).toList());
+    public Flux<BookDto> findAllBooks() {
+        return bookRepositoryCustom.findAll();
     }
 
     @GetMapping("/api/books/{id}")
-    public ResponseEntity<BookDto> findBookById(@PathVariable Long id) {
-        return bookService.findById(id).map(BookDto::toDto)
+    public Mono<ResponseEntity<BookDto>> findBookById(@PathVariable Long id) {
+        return bookRepository.findById(id)
+                .flatMap(book ->
+                        Mono.zip(
+                                Mono.just(book),
+                                authorRepository.findById(book.getAuthorId()),
+                                genreRepository.findById(book.getGenreId()))
+                )
+                .map(tuple -> {
+                    Book b = tuple.getT1();
+                    Author a = tuple.getT2();
+                    Genre g = tuple.getT3();
+                    return BookDto.toDto(b, a, g);
+                })
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
     }
 
     @PostMapping("/api/books")
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
-        BookDto createdBookDto = BookDto.toDto(bookService.insert(
-                bookDto.getTitle(),
-                bookDto.getAuthor().getId(),
-                bookDto.getGenre().getId()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBookDto);
+    public Mono<BookDto> createBook(@RequestBody BookDto bookDto) {
+        return bookRepository.save(bookDto.toDomainObject())
+                .flatMap(book ->
+                        Mono.zip(
+                                Mono.just(book),
+                                authorRepository.findById(book.getAuthorId()),
+                                genreRepository.findById(book.getGenreId()))
+                )
+                .map(tuple -> {
+                    Book b = tuple.getT1();
+                    Author a = tuple.getT2();
+                    Genre g = tuple.getT3();
+                    return BookDto.toDto(b, a, g);
+                });
     }
 
     @PutMapping("/api/books/{id}")
-    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto updatedBookDto) {
-        if (bookService.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        BookDto result = BookDto.toDto(bookService.update(updatedBookDto.toDomainObject()));
-        return ResponseEntity.ok(result);
+    public Mono<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto updatedBookDto) {
+        return bookRepository.findById(id)
+                .flatMap(book ->
+                        Mono.zip(
+                                bookRepository.save(updatedBookDto.toDomainObject()),
+                                authorRepository.findById(updatedBookDto.getAuthor().getId()),
+                                genreRepository.findById(updatedBookDto.getGenre().getId()))
+                )
+                .map(tuple -> {
+                    Book b = tuple.getT1();
+                    Author a = tuple.getT2();
+                    Genre g = tuple.getT3();
+                    return BookDto.toDto(b, a, g);
+                });
     }
 
     @DeleteMapping("/api/books/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        if (bookService.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        bookService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable Long id) {
+        return bookRepository.deleteById(id).map(ResponseEntity::ok);
     }
 
     @GetMapping("/api/books/{id}/comments")
-    public ResponseEntity<List<CommentDto>> getBookComments(@PathVariable Long id) {
-        List<CommentDto> bookComments = commentService.findByBook(id).stream().map(CommentDto::toDto).toList();
-        return ResponseEntity.ok(bookComments);
+    public Flux<CommentDto> getBookComments(@PathVariable Long id) {
+        return commentRepository.findByBookId(id).map(CommentDto::toDto);
     }
 }
