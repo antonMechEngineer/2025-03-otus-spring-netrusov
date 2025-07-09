@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class BookPageController {
 
     @GetMapping("/books")
-    public String findAllBooks(Model model) {
+    public String findAllBooks() {
         return "allBooks";
     }
 

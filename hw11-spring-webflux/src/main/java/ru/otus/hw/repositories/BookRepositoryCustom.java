@@ -30,10 +30,10 @@ public class BookRepositoryCustom {
     public Flux<BookDto> findAll() {
         return template.getDatabaseClient().inConnectionMany(connection ->
                 Flux.from(connection.createStatement(SQL_ALL).execute())
-                        .flatMap(result -> result.map(this::mapper)));
+                        .flatMap(result -> result.map(this::mapRecordToDto)));
     }
 
-    private BookDto mapper(Readable record) {
+    private BookDto mapRecordToDto(Readable record) {
         return new BookDto(
                 record.get("book_id", Long.class),
                 record.get("book_title", String.class),
