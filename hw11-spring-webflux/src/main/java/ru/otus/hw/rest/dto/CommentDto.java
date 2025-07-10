@@ -18,11 +18,7 @@ public class CommentDto {
         return new CommentDto(
                 comment.getId(),
                 comment.getPayloadComment(),
-                comment.getBookId()
+                comment.getBook().getId()
         );
-    }
-
-    public Comment toDomainObject() {
-        return new Comment(id, payloadComment, null);
     }
 }

@@ -2,9 +2,7 @@ package ru.otus.hw.rest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 
 @Data
 @AllArgsConstructor
@@ -18,16 +16,17 @@ public class BookDto {
 
     private GenreDto genre;
 
-    public static BookDto toDto(Book book, Author author, Genre genre) {
+    public static BookDto toDto(Book book) {
         return new BookDto(
                 book.getId(),
                 book.getTitle(),
-                new AuthorDto(author.getId(), author.getFullName()),
-                new GenreDto(genre.getId(), genre.getName())
+                AuthorDto.toDto(book.getAuthor()),
+                GenreDto.toDto(book.getGenre())
         );
     }
 
     public Book toDomainObject() {
-        return new Book(id, title, author.getId(), genre.getId());
+        return new Book(id, title, author.toDomainObject(), genre.toDomainObject());
     }
+
 }

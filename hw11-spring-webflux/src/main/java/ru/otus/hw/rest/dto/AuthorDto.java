@@ -7,6 +7,7 @@ import ru.otus.hw.models.Author;
 @Data
 @AllArgsConstructor
 public class AuthorDto {
+
     private long id;
 
     private String fullName;

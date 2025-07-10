@@ -8,9 +8,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import ru.otus.hw.models.Genre;
-import ru.otus.hw.repositories.GenreRepository;
+import ru.otus.hw.repositories.GenreEntityRepository;
 import ru.otus.hw.rest.GenreController;
 import ru.otus.hw.rest.dto.GenreDto;
+import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ class GenreControllerTest {
     private WebTestClient webTestClient;
 
     @MockBean
-    private GenreRepository genreRepository;
+    private GenreService genreService;
 
     @Test
     void testGetAllGenres_Success() {
@@ -33,8 +34,7 @@ class GenreControllerTest {
                 new Genre(1L, "a"),
                 new Genre(2L, "b"));
 
-        given(genreRepository.findAll()).willReturn(Flux.fromIterable(mockGenres));
-
+        given(genreService.findAll()).willReturn(Flux.fromIterable(mockGenres));
         webTestClient.get()
                 .uri("/api/genres")
                 .accept(MediaType.APPLICATION_JSON)
@@ -49,8 +49,7 @@ class GenreControllerTest {
 
     @Test
     void testGetAllGenres_Empty() {
-        given(genreRepository.findAll()).willReturn(Flux.empty());
-
+        given(genreService.findAll()).willReturn(Flux.empty());
         webTestClient.get()
                 .uri("/api/genres")
                 .accept(MediaType.APPLICATION_JSON)

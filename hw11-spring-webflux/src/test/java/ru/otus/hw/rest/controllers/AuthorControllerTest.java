@@ -8,9 +8,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import ru.otus.hw.models.Author;
-import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.AuthorEntityRepository;
 import ru.otus.hw.rest.AuthorController;
 import ru.otus.hw.rest.dto.AuthorDto;
+import ru.otus.hw.services.AuthorService;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class AuthorControllerTest {
     private WebTestClient webTestClient;
 
     @MockBean
-    private AuthorRepository authorRepository;
+    private AuthorService authorService;
 
     @Test
     void testGetAllAuthors_Success() {
@@ -31,7 +32,7 @@ public class AuthorControllerTest {
                 new Author(1L, "a"),
                 new Author(2L, "b"));
 
-        given(authorRepository.findAll()).willReturn(Flux.fromIterable(mockAuthors));
+        given(authorService.findAll()).willReturn(Flux.fromIterable(mockAuthors));
         webTestClient.get()
                 .uri("/api/authors")
                 .accept(MediaType.APPLICATION_JSON)
@@ -46,7 +47,7 @@ public class AuthorControllerTest {
 
     @Test
     void testGetAllAuthors_Empty() {
-        given(authorRepository.findAll()).willReturn(Flux.empty());
+        given(authorService.findAll()).willReturn(Flux.empty());
         webTestClient.get()
                 .uri("/api/authors")
                 .accept(MediaType.APPLICATION_JSON)

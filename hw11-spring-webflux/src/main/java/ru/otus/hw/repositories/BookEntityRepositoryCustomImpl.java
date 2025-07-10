@@ -1,17 +1,15 @@
 package ru.otus.hw.repositories;
 
+import io.r2dbc.spi.Readable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
-import ru.otus.hw.rest.dto.AuthorDto;
-import ru.otus.hw.rest.dto.BookDto;
-import io.r2dbc.spi.Readable;
-import ru.otus.hw.rest.dto.GenreDto;
+import ru.otus.hw.entities.BookEntity;
 
 @Repository
 @RequiredArgsConstructor
-public class BookRepositoryCustom {
+public class BookEntityRepositoryCustomImpl implements BookEntityRepositoryCustom {
 
     private static final String SQL_ALL = """
             SELECT books.id AS book_id,
@@ -27,18 +25,20 @@ public class BookRepositoryCustom {
 
     private final R2dbcEntityTemplate template;
 
-    public Flux<BookDto> findAll() {
+    public Flux<BookEntity> findAll() {
         return template.getDatabaseClient().inConnectionMany(connection ->
                 Flux.from(connection.createStatement(SQL_ALL).execute())
                         .flatMap(result -> result.map(this::mapRecordToDto)));
     }
 
-    private BookDto mapRecordToDto(Readable record) {
-        return new BookDto(
+    private BookEntity mapRecordToDto(Readable record) {
+        return new BookEntity(
                 record.get("book_id", Long.class),
                 record.get("book_title", String.class),
-                new AuthorDto(record.get("author_id", Long.class), record.get("author_full_name", String.class)),
-                new GenreDto(record.get("genre_id", Long.class), record.get("genre_name", String.class))
+                record.get("author_id", Long.class),
+                record.get("genre_id", Long.class),
+                record.get("author_full_name", String.class),
+                record.get("genre_name", String.class)
         );
     }
 }
