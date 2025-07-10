@@ -28,6 +28,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +59,7 @@ class BookControllerTest {
         );
         given(bookService.findAll()).willReturn(List.copyOf(expectedBooks));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/books"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/books").with(user("abc").password("abc")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -77,7 +79,7 @@ class BookControllerTest {
         Book expectedBook = new Book(1, "Book 1", new Author(1L, "Author 1"), new Genre(1L, "Genre"));
         given(bookService.findById(anyLong())).willReturn(Optional.of(expectedBook));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/1").with(user("abc").password("abc")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -93,7 +95,7 @@ class BookControllerTest {
         Book mockBook = new Book(1, "New Book", new Author(1L, "Author New"), new Genre(1L, "Genre New"));
         given(bookService.insert(requestBook.getTitle(), requestBook.getAuthor().getId(), requestBook.getGenre().getId()))
                 .willReturn(mockBook);
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/books")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/books").with(user("abc").password("abc")).with(csrf())
                         .content(objectMapper.writeValueAsBytes(requestBook))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -112,9 +114,10 @@ class BookControllerTest {
         given(bookService.findById(1L)).willReturn(Optional.of(mockBook));
         given(bookService.update(updatedBook.toDomainObject()))
                 .willReturn(mockBook);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/1")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/1").with(user("abc").password("abc"))
                         .content(objectMapper.writeValueAsBytes(updatedBook))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -128,7 +131,7 @@ class BookControllerTest {
     void testDeleteBook() throws Exception {
         Book book = new Book(1L, "abc", new Author(1L, "a"), new Genre(1L, "a"));
         given(bookService.findById(1L)).willReturn(Optional.of(book));
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/1").with(user("abc").password("abc")).with(csrf()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -138,7 +141,7 @@ class BookControllerTest {
         Book mockBook = new Book(1, "Book", new Author(1L, "Author"), new Genre(1L, "Genre"));
         List<Comment> expectedComments = List.of(new Comment(1L, "First comment", mockBook), new Comment(2L, "Second comment", mockBook));
         given(commentService.findByBook(1L)).willReturn(List.copyOf(expectedComments));
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/1/comments"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/1/comments").with(user("abc").password("abc")).with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))

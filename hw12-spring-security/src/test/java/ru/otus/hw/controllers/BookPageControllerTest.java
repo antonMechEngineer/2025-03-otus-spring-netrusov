@@ -4,25 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Comment;
-import ru.otus.hw.models.Genre;
-import ru.otus.hw.services.AuthorService;
+import ru.otus.hw.security.SecurityConfiguration;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
-import ru.otus.hw.services.GenreService;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookPageController.class)
-
+@Import({SecurityConfiguration.class})
 public class BookPageControllerTest {
 
     @Autowired
@@ -32,54 +25,75 @@ public class BookPageControllerTest {
     private BookService bookService;
 
     @MockBean
-    private AuthorService authorService;
-
-    @MockBean
-    private GenreService genreService;
-
-    @MockBean
     private CommentService commentService;
 
-    private final Author author = new Author(1L, "Author Name");
-    private final Genre genre = new Genre(1L, "Genre Name");
-    private final Book book = new Book(1L, "Title", author, genre);
-
     @Test
-    void shouldReturnAllBooksPage() throws Exception {
-        List<Book> books = List.of(book);
-        when(bookService.findAll()).thenReturn(books);
-
-        mvc.perform(get("/books"))
+    void positiveBooks() throws Exception {
+        mvc.perform(get("/books").with(user("abc").password("abc")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("allBooks"));
     }
 
     @Test
-    void shouldReturnEditBookPageWithModel() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(book));
-        when(authorService.findAll()).thenReturn(List.of(author));
-        when(genreService.findAll()).thenReturn(List.of(genre));
-        mvc.perform(get("/editBook").param("id", "1"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("editBook"));
+    void negativeBooks() throws Exception {
+        mvc.perform(get("/books"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 
     @Test
-    void shouldReturnInsertBookPageWithModel() throws Exception {
-        when(authorService.findAll()).thenReturn(List.of(author));
-        when(genreService.findAll()).thenReturn(List.of(genre));
-        mvc.perform(get("/insertBook"))
+    void positiveInsertBookForm() throws Exception {
+        mvc.perform(get("/insertBook").param("id", "1").with(user("abc").password("abc")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("insertBook"));
     }
 
     @Test
-    void shouldReturnBrowseBookPageWithComments() throws Exception {
-        List<Comment> comments = List.of(new Comment(1L, "text", book));
-        when(bookService.findById(1L)).thenReturn(Optional.of(book));
-        when(commentService.findByBook(1L)).thenReturn(comments);
-        mvc.perform(get("/browseBook").param("id", "1"))
+    void negativeInsertBookForm() throws Exception {
+        mvc.perform(get("/insertBook").param("id", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    void positiveEditBookForm() throws Exception {
+        mvc.perform(get("/editBook").param("id", "1").with(user("abc").password("abc")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("editBook"));
+    }
+
+    @Test
+    void negativeEditBookForm() throws Exception {
+        mvc.perform(get("/editBook").param("id", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    void positiveBrowseBookDetails() throws Exception {
+        mvc.perform(get("/browseBook").param("id", "1").with(user("abc").password("abc")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("browseBook"));
+    }
+
+    @Test
+    void negativeBrowseBookDetails() throws Exception {
+        mvc.perform(get("/browseBook").param("id", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    void positiveConfirmDeleteBook() throws Exception {
+        mvc.perform(get("/deleteBook").param("id", "1").with(user("abc").password("abc")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("deleteBook"));
+    }
+
+    @Test
+    void negativeConfirmDeleteBook() throws Exception {
+        mvc.perform(get("/deleteBook").param("id", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 }

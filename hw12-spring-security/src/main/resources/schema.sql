@@ -25,3 +25,9 @@ create table comments (
     primary key (id)
 );
 
+create table users (
+    id bigserial,
+    user_name varchar(1000),
+    password varchar(1000),
+    primary key (id)
+);

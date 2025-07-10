@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +45,7 @@ class GenreControllerTest {
         List<GenreDto> expectedGenres = Arrays.asList(new GenreDto(1L, "a"), new GenreDto(2L, "b"));
         given(genreService.findAll()).willReturn(Arrays.asList(expectedGenres.get(0).toDomainObject(), expectedGenres.get(1).toDomainObject()));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/genres"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/genres").with(user("abc").password("abc")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -58,7 +59,7 @@ class GenreControllerTest {
     @Test
     void testGetAllGenresWhenNoGenresExist() throws Exception {
         given(genreService.findAll()).willReturn(Collections.emptyList());
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/genres"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/genres").with(user("abc").password("abc")))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
