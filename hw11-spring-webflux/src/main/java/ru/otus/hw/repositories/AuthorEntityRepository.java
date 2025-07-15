@@ -1,8 +1,8 @@
 package ru.otus.hw.repositories;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import ru.otus.hw.entities.AuthorEntity;
+import ru.otus.hw.repositories.projections.AuthorProjection;
 
-public interface AuthorEntityRepository extends ReactiveCrudRepository<AuthorEntity, Long> {
+public interface AuthorEntityRepository extends ReactiveCrudRepository<AuthorProjection, Long> {
 
 }

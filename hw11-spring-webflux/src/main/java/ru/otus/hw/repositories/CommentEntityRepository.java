@@ -2,10 +2,10 @@ package ru.otus.hw.repositories;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
-import ru.otus.hw.entities.CommentEntity;
+import ru.otus.hw.repositories.projections.CommentProjection;
 
 
-public interface CommentEntityRepository extends ReactiveCrudRepository<CommentEntity, Long> {
+public interface CommentEntityRepository extends ReactiveCrudRepository<CommentProjection, Long> {
 
-    Flux<CommentEntity> findByBookId(long bookId);
+    Flux<CommentProjection> findByBookId(long bookId);
 }

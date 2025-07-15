@@ -1,4 +1,4 @@
-package ru.otus.hw.entities;
+package ru.otus.hw.repositories.projections;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ import ru.otus.hw.models.Author;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "authors")
-public class AuthorEntity {
+public class AuthorProjection {
 
     @Id
     private long id;

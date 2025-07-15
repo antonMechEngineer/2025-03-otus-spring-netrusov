@@ -1,7 +1,7 @@
 package ru.otus.hw.repositories;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import ru.otus.hw.entities.BookEntity;
+import ru.otus.hw.repositories.projections.BookProjection;
 
-public interface BookEntityRepository extends ReactiveCrudRepository<BookEntity, Long>, BookEntityRepositoryCustom {
+public interface BookEntityRepository extends ReactiveCrudRepository<BookProjection, Long>, BookEntityRepositoryCustom {
 }

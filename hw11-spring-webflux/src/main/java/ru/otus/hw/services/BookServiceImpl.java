@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
-import ru.otus.hw.entities.AuthorEntity;
-import ru.otus.hw.entities.BookEntity;
-import ru.otus.hw.entities.GenreEntity;
+import ru.otus.hw.repositories.projections.AuthorProjection;
+import ru.otus.hw.repositories.projections.BookProjection;
+import ru.otus.hw.repositories.projections.GenreProjection;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorEntityRepository;
 import ru.otus.hw.repositories.BookEntityRepository;
@@ -26,19 +26,19 @@ public class BookServiceImpl implements BookService {
     public Mono<Book> findById(long id) {
         return bookEntityRepository.findById(id)
                 .flatMap(this::enrichBookEntity)
-                .map(BookEntity::toDomainObject);
+                .map(BookProjection::toDomainObject);
     }
 
     @Override
     public Flux<Book> findAll() {
-        return bookEntityRepository.findAll().map(BookEntity::toDomainObject);
+        return bookEntityRepository.findAll().map(BookProjection::toDomainObject);
     }
 
     @Override
     public Mono<Book> insert(Book book) {
-        return bookEntityRepository.save(BookEntity.from(book))
+        return bookEntityRepository.save(BookProjection.from(book))
                 .flatMap(this::enrichBookEntity)
-                .map(BookEntity::toDomainObject);
+                .map(BookProjection::toDomainObject);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
                 .map(bookEntity -> book)
                 .flatMap(this::enrichUpdatedBookEntity)
                 .flatMap(bookEntityRepository::save)
-                .map(BookEntity::toDomainObject);
+                .map(BookProjection::toDomainObject);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class BookServiceImpl implements BookService {
        return bookEntityRepository.deleteById(id);
     }
 
-    private Mono<BookEntity> enrichBookEntity(BookEntity book) {
+    private Mono<BookProjection> enrichBookEntity(BookProjection book) {
         return Mono.zip(
                 Mono.just(book),
                 authorEntityRepository.findById(book.getAuthorId()),
@@ -64,18 +64,18 @@ public class BookServiceImpl implements BookService {
         ).map(this::mergeBookWithAuthorAndGenre);
     }
 
-    private BookEntity mergeBookWithAuthorAndGenre(Tuple3<BookEntity, AuthorEntity, GenreEntity> tuple) {
-        BookEntity b = tuple.getT1();
-        AuthorEntity a = tuple.getT2();
-        GenreEntity g = tuple.getT3();
+    private BookProjection mergeBookWithAuthorAndGenre(Tuple3<BookProjection, AuthorProjection, GenreProjection> tuple) {
+        BookProjection b = tuple.getT1();
+        AuthorProjection a = tuple.getT2();
+        GenreProjection g = tuple.getT3();
         b.setAuthorFullName(a.getFullName());
         b.setGenreName(g.getName());
         return b;
     }
 
-    private Mono<BookEntity> enrichUpdatedBookEntity(Book book) {
+    private Mono<BookProjection> enrichUpdatedBookEntity(Book book) {
         return Mono.zip(
-                Mono.just(BookEntity.from(book)),
+                Mono.just(BookProjection.from(book)),
                 authorEntityRepository.findById(book.getAuthor().getId()),
                 genreEntityRepository.findById(book.getGenre().getId())
         ).map(this::mergeBookWithAuthorAndGenre);

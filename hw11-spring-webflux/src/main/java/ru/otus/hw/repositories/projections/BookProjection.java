@@ -1,4 +1,4 @@
-package ru.otus.hw.entities;
+package ru.otus.hw.repositories.projections;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import ru.otus.hw.models.Genre;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "books")
-public class BookEntity {
+public class BookProjection {
 
     @Id
     private long id;
@@ -39,8 +39,8 @@ public class BookEntity {
         return new Book(id, title, new Author(authorId, authorFullName), new Genre(genreId, genreName));
     }
 
-    public static BookEntity from(Book book) {
-        return new BookEntity(book.getId(),
+    public static BookProjection from(Book book) {
+        return new BookProjection(book.getId(),
                 book.getTitle(),
                 book.getAuthor().getId(),
                 book.getGenre().getId(),

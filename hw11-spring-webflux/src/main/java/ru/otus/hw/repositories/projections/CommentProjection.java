@@ -1,4 +1,4 @@
-package ru.otus.hw.entities;
+package ru.otus.hw.repositories.projections;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import ru.otus.hw.models.Comment;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("comments")
-public class CommentEntity {
+public class CommentProjection {
 
     @Id
     private long id;

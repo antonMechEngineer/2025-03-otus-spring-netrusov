@@ -1,4 +1,4 @@
-package ru.otus.hw.entities;
+package ru.otus.hw.repositories.projections;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import ru.otus.hw.models.Genre;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("genres")
-public class GenreEntity {
+public class GenreProjection {
 
     @Id
     private long id;
