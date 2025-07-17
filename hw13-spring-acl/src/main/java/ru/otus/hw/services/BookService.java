@@ -9,8 +9,7 @@ public interface BookService {
     Optional<Book> findById(long id);
 
     List<Book> findAll();
-
-    Book insert(String title, long authorId, long genreId);
+    Book insert(Book book);
 
     Book update(Book book);
 

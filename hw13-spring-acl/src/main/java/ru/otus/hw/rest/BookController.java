@@ -41,10 +41,7 @@ public class BookController {
 
     @PostMapping("/api/books")
     public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
-        BookDto createdBookDto = BookDto.toDto(bookService.insert(
-                bookDto.getTitle(),
-                bookDto.getAuthor().getId(),
-                bookDto.getGenre().getId()));
+        BookDto createdBookDto = BookDto.toDto(bookService.insert(bookDto.toDomainObject()));
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBookDto);
     }
 

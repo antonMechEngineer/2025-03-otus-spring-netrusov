@@ -23,6 +23,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/authenticated", "/success").authenticated()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults());
         return http.build();

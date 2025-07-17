@@ -93,7 +93,7 @@ class BookControllerTest {
     void testCreateBook() throws Exception {
         BookDto requestBook = new BookDto(0, "New Book", new AuthorDto(1L, ""), new GenreDto(1L, ""));
         Book mockBook = new Book(1, "New Book", new Author(1L, "Author New"), new Genre(1L, "Genre New"));
-        given(bookService.insert(requestBook.getTitle(), requestBook.getAuthor().getId(), requestBook.getGenre().getId()))
+        given(bookService.insert(requestBook.toDomainObject()))
                 .willReturn(mockBook);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/books").with(user("abc").password("abc")).with(csrf())
                         .content(objectMapper.writeValueAsBytes(requestBook))

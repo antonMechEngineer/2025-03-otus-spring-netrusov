@@ -1,6 +1,9 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -15,38 +18,51 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
 
     private final BookRepository bookRepository;
 
+    private final AclServiceWrapperService aclServiceWrapperService;
+
     @Override
+    @PreAuthorize("hasPermission(returnObject.orElse(null), 'READ')")
     public Optional<Book> findById(long id) {
         return bookRepository.findById(id);
     }
 
     @Override
+    @PostFilter("hasPermission(filterObject, 'READ')")
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
     @Transactional
     @Override
-    public Book insert(String title, long authorId, long genreId) {
-        return save(0, title, authorId, genreId);
+    @PreAuthorize("hasPermission(#book, 'WRITE')")
+    public Book insert(Book book) {
+        Book insertedBook = save(0, book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        aclServiceWrapperService.createPermission(insertedBook, BasePermission.ADMINISTRATION);
+        return insertedBook;
     }
 
     @Transactional
     @Override
+    @PreAuthorize("hasPermission(#book, 'WRITE')")
     public Book update(Book book) {
-        return save(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        Book updatedBook = save(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        aclServiceWrapperService.createPermission(updatedBook, BasePermission.ADMINISTRATION);
+        return updatedBook;
     }
 
     @Transactional
     @Override
+    @PreAuthorize("hasPermission(#book, 'WRITE')")
     public void deleteById(long id) {
-        bookRepository.deleteById(id);
+        Book book = bookRepository.findById(id).orElseThrow();
+        bookRepository.delete(book);
     }
 
     private Book save(long id, String title, long authorId, long genreId) {
