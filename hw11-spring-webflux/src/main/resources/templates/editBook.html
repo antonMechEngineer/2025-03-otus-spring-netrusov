@@ -80,6 +80,7 @@
                 document.getElementById('author-select').appendChild(option);
             });
 
+            document.getElementById('author-select').value = book.author.id;
             const genresResponse = await fetch('/api/genres');
             if (!genresResponse.ok) {
                 throw new Error('Ошибка загрузки жанров');
@@ -91,6 +92,7 @@
                 option.text = genre.name;
                 document.getElementById('genre-select').appendChild(option);
             });
+            document.getElementById('genre-select').value = book.genre.id;
 
             document.getElementById('edit-form').addEventListener('submit', async (event) => {
                 event.preventDefault();

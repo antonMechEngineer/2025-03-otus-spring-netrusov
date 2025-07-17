@@ -6,18 +6,18 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
-import ru.otus.hw.repositories.CommentEntityRepository;
+import ru.otus.hw.repositories.CommentRepository;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private final CommentEntityRepository commentEntityRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public Flux<Comment> findCommentsByBook(Mono<Book> bookMono) {
         return bookMono.flatMapMany(book ->
-                commentEntityRepository.findByBookId(book.getId())
+                commentRepository.findByBookId(book.getId())
                         .map(comment -> comment.toDomainObject(book))
         );
     }

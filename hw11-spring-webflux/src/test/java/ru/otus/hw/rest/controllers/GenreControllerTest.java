@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import ru.otus.hw.models.Genre;
-import ru.otus.hw.repositories.GenreEntityRepository;
 import ru.otus.hw.rest.GenreController;
 import ru.otus.hw.rest.dto.GenreDto;
 import ru.otus.hw.services.GenreService;

@@ -5,7 +5,7 @@ import reactor.core.publisher.Flux;
 import ru.otus.hw.repositories.projections.CommentProjection;
 
 
-public interface CommentEntityRepository extends ReactiveCrudRepository<CommentProjection, Long> {
+public interface CommentRepository extends ReactiveCrudRepository<CommentProjection, Long> {
 
     Flux<CommentProjection> findByBookId(long bookId);
 }

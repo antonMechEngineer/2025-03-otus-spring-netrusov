@@ -10,7 +10,7 @@ import ru.otus.hw.repositories.projections.BookProjection;
 
 @Repository
 @RequiredArgsConstructor
-public class BookEntityRepositoryCustomImpl implements BookEntityRepositoryCustom {
+public class BookRepositoryCustomImpl implements BookRepositoryCustom {
 
     private static final String SQL_ALL = """
             SELECT books.id AS book_id,
