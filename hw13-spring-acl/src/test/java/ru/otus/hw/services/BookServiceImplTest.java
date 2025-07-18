@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ public class BookServiceImplTest {
 
     @Autowired
     private BookService bookService;
+
+    @MockBean
+    private AclServiceWrapperService aclServiceWrapperService;
 
     @DisplayName("Проверка безопасности ленивого поля - автора")
     @Test

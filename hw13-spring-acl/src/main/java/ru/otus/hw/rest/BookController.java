@@ -3,6 +3,8 @@ package ru.otus.hw.rest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
+import ru.otus.hw.models.Book;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.dto.CommentDto;
 import ru.otus.hw.services.BookService;
@@ -56,10 +60,11 @@ public class BookController {
 
     @DeleteMapping("/api/books/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        if (bookService.findById(id).isEmpty()) {
+        Optional<Book> optionalBook = bookService.findById(id);
+        if (optionalBook.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        bookService.deleteById(id);
+        bookService.delete(optionalBook.get());
         return ResponseEntity.noContent().build();
     }
 

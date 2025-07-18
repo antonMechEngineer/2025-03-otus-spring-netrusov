@@ -28,7 +28,6 @@ public class BookServiceImpl implements BookService {
     private final AclServiceWrapperService aclServiceWrapperService;
 
     @Override
-    @PreAuthorize("hasPermission(returnObject.orElse(null), 'READ')")
     public Optional<Book> findById(long id) {
         return bookRepository.findById(id);
     }
@@ -41,10 +40,10 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    @PreAuthorize("hasPermission(#book, 'WRITE')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Book insert(Book book) {
         Book insertedBook = save(0, book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
-        aclServiceWrapperService.createPermission(insertedBook, BasePermission.ADMINISTRATION);
+        aclServiceWrapperService.createPermission(insertedBook, BasePermission.READ);
         return insertedBook;
     }
 
@@ -52,16 +51,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @PreAuthorize("hasPermission(#book, 'WRITE')")
     public Book update(Book book) {
-        Book updatedBook = save(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
-        aclServiceWrapperService.createPermission(updatedBook, BasePermission.ADMINISTRATION);
-        return updatedBook;
+        return save(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
     }
 
     @Transactional
     @Override
-    @PreAuthorize("hasPermission(#book, 'WRITE')")
-    public void deleteById(long id) {
-        Book book = bookRepository.findById(id).orElseThrow();
+    @PreAuthorize("hasPermission(#book, 'DELETE')")
+    public void delete(Book book) {
         bookRepository.delete(book);
     }
 
@@ -70,6 +66,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
         var genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+
         var book = new Book(id, title, author, genre);
         return bookRepository.save(book);
     }
