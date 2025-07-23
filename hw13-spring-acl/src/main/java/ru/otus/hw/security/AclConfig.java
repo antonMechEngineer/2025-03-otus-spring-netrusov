@@ -17,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.sql.DataSource;
 
 @Configuration
+@EnableMethodSecurity    
 public class AclConfig {
 
     @Autowired
@@ -24,16 +25,6 @@ public class AclConfig {
 
     @Autowired
     private CacheManager cacheManager;
-
-    @Bean
-    public JdbcMutableAclService jdbcMutableAclService() {
-        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
-    }
-
-    @Bean
-    public BasicLookupStrategy lookupStrategy() {
-        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
-    }
 
     @Bean
     public SpringCacheBasedAclCache aclCache() {
@@ -53,6 +44,16 @@ public class AclConfig {
     @Bean
     public AclPermissionEvaluator permissionEvaluator(MutableAclService aclService) {
         return new AclPermissionEvaluator(aclService);
+    }
+
+    @Bean
+    public BasicLookupStrategy lookupStrategy() {
+        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
+    }
+    
+    @Bean
+    public JdbcMutableAclService jdbcMutableAclService() {
+        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 
     @Bean
