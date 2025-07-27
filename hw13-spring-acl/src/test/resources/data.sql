@@ -1,14 +1,146 @@
-insert into authors(full_name)
-values ('Author_1'), ('Author_2'), ('Author_3');
+-- Вставка данных в таблицу authors
+INSERT INTO authors (full_name)
+VALUES ('Author_1'), ('Author_2'), ('Author_3');
 
-insert into genres(name)
-values ('Genre_1'), ('Genre_2'), ('Genre_3');
+-- Вставка данных в таблицу genres
+INSERT INTO genres (name)
+VALUES ('Genre_1'), ('Genre_2'), ('Genre_3');
 
-insert into books(title, author_id, genre_id)
-values ('BookTitle_1', 1, 1), ('BookTitle_2', 2, 2), ('BookTitle_3', 3, 3);
+-- Вставка данных в таблицу books
+INSERT INTO books (title, author_id, genre_id)
+VALUES ('BookTitle_1', 1, 1), ('BookTitle_2', 2, 2), ('Secret book', 3, 3);
 
-insert into comments(payload_comment, book_id)
-values ('Comment_1_to_book_1', 1), ('Comment_2_to_book_1', 1), ('Comment_2_to_book_2', 2);
+-- Вставка данных в таблицу comments
+INSERT INTO comments (payload_comment, book_id)
+VALUES ('Comment_1_to_book_1', 1), ('Comment_2_to_book_1', 1), ('Comment_2_to_book_2', 2);
 
-insert into users (user_name, password)
-values ('abc', '$2a$12$i9Dekxpdi0fS1IyILNiEsOVewcLRXPajF6bX4JhuD2BasY5l00FLe');
+-- Вставка данных в таблицу users
+INSERT INTO users (user_name, password, role)
+VALUES
+    ('abc', '$2a$12$i9Dekxpdi0fS1IyILNiEsOVewcLRXPajF6bX4JhuD2BasY5l00FLe', 'ROLE_USER'),
+    ('def', '$2a$12$i9Dekxpdi0fS1IyILNiEsOVewcLRXPajF6bX4JhuD2BasY5l00FLe', 'ROLE_ADMIN');
+
+-- Вставка данных в таблицу acl_sid
+INSERT INTO acl_sid (id, principal, sid)
+VALUES
+    (1, 1, 'abc'), -- Пользователь 'abc'
+    (2, 0, 'ROLE_USER'), -- Роль USER
+    (3, 0, 'ROLE_ADMIN'), -- Роль ADMIN
+    (4, 1, 'def'); -- Пользователь 'def'
+
+-- Вставка данных в таблицу acl_class
+INSERT INTO acl_class (id, class)
+VALUES
+    (1, 'ru.otus.hw.models.Author'),
+    (2, 'ru.otus.hw.models.Genre'),
+    (3, 'ru.otus.hw.models.Book'),
+    (4, 'ru.otus.hw.models.Comment');
+
+-- Порядок должен соответствовать id, которые потом используются
+INSERT INTO acl_object_identity (object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting)
+VALUES
+    (1, 1, NULL, 1, FALSE), -- Автор 1
+    (1, 2, NULL, 1, FALSE), -- Автор 2
+    (1, 3, NULL, 1, FALSE), -- Автор 3
+    (2, 1, NULL, 1, FALSE), -- Жанр 1
+    (2, 2, NULL, 1, FALSE), -- Жанр 2
+    (2, 3, NULL, 1, FALSE), -- Жанр 3
+    (3, 1, NULL, 1, FALSE), -- Книга 1
+    (3, 2, NULL, 1, FALSE), -- Книга 2
+    (3, 3, NULL, 1, FALSE), -- Книга 3
+    (4, 1, NULL, 1, FALSE), -- Комментарий 1
+    (4, 2, NULL, 1, FALSE), -- Комментарий 2
+    (4, 3, NULL, 1, FALSE); -- Комментарий 3
+
+
+-- Вставка данных в таблицу acl_entry
+-- Права для роли USER
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure)
+VALUES
+    -- Права на чтение для всех объектов
+    (1001, 1, 1, 2, 1, 1, 1, 1), -- Автор 1
+    (1002, 2, 1, 2, 1, 1, 1, 1), -- Автор 2
+    (1003, 3, 1, 2, 1, 1, 1, 1), -- Автор 3
+    (1004, 4, 1, 2, 1, 1, 1, 1), -- Жанр 1
+    (1005, 5, 1, 2, 1, 1, 1, 1), -- Жанр 2
+    (1006, 6, 1, 2, 1, 1, 1, 1), -- Жанр 3
+    (1007, 7, 1, 2, 1, 1, 1, 1), -- Книга 1
+    (1008, 8, 1, 2, 1, 1, 1, 1), -- Книга 2
+    (1009, 9, 1, 2, 1, 0, 1, 1), -- Книга 3
+    (1010, 10, 1, 2, 1, 1, 1, 1), -- Комментарий 1
+    (1011, 11, 1, 2, 1, 1, 1, 1), -- Комментарий 2
+    (1012, 12, 1, 2, 1, 1, 1, 1); -- Комментарий 3
+
+-- Права для пользователя abc
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure)
+VALUES
+    -- Права на чтение для всех объектов
+    (1013, 1, 2, 1, 1, 1, 1, 1), -- Автор 1
+    (1014, 2, 2, 1, 1, 1, 1, 1), -- Автор 2
+    (1015, 3, 2, 1, 1, 1, 1, 1), -- Автор 3
+    (1016, 4, 2, 1, 1, 1, 1, 1), -- Жанр 1
+    (1017, 5, 2, 1, 1, 1, 1, 1), -- Жанр 2
+    (1018, 6, 2, 1, 1, 1, 1, 1), -- Жанр 3
+    (1019, 7, 2, 1, 1, 1, 1, 1), -- Книга 1
+    (1020, 8, 2, 1, 1, 1, 1, 1), -- Книга 2
+    (1021, 9, 2, 1, 1, 0, 1, 1), -- Книга 3
+    (1022, 10, 2, 1, 1, 1, 1, 1), -- Комментарий 1
+    (1023, 11, 2, 1, 1, 1, 1, 1), -- Комментарий 2
+    (1024, 12, 2, 1, 1, 1, 1, 1); -- Комментарий 3
+
+
+-- Права для пользователя def
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure)
+VALUES
+    -- Права на чтение для всех объектов
+    (1025, 1, 3, 4, 1, 1, 1, 1), -- Автор 1
+    (1026, 2, 3, 4, 1, 1, 1, 1), -- Автор 2
+    (1027, 3, 3, 4, 1, 1, 1, 1), -- Автор 3
+    (1028, 4, 3, 4, 1, 1, 1, 1), -- Жанр 1
+    (1029, 5, 3, 4, 1, 1, 1, 1), -- Жанр 2
+    (1030, 6, 3, 4, 1, 1, 1, 1), -- Жанр 3
+    (1031, 7, 3, 4, 1, 1, 1, 1), -- Книга 1
+    (1032, 8, 3, 4, 1, 1, 1, 1), -- Книга 2
+    (1033, 9, 3, 4, 1, 1, 1, 1), -- Книга 3
+
+    (1034, 7, 13, 4, 2, 1, 1, 1), -- Книга 1
+    (1035, 8, 13, 4, 2, 1, 1, 1), -- Книга 2
+    (1036, 9, 13, 4, 2, 1, 1, 1), -- Книга 3
+    (1037, 7, 23, 4, 4, 1, 1, 1), -- Книга 1
+    (1038, 8, 23, 4, 4, 1, 1, 1), -- Книга 2
+    (1039, 9, 23, 4, 4, 1, 1, 1), -- Книга 3
+    (1040, 7, 33, 4, 8, 1, 1, 1), -- Книга 1
+    (1041, 8, 33, 4, 8, 1, 1, 1), -- Книга 2
+    (1042, 9, 33, 4, 8, 1, 1, 1), -- Книга 3
+
+    (1043, 10, 3, 4, 1, 1, 1, 1), -- Комментарий 1
+    (1044, 11, 3, 4, 1, 1, 1, 1), -- Комментарий 2
+    (1045, 12, 3, 4, 1, 1, 1, 1); -- Комментарий 3
+
+-- Права для роли ADMIN
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure)
+VALUES
+    -- Права на чтение для всех объектов
+    (1046, 1, 4, 3, 1, 1, 1, 1), -- Автор 1
+    (1047, 2, 4, 3, 1, 1, 1, 1), -- Автор 2
+    (1048, 3, 4, 3, 1, 1, 1, 1), -- Автор 3
+    (1049, 4, 4, 3, 1, 1, 1, 1), -- Жанр 1
+    (1050, 5, 4, 3, 1, 1, 1, 1), -- Жанр 2
+    (1051, 6, 4, 3, 1, 1, 1, 1), -- Жанр 3
+    (1052, 7, 4, 3, 1, 1, 1, 1), -- Книга 1
+    (1053, 8, 4, 3, 1, 1, 1, 1), -- Книга 2
+    (1054, 9, 4, 3, 1, 1, 1, 1), -- Книга 3
+
+    (1055, 7, 43, 3, 2, 1, 1, 1), -- Книга 1
+    (1056, 8, 43, 3, 2, 1, 1, 1), -- Книга 2
+    (1057, 9, 43, 3, 2, 1, 1, 1), -- Книга 3
+    (1058, 7, 53, 3, 4, 1, 1, 1), -- Книга 1
+    (1059, 8, 53, 3, 4, 1, 1, 1), -- Книга 2
+    (1060, 9, 53, 3, 4, 1, 1, 1), -- Книга 3
+    (1061, 7, 63, 3, 8, 1, 1, 1), -- Книга 1
+    (1062, 8, 63, 3, 8, 1, 1, 1), -- Книга 2
+    (1063, 9, 63, 3, 8, 1, 1, 1), -- Книга 3
+
+    (1064, 10, 4, 3, 1, 1, 1, 1), -- Комментарий 1
+    (1065, 11, 4, 3, 1, 1, 1, 1), -- Комментарий 2
+    (1066, 12, 4, 3, 1, 1, 1, 1); -- Комментарий 3

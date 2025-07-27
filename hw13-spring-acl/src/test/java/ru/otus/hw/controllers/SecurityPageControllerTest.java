@@ -1,5 +1,6 @@
 package ru.otus.hw.controllers;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -20,8 +21,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = {GenrePageController.class, BookPageController.class, AuthorPageController.class})
 @Import({SecurityConfiguration.class})
@@ -51,6 +53,18 @@ public class SecurityPageControllerTest {
                 .andExpect(redirectedUrlPattern("**/login"));
     }
 
+    @Test
+    void shouldReturnExpectedStatusByRolePositive() throws Exception {
+        mvc.perform(get("/insertBook").param("id", "1").with(user("def").password("abc").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnExpectedStatusByRoleNegative() throws Exception {
+        mvc.perform(get("/insertBook").param("id", "1").with(user("def").password("abc")))
+                .andExpect(status().isForbidden());
+    }
+
     private MockHttpServletRequestBuilder buildRequest(String method, String url) {
         Map<String, Function<String, MockHttpServletRequestBuilder>> methodMap =
                 Map.of("get", MockMvcRequestBuilders::get);
@@ -63,6 +77,7 @@ public class SecurityPageControllerTest {
                 Arguments.of("get", "/authors", 302),
                 Arguments.of("get", "/genres", 302),
                 Arguments.of("get", "/books", 302),
+                Arguments.of("get", "/insertBook", 302),
                 Arguments.of("get", "/browseBook", 302),
                 Arguments.of("get", "/deleteBook", 302),
                 Arguments.of("get", "/editBook", 302)

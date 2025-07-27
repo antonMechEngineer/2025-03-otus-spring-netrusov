@@ -3,7 +3,6 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -40,10 +39,9 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Book insert(Book book) {
         Book insertedBook = save(0, book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
-        aclServiceWrapperService.createPermission(insertedBook, BasePermission.READ);
+        aclServiceWrapperService.createPermission(insertedBook);
         return insertedBook;
     }
 
@@ -66,7 +64,6 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
         var genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
-
         var book = new Book(id, title, author, genre);
         return bookRepository.save(book);
     }

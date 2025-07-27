@@ -7,7 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionEvaluator;
-import org.springframework.security.acls.domain.*;
+import org.springframework.security.acls.domain.AclAuthorizationStrategy;
+import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
+import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
+import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
+import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.model.MutableAclService;
@@ -17,7 +21,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableMethodSecurity    
 public class AclConfig {
 
     @Autowired
@@ -28,7 +31,8 @@ public class AclConfig {
 
     @Bean
     public SpringCacheBasedAclCache aclCache() {
-        return new SpringCacheBasedAclCache(cacheManager.getCache("aclCache"), permissionGrantingStrategy(), aclAuthorizationStrategy());
+        return new SpringCacheBasedAclCache(cacheManager.getCache("aclCache"), permissionGrantingStrategy(),
+                aclAuthorizationStrategy());
     }
 
     @Bean

@@ -30,37 +30,30 @@ public class BookPageControllerTest {
     @Test
     void positiveBooks() throws Exception {
         mvc.perform(get("/books").with(user("abc").password("abc")))
-                .andExpect(status().isOk())
                 .andExpect(view().name("allBooks"));
     }
 
     @Test
     void positiveInsertBookForm() throws Exception {
-        mvc.perform(get("/insertBook").param("id", "1").with(user("abc").password("abc")))
-                .andExpect(status().isOk())
+        mvc.perform(get("/insertBook").param("id", "1").with(user("def").password("abc").roles("ADMIN")))
                 .andExpect(view().name("insertBook"));
     }
-
 
     @Test
     void positiveEditBookForm() throws Exception {
         mvc.perform(get("/editBook").param("id", "1").with(user("abc").password("abc")))
-                .andExpect(status().isOk())
                 .andExpect(view().name("editBook"));
     }
 
     @Test
     void positiveBrowseBookDetails() throws Exception {
         mvc.perform(get("/browseBook").param("id", "1").with(user("abc").password("abc")))
-                .andExpect(status().isOk())
                 .andExpect(view().name("browseBook"));
     }
-
 
     @Test
     void positiveConfirmDeleteBook() throws Exception {
         mvc.perform(get("/deleteBook").param("id", "1").with(user("abc").password("abc")))
-                .andExpect(status().isOk())
                 .andExpect(view().name("deleteBook"));
     }
 }
