@@ -39,6 +39,8 @@ public class JobConfig {
 
     private static final int CHUNK_SIZE = 1;
 
+    private static final int COMMON_PAGE_SIZE = 10;
+
     private final Logger logger = LoggerFactory.getLogger("Batch");
 
     private final JobRepository jobRepository;
@@ -85,7 +87,7 @@ public class JobConfig {
                         .name("authorReader")
                         .entityManagerFactory(entityManagerFactory)
                         .queryString("SELECT a FROM Author a")
-                        .pageSize(10)
+                        .pageSize(COMMON_PAGE_SIZE)
                         .build())
                 .processor(authorConverter::toMongoProjection)
                 .writer(authorRepository::saveAll)
@@ -100,7 +102,7 @@ public class JobConfig {
                         .name("genreReader")
                         .entityManagerFactory(entityManagerFactory)
                         .queryString("SELECT g FROM Genre g")
-                        .pageSize(10)
+                        .pageSize(COMMON_PAGE_SIZE)
                         .build())
                 .processor(genreConverter::toMongoProjection)
                 .writer(genreRepository::saveAll)
@@ -115,7 +117,7 @@ public class JobConfig {
                         .name("bookReader")
                         .entityManagerFactory(entityManagerFactory)
                         .queryString("SELECT b FROM Book b")
-                        .pageSize(10)
+                        .pageSize(COMMON_PAGE_SIZE)
                         .build())
                 .processor(bookConverter::toMongoProjection)
                 .writer(bookRepository::saveAll)
