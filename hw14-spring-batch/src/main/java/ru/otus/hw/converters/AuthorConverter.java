@@ -2,10 +2,12 @@ package ru.otus.hw.converters;
 
 import org.springframework.stereotype.Component;
 import ru.otus.hw.models.Author;
+import ru.otus.hw.projections.AuthorMongoProjection;
 
 @Component
 public class AuthorConverter {
-    public String authorToString(Author author) {
-        return "Id: %d, FullName: %s".formatted(author.getId(), author.getFullName());
+
+    public AuthorMongoProjection toMongoProjection(Author author) {
+        return new AuthorMongoProjection(String.valueOf(author.getId()), author.getFullName());
     }
 }

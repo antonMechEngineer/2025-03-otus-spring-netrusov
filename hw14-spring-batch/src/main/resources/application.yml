@@ -1,4 +1,7 @@
 spring:
+  batch:
+    job:
+      enabled: false
   datasource:
     url: jdbc:h2:mem:maindb
   sql:
@@ -11,3 +14,8 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  data:
+    mongodb:
+      port: 27017
+      host: localhost
+      database: store
