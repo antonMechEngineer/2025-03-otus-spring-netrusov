@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -14,18 +16,23 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-import ru.otus.hw.converters.AuthorConverter;
-import ru.otus.hw.converters.BookConverter;
-import ru.otus.hw.converters.GenreConverter;
+import ru.otus.hw.mappers.AuthorMapper;
+import ru.otus.hw.mappers.BookMapper;
+import ru.otus.hw.mappers.CommentMapper;
+import ru.otus.hw.mappers.GenreMapper;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Comment;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.projections.AuthorMongoProjection;
 import ru.otus.hw.projections.BookMongoProjection;
+import ru.otus.hw.projections.CommentMongoProjection;
 import ru.otus.hw.projections.GenreMongoProjection;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 @SuppressWarnings("unused")
@@ -53,19 +60,32 @@ public class JobConfig {
 
     private final GenreRepository genreRepository;
 
-    private final GenreConverter genreConverter;
+    private final CommentRepository commentRepository;
+
+    private final GenreMapper genreMapper;
 
     private final BookRepository bookRepository;
 
-    private final BookConverter bookConverter;
+    private final BookMapper bookMapper;
+
+    private final CommentMapper commentMapper;
+
+    private final ThreadPoolTaskExecutor taskExecutor;
 
     @Bean
-    public Job migrateDataToMongoJob(Step migrateAuthorStep, Step migrateGenreStep, Step migrateBookStep) {
+    public Job migrateDataToMongoJob(Step migrateAuthorStep, Step migrateGenreStep,
+                                     Step migrateBookStep, Step migrateCommentStep) {
+        Flow flowAuthorsAndGenres = new FlowBuilder<Flow>("authorsAndGenresFlow")
+                .start(new FlowBuilder<Flow>("authorFlow").from(migrateAuthorStep).build())
+                .split(taskExecutor)
+                .add(new FlowBuilder<Flow>("genreFlow").from(migrateGenreStep).build())
+                .build();
+
         return new JobBuilder(MONGO_MIGRATION_JOB, jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .flow(migrateAuthorStep)
-                .next(migrateGenreStep)
+                .start(flowAuthorsAndGenres)
                 .next(migrateBookStep)
+                .next(migrateCommentStep)
                 .end()
                 .build();
     }
@@ -80,7 +100,7 @@ public class JobConfig {
     }
 
     @Bean
-    public Step migrateAuthorStep(AuthorConverter authorConverter) {
+    public Step migrateAuthorStep(AuthorMapper authorMapper) {
         return new StepBuilder("migrateAuthorStep", jobRepository)
                 .<Author, AuthorMongoProjection>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(new JpaPagingItemReaderBuilder<Author>()
@@ -89,13 +109,13 @@ public class JobConfig {
                         .queryString("SELECT a FROM Author a")
                         .pageSize(COMMON_PAGE_SIZE)
                         .build())
-                .processor(authorConverter::toMongoProjection)
+                .processor(authorMapper::toMongoProjection)
                 .writer(authorRepository::saveAll)
                 .build();
     }
 
     @Bean
-    public Step migrateGenreStep(GenreConverter genreConverter) {
+    public Step migrateGenreStep(GenreMapper genreMapper) {
         return new StepBuilder("migrateGenreStep", jobRepository)
                 .<Genre, GenreMongoProjection>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(new JpaPagingItemReaderBuilder<Genre>()
@@ -104,13 +124,13 @@ public class JobConfig {
                         .queryString("SELECT g FROM Genre g")
                         .pageSize(COMMON_PAGE_SIZE)
                         .build())
-                .processor(genreConverter::toMongoProjection)
+                .processor(genreMapper::toMongoProjection)
                 .writer(genreRepository::saveAll)
                 .build();
     }
 
     @Bean
-    public Step migrateBookStep(BookConverter bookConverter) {
+    public Step migrateBookStep(BookMapper bookMapper) {
         return new StepBuilder("migrateBookStep", jobRepository)
                 .<Book, BookMongoProjection>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(new JpaPagingItemReaderBuilder<Book>()
@@ -119,8 +139,23 @@ public class JobConfig {
                         .queryString("SELECT b FROM Book b")
                         .pageSize(COMMON_PAGE_SIZE)
                         .build())
-                .processor(bookConverter::toMongoProjection)
+                .processor(bookMapper::toMongoProjection)
                 .writer(bookRepository::saveAll)
+                .build();
+    }
+
+    @Bean
+    public Step migrateCommentStep(CommentMapper commentMapper) {
+        return new StepBuilder("migrateCommentStep", jobRepository)
+                .<Comment, CommentMongoProjection>chunk(CHUNK_SIZE, platformTransactionManager)
+                .reader(new JpaPagingItemReaderBuilder<Comment>()
+                        .name("commentReader")
+                        .entityManagerFactory(entityManagerFactory)
+                        .queryString("SELECT c FROM Comment c")
+                        .pageSize(COMMON_PAGE_SIZE)
+                        .build())
+                .processor(commentMapper::toMongoProjection)
+                .writer(commentRepository::saveAll)
                 .build();
     }
 
@@ -128,6 +163,7 @@ public class JobConfig {
     public Step cleanMongoStep() {
         return new StepBuilder("cleanMongoStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
+                    commentRepository.deleteAll();
                     bookRepository.deleteAll();
                     authorRepository.deleteAll();
                     genreRepository.deleteAll();

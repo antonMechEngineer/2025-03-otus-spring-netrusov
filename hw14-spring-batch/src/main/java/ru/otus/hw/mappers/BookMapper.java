@@ -1,4 +1,4 @@
-package ru.otus.hw.converters;
+package ru.otus.hw.mappers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -7,17 +7,17 @@ import ru.otus.hw.projections.BookMongoProjection;
 
 @RequiredArgsConstructor
 @Component
-public class BookConverter {
+public class BookMapper {
 
-    private final AuthorConverter authorConverter;
+    private final AuthorMapper authorMapper;
 
-    private final GenreConverter genreConverter;
+    private final GenreMapper genreMapper;
 
     public BookMongoProjection toMongoProjection(Book book) {
         return new BookMongoProjection(
                 String.valueOf(book.getId()),
                 book.getTitle(),
-                authorConverter.toMongoProjection(book.getAuthor()),
-                genreConverter.toMongoProjection(book.getGenre()));
+                authorMapper.toMongoProjection(book.getAuthor()),
+                genreMapper.toMongoProjection(book.getGenre()));
     }
 }
