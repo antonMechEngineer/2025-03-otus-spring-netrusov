@@ -11,6 +11,7 @@ import org.springframework.batch.test.JobRepositoryTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import ru.otus.hw.projections.AuthorMongoProjection;
@@ -23,6 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@ImportAutoConfiguration(
+        exclude = {
+                org.springframework.shell.boot.StandardCommandsAutoConfiguration.class
+        }
+)
 @SpringBatchTest
 public class JobTest {
 

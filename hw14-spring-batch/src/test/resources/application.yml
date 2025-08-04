@@ -1,4 +1,11 @@
 spring:
+  main:
+    allow-circular-references: true
+  data:
+    mongodb:
+      host: localhost
+      port: 0
+      database: store
   batch:
     job:
       enabled: false
@@ -16,3 +23,9 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
