@@ -12,6 +12,7 @@
     <modules>
         <module>hw14-spring-batch</module>
         <module>hw15-spring-integration</module>
+        <module>hw16-spring-ajax-monitoring</module>
     </modules>
 
 </project>
