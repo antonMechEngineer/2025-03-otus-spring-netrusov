@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Insert book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<form id="insert-form" action="insertBook.html" th:method="post" th:action="@{/insertBook}"
+      th:object="${book}">
+    <h3>New Book Info:</h3>
+    <div class="row">
+        <label for="book-title-input">Title:</label>
+        <input id="book-title-input" name="title" type="text" value="Default title" th:value="*{title}"/>
+    </div>
+    <div class="row">
+        <label for="author">Author:</label>
+        <select id="author" th:field="*{author.id}">
+            <option th:each="a : ${authors}" th:value="${a.id}" th:text="${a.fullName}"></option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="genre">Genre:</label>
+        <select id="genre" th:field="*{genre.id}">
+            <option th:each="g : ${genres}" th:value="${g.id}" th:text="${g.name}"></option>
+        </select>
+    </div>
+        <button style="margin-top: 20px" type="submit">Save</button>
+        <a href="allBooks.html" th:href="@{/books}"><button style="margin-top: 20px"  type="button">Go to book's list</button></a>
+    </div>
+</form>
+
+</body>
+</html>
