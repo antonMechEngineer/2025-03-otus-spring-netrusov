@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+    database: store
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
