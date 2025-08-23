@@ -1,16 +1,16 @@
 services:
-  app:
+  library-service:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    # Эти свойства перегружают соответствующие в application.yml
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-  postgres:
+
+  library-db:
     image: "postgres:17"
     ports:
       - "5432:5432"
