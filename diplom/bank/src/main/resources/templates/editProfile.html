@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit Profile</title>
+    <style>
+        body { padding: 50px; }
+        label { display: inline-block; width: 120px; }
+        .row { margin-top: 10px; }
+    </style>
+</head>
+<body>
+<form id="edit-profile-form">
+    <h3>Edit Profile:</h3>
+    <div class="row">
+        <label for="username-input">Username:</label>
+        <input id="username-input" type="text" required/>
+    </div>
+    <div class="row">
+        <label for="password-input">Password:</label>
+        <input id="password-input" type="password"/>
+    </div>
+    <div class="row">
+        <button type="submit">Save</button>
+        <a href="/profile"><button type="button">Back</button></a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/profile');
+            if (!response.ok) throw new Error('Ошибка загрузки профиля');
+            const user = await response.json();
+            document.getElementById('username-input').value = user.username;
+            document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const userDto = {
+                    username: document.getElementById('username-input').value,
+                    password: document.getElementById('password-input').value
+                };
+                const putResponse = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userDto)
+                });
+                if (putResponse.ok) {
+                    alert('Профиль успешно обновлён! Пройдите аутентификацию заново!');
+                    window.location.href = "/login";
+                } else {
+                    alert('Ошибка обновления профиля');
+                }
+            });
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+</script>
+</body>
+</html>

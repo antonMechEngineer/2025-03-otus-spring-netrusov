@@ -10,7 +10,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
 
-  library-d:
+  library-db:
     image: "postgres:17"
     ports:
       - "5432:5432"

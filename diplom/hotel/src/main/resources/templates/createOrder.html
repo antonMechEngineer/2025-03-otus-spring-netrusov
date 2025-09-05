@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create New Order</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        body { padding: 50px; }
+        label { display: inline-block; width: 120px; }
+        .row { margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<form id="insert-payment-form">
+    <h3>New Order:</h3>
+    <div class="row">
+        <label for="account-info">Room Information:</label>
+        <span id="account-info"></span>
+    </div>
+    <div class="row">
+        <label for="begin-rent">Check-in Date:</label>
+        <input id="begin-rent" type="text" placeholder="Select Check-In Date" required readonly/>
+    </div>
+    <div class="row">
+        <label for="end-rent">Check-out Date:</label>
+        <input id="end-rent" type="text" placeholder="Select Check-Out Date" required readonly/>
+    </div>
+    <div class="row">
+        <button type="submit">Submit Order</button>
+        <a href="/rooms"><button type="button">Back to Rooms</button></a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        let roomId = new URLSearchParams(window.location.search).get('id');
+        try {
+            const roomResponse = await fetch(`/api/rooms/${roomId}`);
+            if (!roomResponse.ok) throw new Error('Error loading account data');
+            const roomData = await roomResponse.json();
+            document.getElementById('account-info').innerHTML = `${roomData.roomNumber} (${roomData.type}), Price per day: ${roomData.pricePerDay}`;
+            const occupiedDates = roomData.occupiedDates || [];
+            const formattedOccupiedDates = occupiedDates.map(d => new Date(d));
+            const today = new Date().toISOString().split('T')[0];
+            flatpickr("#begin-rent", {
+                enableTime: false,
+                allowInput: true,
+                minDate: today,
+                disable: formattedOccupiedDates.map(d => d.toISOString().split('T')[0]),
+                onChange: function(selectedDates) {
+                    const startDate = selectedDates[0].toISOString().split('T')[0];
+                    flatpickr("#end-rent").destroy();
+                    flatpickr("#end-rent", {
+                        enableTime: false,
+                        allowInput: true,
+                        minDate: startDate,
+                        disable: formattedOccupiedDates.filter((d) => new Date(d) >= new Date(startDate)).map(d => d.toISOString().split('T')[0])
+                    });
+                },
+            });
+            flatpickr("#end-rent", {
+                enableTime: false,
+                allowInput: true,
+                minDate: today,
+                disable: formattedOccupiedDates.map(d => d.toISOString().split('T')[0])
+            });
+            document.getElementById('insert-payment-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const orderDto = {
+                    id: roomData.id,
+                    roomNumber: roomData.roomNumber,
+                    beginRent: document.getElementById('begin-rent').value,
+                    endRent: document.getElementById('end-rent').value
+                };
+                const response = await fetch('/api/orders/unconfirmed', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(orderDto)
+                });
+                if (response.ok) {
+                    window.location.href = '/orders';
+                } else {
+                    alert('Ошибка бронирования заказа!');
+                }
+            });
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+</script>
+
+</body>
+</html>
