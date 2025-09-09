@@ -39,9 +39,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order create(Order order) {
-        Order createdOrder = orderRepository.save(order);
-        paymentProducer.send(createdOrder);
-        return createdOrder;
+        return orderRepository.save(order);
     }
 
     @Transactional

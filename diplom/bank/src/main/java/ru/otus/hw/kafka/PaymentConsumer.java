@@ -8,7 +8,12 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.kafka.dto.PaymentReq;
 import ru.otus.hw.mapper.PaymentMapper;
+import ru.otus.hw.models.Payment;
+import ru.otus.hw.models.User;
 import ru.otus.hw.services.PaymentService;
+import ru.otus.hw.services.UserService;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -17,11 +22,18 @@ public class PaymentConsumer {
 
     private final PaymentService paymentService;
 
-    private final PaymentMapper paymentMapper;
+    private final UserService userService;
 
     @KafkaListener(topics = "payment-request", containerFactory = "listenerContainerFactory")
     public void listen(@Payload PaymentReq paymentReq) {
-        log.info("Прочитал запись paymentReq!");
-        paymentService.create(paymentMapper.fromPaymentReq(paymentReq));
+        log.info("Received paymentReq!");
+        User currentUser = userService.findByUsername(paymentReq.getUsername());
+        paymentService.create(new Payment(0,
+                paymentReq.getBuy(),
+                paymentReq.getBuyId(),
+                currentUser,
+                paymentReq.getPrice(),
+                Payment.Status.NOT_PAID,
+                LocalDateTime.now()));
     }
 }

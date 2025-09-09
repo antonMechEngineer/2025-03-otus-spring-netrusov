@@ -10,8 +10,3 @@ VALUES
 (1000.00, 1),
 (500.00, 2),
 (500.00, 3);
-
-INSERT INTO payments (buy, buy_id, user_id, price, status)
-VALUES
-('Hotel', 1, 1, 50.00, 'NOT_PAID'),
-('Hotel', 2, 2, 20.00, 'PAID');

@@ -32,14 +32,14 @@ public class PaymentController {
     }
 
     @PutMapping("/api/payments/{id}")
-    public ResponseEntity<PaymentDto> pay(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<PaymentDto> pay(Authentication authentication, @PathVariable("id") long id) {
         Payment finishedPayment = paymentService.pay(authentication.getName(), id);
         PaymentDto finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }
 
     @PutMapping("/api/payments/{id}/cancel")
-    public ResponseEntity<PaymentDto> cancel(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<PaymentDto> cancel(Authentication authentication, @PathVariable("id") long id) {
         Payment finishedPayment = paymentService.cancel(authentication.getName(), id);
         PaymentDto finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);

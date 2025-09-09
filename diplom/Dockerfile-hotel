@@ -1,0 +1,10 @@
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
+WORKDIR /build
+COPY . .
+
+RUN mvn -pl hotel clean package -DskipTests
+
+FROM bellsoft/liberica-openjdk-alpine-musl:17.0.13
+WORKDIR /hotel
+COPY --from=builder /build/hotel/target/hotel-*.jar hotel.jar
+ENTRYPOINT ["java", "-jar", "hotel.jar"]

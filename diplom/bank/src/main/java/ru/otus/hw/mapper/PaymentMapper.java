@@ -17,9 +17,7 @@ public interface PaymentMapper {
 
     Payment fromDto(PaymentDto paymentDto);
 
-    Payment fromPaymentReq(PaymentReq paymentReq);
-
-    @Mapping(target = "isConfirmed", expression = "java(payment.getStatus() == Payment.Status.PAID)")
+    @Mapping(target = "confirmed", expression = "java(payment.getStatus() == Payment.Status.PAID)")
     PaymentResp toPaymentResp(Payment payment);
 
 

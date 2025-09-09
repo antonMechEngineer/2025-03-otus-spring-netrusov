@@ -29,7 +29,7 @@ public class RoomController {
 
 
     @GetMapping("/api/rooms/{id}")
-    public ResponseEntity<RoomDto> findRoomById(@PathVariable Long id) {
+    public ResponseEntity<RoomDto> findRoomById(@PathVariable("id") Long id) {
         List<LocalDate> occupiedDates = orderService.findOccupiedDates(id);
         RoomDto roomDto = roomMapper.toDto(roomService.findById(id));
         roomDto.setOccupiedDates(occupiedDates);

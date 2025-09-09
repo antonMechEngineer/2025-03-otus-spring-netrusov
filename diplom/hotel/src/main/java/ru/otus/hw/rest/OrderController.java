@@ -39,7 +39,7 @@ public class OrderController {
     }
 
     @GetMapping("/api/orders/{id}")
-    public ResponseEntity<OrderDto> findById(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<OrderDto> findById(Authentication authentication, @PathVariable("id") long id) {
         Order order = orderService.findById(id);
         if (!order.getUser().getUsername().equals(authentication.getName())) {
             return ResponseEntity.notFound().build();
@@ -57,7 +57,7 @@ public class OrderController {
     }
 
     @PutMapping("/api/orders/{id}/pay")
-    public ResponseEntity<OrderDto> pay(Authentication authentication, @PathVariable long id) {
+    public ResponseEntity<OrderDto> pay(Authentication authentication, @PathVariable("id") long id) {
         Order order = orderService.findById(id);
         if (!order.getUser().getUsername().equals(authentication.getName())) {
             return ResponseEntity.notFound().build();
@@ -67,7 +67,7 @@ public class OrderController {
     }
 
     @PutMapping("/api/orders/{id}/cancel")
-    public ResponseEntity<Void> cancel(Authentication authentication, @PathVariable Long id) {
+    public ResponseEntity<Void> cancel(Authentication authentication, @PathVariable("id") long id) {
         if (!orderService.findById(id).getUser().getUsername().equals(authentication.getName())) {
             return ResponseEntity.notFound().build();
         }

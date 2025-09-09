@@ -1,0 +1,9 @@
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
+WORKDIR /build
+COPY . .
+RUN mvn -pl bank clean package -DskipTests
+
+FROM bellsoft/liberica-openjdk-alpine-musl:17.0.13
+WORKDIR /bank
+COPY --from=builder /build/bank/target/bank-*.jar bank.jar
+ENTRYPOINT ["java", "-jar", "bank.jar"] 
