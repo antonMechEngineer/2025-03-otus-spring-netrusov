@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Browse book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        .comments tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+    </style>
+</head>
+<body>
+
+<div id="browse-page">
+    <h3>Book Info:</h3>
+    <div class="row">
+        <label for="id">ID:</label>
+        <input id="id" type="text" readonly/>
+    </div>
+    <div class="row">
+        <label for="book-title">Title:</label>
+        <input id="book-title" type="text" readonly/>
+    </div>
+    <div class="row">
+        <label for="book-author">Author:</label>
+        <input id="book-author" type="text" readonly/>
+    </div>
+    <div class="row">
+        <label for="book-genre">Genre:</label>
+        <input id="book-genre" type="text" readonly/>
+    </div>
+
+    <h3>Comments for the book:</h3>
+    <table class="comments">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Comment</th>
+        </tr>
+        </thead>
+        <tbody id="comments-list"></tbody>
+    </table>
+    <div class="row">
+        <a href="/books"><button type="button">Go to book's list</button></a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const params = new URLSearchParams(window.location.search);
+        const bookId = params.get('id');
+
+        try {
+            const bookResponse = await fetch(`/api/books/${bookId}`);
+            if (!bookResponse.ok) {
+                throw new Error('Ошибка загрузки книги');
+            }
+            const book = await bookResponse.json();
+            document.getElementById('id').value = book.id;
+            document.getElementById('book-title').value = book.title;
+            document.getElementById('book-author').value = book.author.fullName || '';
+            document.getElementById('book-genre').value = book.genre.name || '';
+            const commentsResponse = await fetch(`/api/books/${bookId}/comments`);
+            if (!commentsResponse.ok) {
+                throw new Error('Ошибка загрузки комментариев');
+            }
+            const comments = await commentsResponse.json();
+            comments.forEach((comment) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${comment.id}</td>
+                    <td>${comment.payloadComment}</td>
+                `;
+                document.getElementById('comments-list').appendChild(row);
+            });
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+</script>
+
+</body>
+</html>
