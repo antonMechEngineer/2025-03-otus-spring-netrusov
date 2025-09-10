@@ -4,6 +4,7 @@ package ru.otus.hw.kafka;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.kafka.dto.PaymentReq;
@@ -25,7 +26,7 @@ public class PaymentConsumer {
     private final UserService userService;
 
     @KafkaListener(topics = "payment-request", containerFactory = "listenerContainerFactory")
-    public void listen(@Payload PaymentReq paymentReq) {
+    public void listen(@Payload PaymentReq paymentReq, Acknowledgment acknowledgment) {
         log.info("Received paymentReq!");
         User currentUser = userService.findByUsername(paymentReq.getUsername());
         paymentService.create(new Payment(0,
@@ -35,5 +36,6 @@ public class PaymentConsumer {
                 paymentReq.getPrice(),
                 Payment.Status.NOT_PAID,
                 LocalDateTime.now()));
+        acknowledgment.acknowledge();
     }
 }

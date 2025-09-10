@@ -12,7 +12,7 @@ spring:
       group-id: bank
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      enable-auto-commit: true
+      enable-auto-commit: false
       auto-offset-reset: earliest
       properties:
         spring:
