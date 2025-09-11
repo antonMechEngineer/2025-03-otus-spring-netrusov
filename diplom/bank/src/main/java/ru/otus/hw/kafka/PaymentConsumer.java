@@ -29,7 +29,7 @@ public class PaymentConsumer {
     public void listen(@Payload PaymentReq paymentReq, Acknowledgment acknowledgment) {
         log.info("Received paymentReq!");
         User currentUser = userService.findByUsername(paymentReq.getUsername());
-        paymentService.create(new Payment(0,
+        paymentService.create(new Payment(null,
                 paymentReq.getBuy(),
                 paymentReq.getBuyId(),
                 currentUser,
