@@ -8,6 +8,6 @@ public interface RoomService {
 
     List<Room> findAll();
 
-    Room findById(long id);
+    Room findById(Long id);
 
 }

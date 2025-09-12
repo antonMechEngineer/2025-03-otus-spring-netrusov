@@ -22,10 +22,9 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.findAll();
     }
 
-
     @Override
     @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Room' ,'READ')")
-    public Room findById(long id) {
+    public Room findById(Long id) {
         return roomRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 

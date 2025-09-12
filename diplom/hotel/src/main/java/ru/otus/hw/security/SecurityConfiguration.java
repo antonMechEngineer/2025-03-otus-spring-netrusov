@@ -25,7 +25,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
-                        .defaultSuccessUrl("/orders", true)
+                        .defaultSuccessUrl("/rooms", true)
                         .permitAll());
         return http.build();
     }

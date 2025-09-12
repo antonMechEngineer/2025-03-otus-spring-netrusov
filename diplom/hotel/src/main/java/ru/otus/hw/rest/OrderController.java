@@ -15,7 +15,6 @@ import ru.otus.hw.services.RoomService;
 import ru.otus.hw.services.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -39,11 +38,8 @@ public class OrderController {
     }
 
     @GetMapping("/api/orders/{id}")
-    public ResponseEntity<OrderDto> findById(Authentication authentication, @PathVariable("id") long id) {
+    public ResponseEntity<OrderDto> findById(@PathVariable("id") long id) {
         Order order = orderService.findById(id);
-        if (!order.getUser().getUsername().equals(authentication.getName())) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.status(HttpStatus.OK).body(orderMapper.toDto(order));
     }
 
@@ -57,21 +53,16 @@ public class OrderController {
     }
 
     @PutMapping("/api/orders/{id}/pay")
-    public ResponseEntity<OrderDto> pay(Authentication authentication, @PathVariable("id") long id) {
+    public ResponseEntity<OrderDto> pay( @PathVariable("id") long id) {
         Order order = orderService.findById(id);
-        if (!order.getUser().getUsername().equals(authentication.getName())) {
-            return ResponseEntity.notFound().build();
-        }
-        orderService.updateStatus(id, Order.Status.PAYMENT_REQUEST);
+        orderService.updateStatus(order, Order.Status.PAYMENT_REQUEST);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/api/orders/{id}/cancel")
-    public ResponseEntity<Void> cancel(Authentication authentication, @PathVariable("id") long id) {
-        if (!orderService.findById(id).getUser().getUsername().equals(authentication.getName())) {
-            return ResponseEntity.notFound().build();
-        }
-        orderService.updateStatus(id, Order.Status.CANCEL);
+    public ResponseEntity<Void> cancel(@PathVariable("id") long id) {
+        Order order = orderService.findById(id);
+        orderService.updateStatus(order, Order.Status.CANCEL);
         return ResponseEntity.noContent().build();
     }
 }

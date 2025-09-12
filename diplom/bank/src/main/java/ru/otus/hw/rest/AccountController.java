@@ -18,7 +18,7 @@ public class AccountController {
     private final AccountMapper accountMapper;
 
     @GetMapping("/api/balance")
-    public ResponseEntity<AccountDto> findBalance(Authentication authentication) {
+    public ResponseEntity<AccountDto> findUserBalance(Authentication authentication) {
         AccountDto accountDto = accountMapper.toDto(accountService.findByUsername(authentication.getName()));
         return ResponseEntity.ok(accountDto);
     }

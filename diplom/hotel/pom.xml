@@ -106,7 +106,6 @@
             <groupId>org.jsonschema2pojo</groupId>
             <artifactId>jsonschema2pojo-core</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>

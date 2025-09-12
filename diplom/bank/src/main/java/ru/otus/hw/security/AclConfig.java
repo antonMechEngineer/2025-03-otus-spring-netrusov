@@ -14,6 +14,7 @@ import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
+import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -54,10 +55,17 @@ public class AclConfig {
     public BasicLookupStrategy lookupStrategy() {
         return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
     }
-    
+
     @Bean
-    public JdbcMutableAclService jdbcMutableAclService() {
-        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
+    public MutableAclService mutableAclService(DataSource dataSource, LookupStrategy lookupStrategy) {
+        JdbcMutableAclService service = new JdbcMutableAclService(
+                dataSource,
+                lookupStrategy,
+                aclCache()
+        );
+        service.setClassIdentityQuery("SELECT currval('acl_class_id_seq')");
+        service.setSidIdentityQuery("SELECT currval('acl_sid_id_seq')");
+        return service;
     }
 
     @Bean

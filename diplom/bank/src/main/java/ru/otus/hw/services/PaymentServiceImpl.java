@@ -2,6 +2,8 @@ package ru.otus.hw.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.kafka.PaymentProducer;
@@ -29,20 +31,37 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentProducer paymentProducer;
 
+    private final AclServiceWrapperService aclServiceWrapperService;
+
+    @PostFilter("hasPermission(filterObject, 'READ')")
     @Override
     public List<Payment> findByUsername(String username) {
+        return findByUsernameInternal(username);
+    }
+
+    @Override
+    public List<Payment> findByUsernameInternal(String username) {
         return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new).getPayments();
     }
 
-    public void create(Payment payment){
-        paymentRepository.save(payment);
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Payment', 'READ')")
+    @Override
+    public Payment findById(Long id) {
+        return paymentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
     @Override
-    public Payment pay(String username, long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        Account account = userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new).getAccount();
+    public void create(Payment payment) {
+        Payment createdPayment = paymentRepository.save(payment);
+        aclServiceWrapperService.createPaymentPermission(createdPayment);
+    }
+
+    @PreAuthorize("hasPermission(#payment, 'WRITE')")
+    @Transactional
+    @Override
+    public Payment pay(Payment payment) {
+        Account account = payment.getUser().getAccount();
         BigDecimal updatedBalance = account.getBalance().subtract(payment.getPrice());
         account.setBalance(updatedBalance);
         accountRepository.save(account);
@@ -52,10 +71,10 @@ public class PaymentServiceImpl implements PaymentService {
         return confirmedPayment;
     }
 
+    @PreAuthorize("hasPermission(#payment, 'WRITE')")
     @Transactional
     @Override
-    public Payment cancel(String username, long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public Payment cancel(Payment payment) {
         payment.setStatus(CANCEL);
         Payment canceledPayment = paymentRepository.save(payment);
         paymentProducer.send(canceledPayment);

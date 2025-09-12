@@ -23,7 +23,7 @@ public class PaymentController {
     private final PaymentMapper paymentMapper;
 
     @GetMapping("/api/payments")
-    public ResponseEntity<List<PaymentDto>> findAll(Authentication authentication) {
+    public ResponseEntity<List<PaymentDto>> findUserPayments(Authentication authentication) {
         List<PaymentDto> paymentDtos = paymentService.findByUsername(authentication.getName())
                 .stream()
                 .map(paymentMapper::toDto)
@@ -32,15 +32,17 @@ public class PaymentController {
     }
 
     @PutMapping("/api/payments/{id}")
-    public ResponseEntity<PaymentDto> pay(Authentication authentication, @PathVariable("id") long id) {
-        Payment finishedPayment = paymentService.pay(authentication.getName(), id);
+    public ResponseEntity<PaymentDto> pay(@PathVariable("id") long id) {
+        Payment payment = paymentService.findById(id);
+        Payment finishedPayment = paymentService.pay(payment);
         PaymentDto finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }
 
     @PutMapping("/api/payments/{id}/cancel")
-    public ResponseEntity<PaymentDto> cancel(Authentication authentication, @PathVariable("id") long id) {
-        Payment finishedPayment = paymentService.cancel(authentication.getName(), id);
+    public ResponseEntity<PaymentDto> cancel(@PathVariable("id") long id) {
+        Payment payment = paymentService.findById(id);
+        Payment finishedPayment = paymentService.cancel(payment);
         PaymentDto finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }

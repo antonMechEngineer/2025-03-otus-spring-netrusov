@@ -17,13 +17,6 @@ VALUES
 (103, 'RESERVE', 150.00);
 
 -- -----------------------
--- Заказы
--- -----------------------
-INSERT INTO orders (begin_rent, end_rent, created_at, total_price, status, user_id, room_id)
-VALUES
-('2025-09-01', '2025-09-10', '2025-09-01 12:00', 100.00, 'NOT_PAID', 1, 1);
-
--- -----------------------
 -- ACL SID (пользователи и роли)
 -- -----------------------
 INSERT INTO acl_sid (principal, sid) VALUES
@@ -34,15 +27,15 @@ INSERT INTO acl_sid (principal, sid) VALUES
 (false, 'ROLE_USER');
 
 -- -----------------------
--- ACL CLASS для заказов
+-- ACL CLASS для заказов и комнат
 -- -----------------------
 INSERT INTO acl_class (class) VALUES
-('ru.otus.hw.models.Room');
+('ru.otus.hw.models.Room'),
+('ru.otus.hw.models.Order');
 
 -- -----------------------
--- ACL OBJECTS для заказов
+-- ACL OBJECTS для комнат
 -- -----------------------
--- допустим id 1 и 2 заказов
 INSERT INTO acl_object_identity (object_id_class, object_id_identity, owner_sid, entries_inheriting)
 VALUES
 (1, 1, 1, TRUE),
