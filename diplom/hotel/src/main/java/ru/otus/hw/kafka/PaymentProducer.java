@@ -18,6 +18,6 @@ public class PaymentProducer {
 
 
     public void send(Order o) {
-        kafkaTemplate.send(TOPIC_REQ, new PaymentReq(BUY, o.getId(), o.getTotalPrice(), o.getUser().getUsername()));
+        kafkaTemplate.send(TOPIC_REQ, new PaymentReq(BUY, o.getId(), o.getTotalPrice().doubleValue(), o.getUser().getUsername()));
     }
 }

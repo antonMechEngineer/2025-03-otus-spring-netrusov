@@ -22,7 +22,7 @@ public class PaymentConsumer {
     @KafkaListener(topics = "payment-response", containerFactory = "listenerContainerFactory")
     public void listen(@Payload PaymentResp paymentResp, Acknowledgment acknowledgment) {
         log.info("Received paymentResp!");
-        if (paymentResp.isConfirmed()) {
+        if (paymentResp.getConfirmed()) {
             orderService.updateStatus(paymentResp.getBuyId(), Order.Status.PAID);
         } else {
             orderService.updateStatus(paymentResp.getBuyId(), Order.Status.CANCEL);

@@ -14,6 +14,7 @@ import ru.otus.hw.models.User;
 import ru.otus.hw.services.PaymentService;
 import ru.otus.hw.services.UserService;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -33,7 +34,7 @@ public class PaymentConsumer {
                 paymentReq.getBuy(),
                 paymentReq.getBuyId(),
                 currentUser,
-                paymentReq.getPrice(),
+                BigDecimal.valueOf(paymentReq.getPrice()),
                 Payment.Status.NOT_PAID,
                 LocalDateTime.now()));
         acknowledgment.acknowledge();

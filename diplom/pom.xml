@@ -20,6 +20,8 @@
         <mapstruct-processor.version>1.5.3.Final</mapstruct-processor.version>
         <spring-context-support.version>5.3.23</spring-context-support.version>
         <postresql.version>42.6.0</postresql.version>
+        <jsonschema2pojo.version>1.2.2</jsonschema2pojo.version>
+        <codehaus.version>3.5.0</codehaus.version>
     </properties>
 
     <modules>
@@ -71,7 +73,63 @@
                 <version>${mapstruct-processor.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-core</artifactId>
+                <version>${jsonschema2pojo.version}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jsonschema2pojo</groupId>
+                    <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                    <version>${jsonschema2pojo.version}</version>
+                    <configuration>
+                        <sourceDirectory>${project.basedir}/../schemas</sourceDirectory>
+                        <targetPackage>ru.otus.hw.kafka.dto</targetPackage>
+                        <outputDirectory>${project.build.directory}/generated-sources/jsonschema2pojo</outputDirectory>
+                        <generateBuilders>true</generateBuilders>
+                        <includeConstructors>true</includeConstructors>
+                        <useLongIntegers>true</useLongIntegers>
+                        <constructorsRequiredPropertiesOnly>true</constructorsRequiredPropertiesOnly>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${codehaus.version}</version>
+                    <executions>
+                        <execution>
+                            <id>add-generated-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>${project.build.directory}/generated-sources/jsonschema2pojo</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+    </build>
 
 </project>
