@@ -1,5 +1,7 @@
 package ru.otus.hw.services;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.models.Account;
@@ -18,7 +20,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow().getAccount();
+        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new).getAccount();
     }
 
     @Override

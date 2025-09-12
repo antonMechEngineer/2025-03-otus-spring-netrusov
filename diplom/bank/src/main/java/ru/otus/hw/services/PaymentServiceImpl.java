@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow().getPayments();
+        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new).getPayments();
     }
 
     public void create(Payment payment){
@@ -40,8 +41,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public Payment pay(String username, long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow();
-        Account account = userRepository.findByUsername(username).orElseThrow().getAccount();
+        Payment payment = paymentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Account account = userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new).getAccount();
         BigDecimal updatedBalance = account.getBalance().subtract(payment.getPrice());
         account.setBalance(updatedBalance);
         accountRepository.save(account);
@@ -54,7 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public Payment cancel(String username, long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow();
+        Payment payment = paymentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         payment.setStatus(CANCEL);
         Payment canceledPayment = paymentRepository.save(payment);
         paymentProducer.send(canceledPayment);

@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public void updateStatus(long id, Order.Status status) {
-        Order order = orderRepository.findById(id).orElseThrow();
+        Order order = orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         order.setStatus(status);
         orderRepository.save(order);
         if (status == Order.Status.PAYMENT_REQUEST) {
@@ -69,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Scheduled(initialDelay = 60_000, fixedRate = 600_000)
+    @Scheduled(initialDelay = 120_000, fixedRate = 600_000)
     public void checkAndCancelOrders() {
         List<Order> ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 Order.Status.NOT_PAID,
