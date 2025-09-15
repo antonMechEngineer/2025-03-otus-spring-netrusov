@@ -14,7 +14,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handeNotFoundException(EntityNotFoundException ex) {
-        return ResponseEntity.status(404).body(ERROR_STRING);
+        return ResponseEntity.badRequest().body(ERROR_STRING);
     }
-
 }

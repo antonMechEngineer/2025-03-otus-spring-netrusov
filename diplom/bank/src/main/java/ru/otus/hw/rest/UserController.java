@@ -1,5 +1,6 @@
 package ru.otus.hw.rest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @PutMapping("/api/profile")
-    public UserDto editUser(Authentication authentication, @RequestBody UserDto userDto) {
+    public UserDto editUser(Authentication authentication, @Valid @RequestBody UserDto userDto) {
         User currentUser = userService.findByUsername(authentication.getName());
         currentUser.setUsername(userDto.getUsername());
         currentUser.setPassword(userDto.getPassword());

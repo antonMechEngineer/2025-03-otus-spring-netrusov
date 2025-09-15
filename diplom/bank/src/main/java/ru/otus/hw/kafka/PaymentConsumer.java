@@ -8,7 +8,6 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.kafka.dto.PaymentReq;
-import ru.otus.hw.mapper.PaymentMapper;
 import ru.otus.hw.models.Payment;
 import ru.otus.hw.models.User;
 import ru.otus.hw.services.PaymentService;

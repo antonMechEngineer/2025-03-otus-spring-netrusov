@@ -7,14 +7,14 @@ CREATE TABLE users (
 );
 
 -- Создание таблицы accounts
-CREATE TABLE IF NOT EXISTS accounts (
+CREATE TABLE accounts (
     id BIGSERIAL PRIMARY KEY,
     balance DECIMAL(19, 2),
     user_id BIGINT UNIQUE REFERENCES users(id)
 );
 
 -- Создание таблицы payments
-CREATE TABLE IF NOT EXISTS payments (
+CREATE TABLE payments (
     id BIGSERIAL PRIMARY KEY,
     buy VARCHAR(255),
     buy_id BIGINT,

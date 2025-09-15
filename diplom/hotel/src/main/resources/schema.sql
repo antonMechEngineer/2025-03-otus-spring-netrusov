@@ -15,7 +15,7 @@ CREATE TABLE rooms (
     id BIGSERIAL PRIMARY KEY,
     room_number INT NOT NULL,
     type VARCHAR(20) NOT NULL,
-    price_per_day NUMERIC(10,2) NOT NULL
+    price_per_day DECIMAL(19,2) NOT NULL
 );
 
 -- -----------------------
@@ -26,7 +26,7 @@ CREATE TABLE orders (
     begin_rent TIMESTAMP NOT NULL,
     end_rent TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    total_price NUMERIC(10,2) NOT NULL,
+    total_price DECIMAL(19,2) NOT NULL,
     status VARCHAR(20) NOT NULL,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     room_id BIGINT NOT NULL REFERENCES rooms(id)

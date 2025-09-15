@@ -1,5 +1,6 @@
 package ru.otus.hw.rest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class OrderController {
     }
 
     @PostMapping("/api/orders/unconfirmed")
-    public ResponseEntity<OrderDto> create(@RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> create(@Valid @RequestBody OrderDto orderDto) {
         Room room = roomService.findById(orderDto.getId());
         User user = userService.findCurrentUser();
         Order order = orderService.create(new Order(orderDto.getBeginRent(), orderDto.getEndRent(), user, room));
