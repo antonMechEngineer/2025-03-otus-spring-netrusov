@@ -26,6 +26,7 @@ public class Payment {
     private long buyId;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "price")

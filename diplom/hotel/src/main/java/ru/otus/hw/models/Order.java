@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit;
 @Table(name = "orders")
 @NoArgsConstructor
 public class Order {
-    //todo: проставить валидацию состояний
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -28,9 +28,11 @@ public class Order {
     private LocalDate endRent;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "room_id")
     private Room room;
 
     @Column(name = "total_price")

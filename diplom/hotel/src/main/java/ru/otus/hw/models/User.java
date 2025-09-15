@@ -1,16 +1,9 @@
 package ru.otus.hw.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import jakarta.persistence.GenerationType;
 
 import java.util.List;
 
@@ -34,6 +27,6 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Order> orders;
 }

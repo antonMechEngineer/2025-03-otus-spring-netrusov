@@ -27,9 +27,9 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Payment> payments;
 
-    @OneToOne
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Account account;
 }

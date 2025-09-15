@@ -1,6 +1,4 @@
-//todo: bean validation
 //todo: построить работу с исключениями
-//todo: проверить отсутствие проблемы n+1
 //todo: переписать тесты
 
 package ru.otus.hw;

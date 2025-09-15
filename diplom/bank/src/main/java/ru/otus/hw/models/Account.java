@@ -22,6 +22,6 @@ public class Account {
     private BigDecimal balance;
 
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
-
 }

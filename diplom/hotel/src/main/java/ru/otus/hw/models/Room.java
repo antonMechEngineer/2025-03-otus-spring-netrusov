@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,6 +28,9 @@ public class Room {
 
     @Column(name = "price_per_day")
     private BigDecimal pricePerDay;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Order> orders;
 
     public enum Type {STANDARD, PREMIUM, RESERVE}
 
