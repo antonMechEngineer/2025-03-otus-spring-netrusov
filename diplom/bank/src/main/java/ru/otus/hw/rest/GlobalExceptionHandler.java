@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @ControllerAdvice
 public class GlobalExceptionHandler {

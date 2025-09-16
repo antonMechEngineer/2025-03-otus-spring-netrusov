@@ -12,6 +12,7 @@ import ru.otus.hw.models.User;
 import ru.otus.hw.rest.dto.UserDto;
 import ru.otus.hw.services.UserService;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
 public class UserController {

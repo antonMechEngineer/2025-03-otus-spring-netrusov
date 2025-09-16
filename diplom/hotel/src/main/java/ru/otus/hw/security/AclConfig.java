@@ -20,6 +20,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
 
+@SuppressWarnings("unused")
 @Configuration
 public class AclConfig {
 

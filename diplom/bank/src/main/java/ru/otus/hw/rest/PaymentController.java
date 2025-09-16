@@ -14,6 +14,7 @@ import ru.otus.hw.services.PaymentService;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
 public class PaymentController {

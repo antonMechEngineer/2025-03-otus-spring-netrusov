@@ -9,6 +9,7 @@ import ru.otus.hw.mapper.AccountMapper;
 import ru.otus.hw.rest.dto.AccountDto;
 import ru.otus.hw.services.AccountService;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
 public class AccountController {

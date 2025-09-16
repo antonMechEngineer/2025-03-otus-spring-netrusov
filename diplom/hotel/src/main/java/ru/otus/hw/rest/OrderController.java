@@ -17,6 +17,7 @@ import ru.otus.hw.services.UserService;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
 public class OrderController {
