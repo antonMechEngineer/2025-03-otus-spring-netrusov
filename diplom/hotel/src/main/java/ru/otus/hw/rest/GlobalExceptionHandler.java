@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CallNotPermittedException.class)
-    public ResponseEntity<String> handleRateLimiterException(CallNotPermittedException ex) {
+    public ResponseEntity<String> handleCircuitBreakerException(CallNotPermittedException ex) {
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body("Service temporarily unavailable. Please try again later.");
