@@ -1,4 +1,4 @@
-package ru.otus.hw.kafka;
+package ru.otus.hw.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -17,6 +17,7 @@ import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import ru.otus.hw.kafka.dto.PaymentReq;
 
+@SuppressWarnings("unused")
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfig {

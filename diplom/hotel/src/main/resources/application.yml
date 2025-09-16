@@ -48,3 +48,10 @@ management:
       enabled: true
 logging:
   config: classpath:logback-spring.xml
+cache:
+  rooms:
+    ttl-minutes: 10
+    max-size: 100
+  acl:
+    ttl-minutes: 60
+    max-size: 5000

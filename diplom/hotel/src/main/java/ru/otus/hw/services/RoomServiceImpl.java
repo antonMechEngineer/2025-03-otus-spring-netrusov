@@ -2,6 +2,7 @@ package ru.otus.hw.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
+    @Cacheable("rooms")
     @PostFilter("hasPermission(filterObject, 'READ')")
     public List<Room> findAll() {
         return roomRepository.findAll();
