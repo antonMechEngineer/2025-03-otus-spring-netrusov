@@ -1,5 +1,6 @@
 package ru.otus.hw.rest;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import ru.otus.hw.services.RoomService;
 import java.time.LocalDate;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
 public class RoomController {
@@ -23,10 +25,10 @@ public class RoomController {
     private final RoomMapper roomMapper;
 
     @GetMapping("/api/rooms")
+    @RateLimiter(name = "roomsRateLimiter")
     public List<RoomDto> findAllRooms() {
         return roomService.findAll().stream().map(roomMapper::toDto).toList();
     }
-
 
     @GetMapping("/api/rooms/{id}")
     public ResponseEntity<RoomDto> findRoomById(@PathVariable("id") Long id) {

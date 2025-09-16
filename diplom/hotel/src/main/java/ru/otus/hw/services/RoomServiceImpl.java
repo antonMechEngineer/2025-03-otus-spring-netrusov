@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +21,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Cacheable("rooms")
     @PostFilter("hasPermission(filterObject, 'READ')")
+    @CircuitBreaker(name = "dbBreaker")
     public List<Room> findAll() {
         return roomRepository.findAll();
     }

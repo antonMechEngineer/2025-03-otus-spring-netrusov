@@ -55,3 +55,40 @@ cache:
   acl:
     ttl-minutes: 60
     max-size: 5000
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        register-health-indicator: true
+        timeout-duration: 0
+    instances:
+      roomsRateLimiter:
+        base-config: default
+        limit-for-period: 5
+        limit-refresh-period: 30s
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 2s
+        failure-rate-threshold: 50
+        event-consumer-buffer-size: 3
+        record-exceptions:
+          - org.springframework.dao.DataAccessException
+          - java.sql.SQLException
+          - org.hibernate.exception.JDBCConnectionException
+          - java.net.ConnectException
+          - java.util.concurrent.TimeoutException
+        ignore-exceptions:
+          - ru.otus.hw.exceptions.EntityNotFoundException
+    instances:
+      dbBreaker:
+        base-config: default
+        sliding-window-size: 20
+        failure-rate-threshold: 10
+        wait-duration-in-open-state: 30s
+        slow-call-rate-threshold: 10
+        slow-call-duration-threshold: 1ms

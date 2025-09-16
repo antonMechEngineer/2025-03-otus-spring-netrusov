@@ -22,6 +22,7 @@
         <postresql.version>42.6.0</postresql.version>
         <jsonschema2pojo.version>1.2.2</jsonschema2pojo.version>
         <codehaus.version>3.5.0</codehaus.version>
+        <resilience4j.version>2.3.0</resilience4j.version>
     </properties>
 
     <modules>
@@ -78,6 +79,11 @@
                 <artifactId>jsonschema2pojo-core</artifactId>
                 <version>${jsonschema2pojo.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-spring-boot3</artifactId>
+                <version>${resilience4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
