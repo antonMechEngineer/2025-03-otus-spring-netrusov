@@ -32,6 +32,6 @@ public class Room {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Order> orders;
 
-    public enum Type {STANDARD, PREMIUM, RESERVE}
+    public enum Type {STANDARD, PREMIUM, LUX}
 
 }

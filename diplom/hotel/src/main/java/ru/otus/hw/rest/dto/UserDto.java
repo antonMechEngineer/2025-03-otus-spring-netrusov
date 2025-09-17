@@ -19,6 +19,10 @@ public class UserDto {
     @Size(min = 1, max = 100, message = "Password must be between 1 and 100 characters")
     private String password;
 
+    @NotBlank(message = "Role cannot be blank")
+    @Size(min = 1, max = 50, message = "Role must be between 1 and 50 characters")
+    private String role;
+
     private List<OrderDto> orderDtos;
 
 }

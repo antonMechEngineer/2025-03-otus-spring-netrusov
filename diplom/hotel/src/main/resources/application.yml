@@ -60,12 +60,12 @@ resilience4j:
     configs:
       default:
         register-health-indicator: true
-        timeout-duration: 0
+        timeout-duration: 100
     instances:
       roomsRateLimiter:
         base-config: default
-        limit-for-period: 5
-        limit-refresh-period: 30s
+        limit-for-period: 1000
+        limit-refresh-period: 1s
   circuitbreaker:
     configs:
       default:
@@ -91,4 +91,4 @@ resilience4j:
         failure-rate-threshold: 10
         wait-duration-in-open-state: 30s
         slow-call-rate-threshold: 10
-        slow-call-duration-threshold: 1ms
+        slow-call-duration-threshold: 20ms

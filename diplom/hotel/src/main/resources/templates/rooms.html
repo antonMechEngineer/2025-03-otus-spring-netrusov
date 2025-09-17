@@ -21,21 +21,85 @@
             color: red;
         }
 
+        nav a.disabled {
+            color: #cccccc;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        nav a.disabled:hover {
+            color: #cccccc;
+        }
+
+        .sign-out-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .sign-out-btn:hover {
+            opacity: 0.9;
+        }
+
+        .sign-out-btn.disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         body { padding: 50px; }
-        .rooms { border: 1px solid steelblue; width: 500px; border-collapse: collapse; }
-        .rooms tr td, th { padding: 5px; border: 1px solid steelblue; }
-        .rooms td:first-child, .rooms td:last-child { width: 100px; }
+        .rooms {
+            border: 1px solid steelblue;
+            width: 700px;
+            border-collapse: collapse;
+        }
+        .rooms tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+        .rooms td:first-child, .rooms td:last-child {
+            width: 80px;
+        }
 
         .action-btn {
             display: inline-block;
             padding: 3px 8px;
+            margin: 2px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             font-size: 12px;
             text-decoration: none;
             color: white;
+        }
+
+        .book-btn {
+            background-color: #4CAF50;
+        }
+
+        .login-btn {
             background-color: #2196F3;
+        }
+
+        .edit-btn {
+            background-color: #2196F3;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+        }
+
+        .create-btn {
+            background-color: #4CAF50;
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
 
         .action-btn:hover {
@@ -47,15 +111,46 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
+
+        #admin-actions {
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message {
+            color: red;
+            margin: 10px 0;
+        }
+
+        #login-prompt {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: none;
+        }
     </style>
 </head>
 <body>
 <nav>
-    <a href="/orders">Orders</a>
-    <a href="/profile">Profile</a>
+    <a href="/orders" id="orders-link" class="disabled">Orders</a>
+    <a href="/profile" id="profile-link" class="disabled">Profile</a>
+    <button id="sign-out-btn" class="sign-out-btn disabled">Sign Out</button>
 </nav>
 
 <h3>Rooms:</h3>
+
+<div id="admin-actions">
+    <a href="/createRoom" class="action-btn create-btn">Create Room</a>
+</div>
+
+<div id="login-prompt">
+    <p>Please <a href="/login" class="action-btn login-btn">Login</a> to book a room or access your profile</p>
+</div>
+
+<div id="error-message" class="error-message" style="display: none;"></div>
+
 <table class="rooms">
     <thead>
     <tr>
@@ -69,37 +164,163 @@
 </table>
 
 <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        async function loadRooms() {
-            try {
-                const response = await fetch('/api/rooms');
-                if (!response.ok) throw new Error('Error loading rooms');
-                const rooms = await response.json();
-
-                const tbody = document.querySelector('.rooms tbody');
-                tbody.innerHTML = '';
-                rooms.forEach(account => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${account.roomNumber}</td>
-                        <td>${account.type}</td>
-                        <td>${account.pricePerDay}</td>
-                        <td>
-                            <a href="/createOrder?id=${account.id}" class="action-btn">
-                                Book
-                            </a>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (err) {
-                alert(err.message);
+    async function loadUser() {
+        try {
+            const response = await fetch('/api/profile');
+            if (!response.ok) {
+                return { role: null, authenticated: false };
             }
+            const userData = await response.json();
+            return { role: userData.role, authenticated: true };
+        } catch (err) {
+            return { role: null, authenticated: false };
+        }
+    }
+
+    function deleteRoom(id) {
+        if (confirm("Are you sure you want to delete this room?")) {
+            fetch(`/api/rooms/${id}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Room deleted successfully!");
+                        location.reload();
+                    } else {
+                        alert("Error deleting the room.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Error deleting the room.");
+                });
+        }
+    }
+
+    async function signOut() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('You have been signed out successfully!');
+                window.location.href = '/rooms';
+            } else {
+                alert('Error signing out. Please try again.');
+            }
+        } catch (error) {
+            console.error('Sign out error:', error);
+            alert('Error signing out. Please try again.');
+        }
+    }
+
+    async function loadRooms(user) {
+        try {
+            const response = await fetch('/api/rooms');
+            if (!response.ok) {
+                throw new Error('Failed to load rooms');
+            }
+
+            const rooms = await response.json();
+            const tbody = document.querySelector('.rooms tbody');
+            tbody.innerHTML = '';
+
+            rooms.forEach(room => {
+                const row = document.createElement('tr');
+
+                let actions = '';
+                if (user.authenticated) {
+                    actions = `
+                        <a href="/createOrder?id=${room.id}" class="action-btn book-btn">
+                            Book
+                        </a>
+                    `;
+                } else {
+                    actions = `
+                        <a href="/login" class="action-btn login-btn">
+                            Login to Book
+                        </a>
+                    `;
+                }
+
+                if (user.role === "ROLE_ADMIN") {
+                    actions += `
+                        <a href="/editRoom?id=${room.id}" class="action-btn edit-btn">Update</a>
+                        <a href="javascript:void(0)" onclick="deleteRoom(${room.id})" class="action-btn delete-btn">Delete</a>
+                    `;
+                }
+
+                row.innerHTML = `
+                    <td>${room.roomNumber}</td>
+                    <td>${room.type}</td>
+                    <td>${room.pricePerDay}</td>
+                    <td>${actions}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+        } catch (err) {
+            console.error('Error loading rooms:', err);
+            showError("Failed to load rooms. Please try again later.");
+
+            const tbody = document.querySelector('.rooms tbody');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No rooms available</td></tr>';
+        }
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+
+    function updateNavigation(user) {
+        const ordersLink = document.getElementById('orders-link');
+        const profileLink = document.getElementById('profile-link');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        const loginPrompt = document.getElementById('login-prompt');
+
+        if (user.authenticated) {
+            ordersLink.classList.remove('disabled');
+            ordersLink.href = "/orders";
+            profileLink.classList.remove('disabled');
+            profileLink.href = "/profile";
+
+            signOutBtn.classList.remove('disabled');
+            signOutBtn.onclick = signOut;
+
+            loginPrompt.style.display = 'none';
+        } else {
+            ordersLink.classList.add('disabled');
+            ordersLink.href = "javascript:void(0)";
+            profileLink.classList.add('disabled');
+            profileLink.href = "javascript:void(0)";
+
+            signOutBtn.classList.add('disabled');
+            signOutBtn.onclick = null;
+
+            loginPrompt.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        let user = { role: null, authenticated: false };
+        try {
+            user = await loadUser();
+        } catch (err) {
+            console.error('Error loading user info:', err);
         }
 
-        await loadRooms();
+        updateNavigation(user);
+
+        if (user.role === "ROLE_ADMIN") {
+            document.getElementById('admin-actions').style.display = 'block';
+        }
+
+        await loadRooms(user);
     });
 </script>
-
 </body>
 </html>

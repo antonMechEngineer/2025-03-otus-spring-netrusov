@@ -10,6 +10,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.http.HttpMethod.*;
+
 @SuppressWarnings("unused")
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -23,7 +25,11 @@ public class SecurityConfiguration {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login", "/rooms", "api/rooms").permitAll()
+                        .requestMatchers("/createRoom", "/editRoom").hasRole("ADMIN")
+                        .requestMatchers(POST, "/api/rooms").hasRole("ADMIN")
+                        .requestMatchers(PUT, "/api/rooms/{id}").hasRole("ADMIN")
+                        .requestMatchers(DELETE, "/api/rooms/{id}").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .defaultSuccessUrl("/rooms", true)

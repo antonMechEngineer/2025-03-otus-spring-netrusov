@@ -12,13 +12,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RoomPageController {
 
     @GetMapping("/rooms")
-    public String findAllRooms(Model model) {
+    public String findAllRooms() {
         return "rooms";
     }
 
-    @GetMapping("/browseRoom")
-    public String browseRoomDetails(@RequestParam Long id, Model model) {
-        model.addAttribute("roomId", id);
-        return "browseRoom";
+    @GetMapping("/createRoom")
+    public String createRoom() {
+        return "createRoom";
     }
+
+    @GetMapping("/editRoom")
+    public String editRoom(@RequestParam Long id, Model model) {
+        model.addAttribute("id", id);
+        return "editRoom";
+    }
+
 }

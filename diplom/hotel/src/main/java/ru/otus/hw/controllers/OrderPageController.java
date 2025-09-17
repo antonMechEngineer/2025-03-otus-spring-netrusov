@@ -27,6 +27,4 @@ public class OrderPageController {
         model.addAttribute("orderId", id);
         return "editOrder";
     }
-
-
 }

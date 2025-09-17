@@ -10,4 +10,9 @@ public interface RoomService {
 
     Room findById(Long id);
 
+    Room save(Room room);
+
+    Room update(Long id, Room room);
+
+    void deleteById(Long id);
 }
