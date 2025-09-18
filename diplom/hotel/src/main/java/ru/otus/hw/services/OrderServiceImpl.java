@@ -7,8 +7,11 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.exceptions.BookingProcessException;
+import ru.otus.hw.exceptions.PaymentProcessException;
 import ru.otus.hw.kafka.PaymentProducer;
 import ru.otus.hw.models.Order;
+import ru.otus.hw.models.Order.Status;
 import ru.otus.hw.repositories.OrderRepository;
 import ru.otus.hw.repositories.UserRepository;
 
@@ -17,11 +20,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static ru.otus.hw.models.Order.Status.AUTO_CANCEL;
+import static ru.otus.hw.models.Order.Status.PAYMENT_REQUEST;
+import static ru.otus.hw.models.Order.Status.PAID;
+import static ru.otus.hw.models.Order.Status.NOT_PAID;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    private static final String ERROR_CONFIRM_PAYMENT = "Error confirm payment orderId = %s";
+
+    private static final String ERROR_CREATE_BOOKING = "Error create book for room id = %s. Room is already occupied!";
 
     private final OrderRepository orderRepository;
 
@@ -51,23 +62,34 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order create(Order order) {
+        if (orderRepository.existsByRoomIdAndStatusInAndBeginRentLessThanEqualAndEndRentGreaterThanEqual(
+                order.getRoom().getId(),
+                List.of(NOT_PAID, PAID, PAYMENT_REQUEST),
+                order.getBeginRent(),
+                order.getEndRent())
+        ) {
+            throw new BookingProcessException(format(ERROR_CREATE_BOOKING, order.getRoom().getId()));
+        }
         Order createdOrder = orderRepository.save(order);
         aclServiceWrapperService.createPermission(createdOrder);
         return createdOrder;
     }
 
     @PreAuthorize("hasPermission(#order, 'WRITE')")
-    @Transactional
     @Override
-    public void updateStatus(Order order, Order.Status status) {
+    public void updateStatus(Order order, Status status) {
         updateStatusInternal(order, status);
     }
 
     @Override
-    public void updateStatusInternal(Order order, Order.Status status) {
+    @Transactional
+    public void updateStatusInternal(Order order, Status status) {
+        if (status == PAID && order.getStatus() != PAYMENT_REQUEST) {
+            throw new PaymentProcessException(format(ERROR_CONFIRM_PAYMENT, order.getId()));
+        }
         order.setStatus(status);
         orderRepository.save(order);
-        if (status == Order.Status.PAYMENT_REQUEST) {
+        if (status == PAYMENT_REQUEST) {
             paymentProducer.send(order);
         }
     }
@@ -75,7 +97,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<LocalDate> findOccupiedDates(Long roomId) {
         return orderRepository.findAll().stream()
-                .filter(o -> o.getRoom().getId().equals(roomId) && o.getStatus() == Order.Status.PAID)
+                .filter(o -> o.getRoom().getId().equals(roomId) && o.getStatus() == PAID ||
+                        o.getRoom().getId().equals(roomId) && o.getStatus() == PAYMENT_REQUEST)
                 .flatMap(order -> generateDateRangeStream(order.getBeginRent(), order.getEndRent()))
                 .toList();
     }
@@ -91,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
     @Scheduled(initialDelay = 120_000, fixedRate = 600_000)
     public void checkAndCancelOrders() {
         List<Order> ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
-                Order.Status.NOT_PAID,
+                NOT_PAID,
                 LocalDateTime.now().minusMinutes(2)
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
