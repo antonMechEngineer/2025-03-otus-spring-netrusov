@@ -10,9 +10,10 @@ import ru.otus.hw.services.AccountService;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("unused")
 @Component
 @RequiredArgsConstructor
-public class CurrentAccountIndicator implements HealthIndicator {
+public class BalanceIndicator implements HealthIndicator {
 
     private final AccountService accountService;
 
@@ -31,6 +32,4 @@ public class CurrentAccountIndicator implements HealthIndicator {
             return Health.up().withDetail("message", "Balances are ok!").build();
         }
     }
-
-
 }
