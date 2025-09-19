@@ -44,26 +44,19 @@
             const occupiedDates = roomData.occupiedDates || [];
             const formattedOccupiedDates = occupiedDates.map(d => new Date(d));
             const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
             flatpickr("#begin-rent", {
                 enableTime: false,
                 allowInput: true,
                 minDate: today,
-                disable: formattedOccupiedDates.map(d => d.toISOString().split('T')[0]),
-                onChange: function(selectedDates) {
-                    const startDate = selectedDates[0].toISOString().split('T')[0];
-                    flatpickr("#end-rent").destroy();
-                    flatpickr("#end-rent", {
-                        enableTime: false,
-                        allowInput: true,
-                        minDate: startDate,
-                        disable: formattedOccupiedDates.filter((d) => new Date(d) >= new Date(startDate)).map(d => d.toISOString().split('T')[0])
-                    });
-                },
+                disable: formattedOccupiedDates.map(d => d.toISOString().split('T')[0])
             });
             flatpickr("#end-rent", {
                 enableTime: false,
                 allowInput: true,
-                minDate: today,
+                minDate: tomorrowFormatted,
                 disable: formattedOccupiedDates.map(d => d.toISOString().split('T')[0])
             });
             document.getElementById('insert-payment-form').addEventListener('submit', async (event) => {

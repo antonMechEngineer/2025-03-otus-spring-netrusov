@@ -1,5 +1,6 @@
 //todo: переписать тесты
-//todo: написать swagger спецификацию
+//todo: сделать пагинцаию
+//todo: добавить возможность редактировать заказы admin
 package ru.otus.hw;
 
 import org.springframework.boot.SpringApplication;
