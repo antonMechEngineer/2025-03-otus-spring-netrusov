@@ -16,8 +16,9 @@ public class PaymentProducer {
 
     private final KafkaTemplate<String, PaymentReq> kafkaTemplate;
 
-
-    public void send(Order o) {
-        kafkaTemplate.send(TOPIC_REQ, new PaymentReq(BUY, o.getId(), o.getTotalPrice().doubleValue(), o.getUser().getUsername()));
+    public void send(Order o, PaymentReq.ActionType actionType) {
+        kafkaTemplate.send(
+                TOPIC_REQ,
+                new PaymentReq(BUY, o.getId(), o.getTotalPrice().doubleValue(), o.getUser().getUsername(), actionType));
     }
 }

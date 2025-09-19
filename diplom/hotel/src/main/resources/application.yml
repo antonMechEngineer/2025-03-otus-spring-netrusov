@@ -1,3 +1,11 @@
+rentability-threshold: 1000
+ttl:
+  not-paid-order:
+    min: 2
+    checking-cron: 0 * * * * *
+  requested-payment-order:
+    min: 5
+    checking-cron: 0 */5 * * * *
 server:
   port: 8080
 spring:

@@ -1,6 +1,5 @@
+//todo: добавить liquibase
 //todo: переписать тесты
-//todo: сделать пагинцаию
-//todo: добавить возможность редактировать заказы admin
 package ru.otus.hw;
 
 import org.springframework.boot.SpringApplication;

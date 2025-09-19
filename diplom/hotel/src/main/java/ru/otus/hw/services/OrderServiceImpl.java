@@ -2,6 +2,7 @@ package ru.otus.hw.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,10 +22,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static ru.otus.hw.models.Order.Status.AUTO_CANCEL;
-import static ru.otus.hw.models.Order.Status.PAYMENT_REQUEST;
-import static ru.otus.hw.models.Order.Status.PAID;
-import static ru.otus.hw.models.Order.Status.NOT_PAID;
+import static ru.otus.hw.kafka.dto.PaymentReq.ActionType.CANCEL;
+import static ru.otus.hw.kafka.dto.PaymentReq.ActionType.PAY;
+import static ru.otus.hw.models.Order.Status.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,12 @@ public class OrderServiceImpl implements OrderService {
     private static final String ERROR_CONFIRM_PAYMENT = "Error confirm payment orderId = %s";
 
     private static final String ERROR_CREATE_BOOKING = "Error create book for room id = %s. Room is already occupied!";
+
+    @Value("${ttl.not-paid-order.min}")
+    private Long notPaidOrderTtl;
+
+    @Value("${ttl.requested-payment-order.min}")
+    private Long requestedPaymentOrderTtl;
 
     private final OrderRepository orderRepository;
 
@@ -90,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status);
         orderRepository.save(order);
         if (status == PAYMENT_REQUEST) {
-            paymentProducer.send(order);
+            paymentProducer.send(order, PAY);
         }
     }
 
@@ -103,6 +110,13 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Override
+    public List<Order> findPaidLastDays(Integer numberDays){
+        return orderRepository.findByStatusAndCreatedAtLessThanEqual(
+                PAID,
+                LocalDateTime.now().minusDays(numberDays));
+    }
+
     private Stream<LocalDate> generateDateRangeStream(LocalDate start, LocalDate end) {
         return Stream.iterate(
                 start,
@@ -111,14 +125,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Scheduled(initialDelay = 120_000, fixedRate = 600_000)
-    public void checkAndCancelOrders() {
+    @Scheduled(cron = "${ttl.not-paid-order.checking-cron}")
+    public void cancelNotPaidOrders() {
         List<Order> ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 NOT_PAID,
-                LocalDateTime.now().minusMinutes(2)
+                LocalDateTime.now().minusMinutes(notPaidOrderTtl)
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
         orderRepository.saveAll(ordersToCancel);
+    }
+
+    @Scheduled(cron = "${ttl.requested-payment-order.checking-cron}")
+    @Override
+    @Transactional
+    public void cancelPayRequestedOrders() {
+        List<Order> ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
+                PAYMENT_REQUEST,
+                LocalDateTime.now().minusMinutes(requestedPaymentOrderTtl)
+        );
+        ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
+        orderRepository.saveAll(ordersToCancel);
+        ordersToCancel.forEach(o-> paymentProducer.send(o, CANCEL));
     }
 }
 

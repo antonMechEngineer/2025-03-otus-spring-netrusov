@@ -13,8 +13,12 @@
     },
     "username": {
       "type": "string"
+    },
+    "actionType": {
+      "type": "string",
+      "enum": ["PAY", "CANCEL"]
     }
   },
-  "required": ["buy", "buyId", "price", "username"],
+  "required": ["buy", "buyId", "price", "username", "actionType"],
   "additionalProperties": false
 }

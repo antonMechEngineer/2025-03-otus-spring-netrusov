@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.otus.hw.models.Order;
 
 import java.time.LocalDate;
@@ -21,5 +22,9 @@ public interface OrderService {
 
     List<LocalDate> findOccupiedDates(Long roomId);
 
-    void checkAndCancelOrders();
+    List<Order> findPaidLastDays(Integer numberDays);
+
+    void cancelNotPaidOrders();
+
+    void cancelPayRequestedOrders();
 }
