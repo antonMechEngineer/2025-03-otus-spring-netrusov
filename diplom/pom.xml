@@ -24,6 +24,7 @@
         <codehaus.version>3.5.0</codehaus.version>
         <resilience4j.version>2.3.0</resilience4j.version>
         <swagger.version>2.8.4</swagger.version>
+        <liquibase.version>4.27.0</liquibase.version>
     </properties>
 
     <modules>
@@ -90,6 +91,11 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

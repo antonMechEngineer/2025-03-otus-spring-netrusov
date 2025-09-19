@@ -27,11 +27,6 @@ spring:
                   type: ru.otus.hw.kafka.dto.PaymentReq
   datasource:
     url: jdbc:h2:mem:maindb
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
-      schema-locations: classpath:schema.sql
   jpa:
     generate-ddl: false
     hibernate:

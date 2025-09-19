@@ -9,6 +9,10 @@ ttl:
 server:
   port: 8080
 spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -33,11 +37,6 @@ spring:
                 type: ru.otus.hw.kafka.dto.PaymentResp
   datasource:
     url: jdbc:h2:mem:maindb
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
-      schema-locations: classpath:schema.sql
   jpa:
     generate-ddl: false
     hibernate:

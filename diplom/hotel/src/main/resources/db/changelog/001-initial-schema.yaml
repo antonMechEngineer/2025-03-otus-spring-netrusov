@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-1
+      author: ANN
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+
+  - changeSet:
+      id: 001-2
+      author: ANN
+      changes:
+        - createTable:
+            tableName: rooms
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: room_number
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_per_day
+                  type: decimal(19,2)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-3
+      author: ANN
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: begin_rent
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_rent
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: decimal(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+              - column:
+                  name: room_id
+                  type: bigint
