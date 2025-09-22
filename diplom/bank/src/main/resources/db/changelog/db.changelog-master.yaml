@@ -1,9 +1,9 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/001-initial-schema.yaml
+      file: db/changelog/2025-09-19--initial-schema.yaml
   - include:
-      file: db/changelog/002-acl-tables.yaml
+      file: db/changelog/2025-09-19--create-acl-tables.yaml
   - include:
-      file: db/changelog/003-foreign-keys.yaml
+      file: db/changelog/2025-09-19--create-foreign-keys.yaml
   - include:
-      file: db/changelog/004-insert-initial-data.yaml
+      file: db/changelog/2025-09-19--insert-initial-data.yaml

@@ -1,6 +1,6 @@
 databaseChangeLog:
     - changeSet:
-          id: 003-1
+          id: 2025-09-19--create-foreign-keys-1
           author: your-name
           changes:
               - addForeignKeyConstraint:
@@ -18,7 +18,7 @@ databaseChangeLog:
                     constraintName: fk_acl_entry_sid
 
     - changeSet:
-          id: 003-2
+          id: 2025-09-19--create-foreign-keys-2
           author: your-name
           changes:
               - addForeignKeyConstraint:

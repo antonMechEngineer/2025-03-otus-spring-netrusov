@@ -1,4 +1,3 @@
-//todo: добавить liquibase
 //todo: переписать тесты
 package ru.otus.hw;
 

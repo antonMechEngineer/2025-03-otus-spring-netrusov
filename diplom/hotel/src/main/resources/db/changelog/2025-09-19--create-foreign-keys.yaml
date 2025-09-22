@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 003-1
+      id: 2025-09-19--create-foreign-keys-1
       author: ANN
       changes:
         - addForeignKeyConstraint:
@@ -19,7 +19,7 @@ databaseChangeLog:
             constraintName: fk_orders_room_id
 
   - changeSet:
-      id: 003-2
+      id: 2025-09-19--create-foreign-keys-2
       author: ANN
       changes:
         - addForeignKeyConstraint:
@@ -37,7 +37,7 @@ databaseChangeLog:
             constraintName: fk_acl_entry_sid
 
   - changeSet:
-      id: 003-3
+      id: 2025-09-19--create-foreign-keys-3
       author: ANN
       changes:
         - addForeignKeyConstraint:
