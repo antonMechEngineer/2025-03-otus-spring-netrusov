@@ -12,6 +12,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByStatusAndCreatedAtLessThanEqual(Order.Status status, LocalDateTime timeThreshold);
 
+    List<Order> findByStatusAndCreatedAtGreaterThanEqual(Order.Status status, LocalDateTime timeThreshold);
+
     boolean existsByRoomIdAndStatusInAndBeginRentLessThanEqualAndEndRentGreaterThanEqual(
             Long roomId,
             Collection<Order.Status> statuses,

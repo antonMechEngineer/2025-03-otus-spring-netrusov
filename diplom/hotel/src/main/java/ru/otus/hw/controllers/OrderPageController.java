@@ -2,9 +2,7 @@ package ru.otus.hw.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @SuppressWarnings("unused")
 @Controller
@@ -17,14 +15,7 @@ public class OrderPageController {
     }
 
     @GetMapping("/createOrder")
-    public String createOrder(@RequestParam(required = false) Long id, Model model) {
-        model.addAttribute("orderId", id);
+    public String createOrder() {
         return "createOrder";
-    }
-
-    @GetMapping("/editOrder")
-    public String editOrder(@RequestParam Long id, Model model) {
-        model.addAttribute("orderId", id);
-        return "editOrder";
     }
 }

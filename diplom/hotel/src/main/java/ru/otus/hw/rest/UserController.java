@@ -12,6 +12,7 @@ import ru.otus.hw.models.User;
 import ru.otus.hw.rest.dto.UserDto;
 import ru.otus.hw.services.UserService;
 
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
@@ -30,6 +31,7 @@ public class UserController {
         User currentUser = userService.findByUsername(authentication.getName());
         currentUser.setUsername(userDto.getUsername());
         currentUser.setPassword(userDto.getPassword());
-        return userMapper.toDto(userService.editInfo(currentUser));
+        User updatedUser = userService.edit(currentUser);
+        return userMapper.toDto(updatedUser);
     }
 }

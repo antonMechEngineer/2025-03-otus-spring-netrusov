@@ -20,7 +20,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
-public class OrderController {
+public class   OrderController {
 
     private final RoomService roomService;
 
@@ -42,20 +42,21 @@ public class OrderController {
     @GetMapping("/api/orders/{id}")
     public ResponseEntity<OrderDto> findById(@PathVariable("id") long id) {
         Order order = orderService.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(orderMapper.toDto(order));
+        OrderDto orderDto = orderMapper.toDto(order);
+        return ResponseEntity.status(HttpStatus.OK).body(orderDto);
     }
 
     @PostMapping("/api/orders/unconfirmed")
     public ResponseEntity<OrderDto> create(@Valid @RequestBody OrderDto orderDto) {
         Room room = roomService.findById(orderDto.getId());
-        User user = userService.findCurrentUser();
+        User user = userService.findCurrent();
         Order order = orderService.create(new Order(orderDto.getBeginRent(), orderDto.getEndRent(), user, room));
         OrderDto createdOrderDto = orderMapper.toDto(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrderDto);
     }
 
     @PutMapping("/api/orders/{id}/pay")
-    public ResponseEntity<OrderDto> pay( @PathVariable("id") long id) {
+    public ResponseEntity<Void> pay( @PathVariable("id") long id) {
         Order order = orderService.findById(id);
         orderService.updateStatus(order, Order.Status.PAYMENT_REQUEST);
         return ResponseEntity.noContent().build();

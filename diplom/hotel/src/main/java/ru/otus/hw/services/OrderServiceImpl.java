@@ -1,7 +1,7 @@
 package ru.otus.hw.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostFilter;
@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.BookingProcessException;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.exceptions.PaymentProcessException;
 import ru.otus.hw.kafka.PaymentProducer;
 import ru.otus.hw.models.Order;
@@ -29,11 +30,14 @@ import static ru.otus.hw.models.Order.Status.*;
 
 @Service
 @RequiredArgsConstructor
+@Setter
 public class OrderServiceImpl implements OrderService {
 
     private static final String ERROR_CONFIRM_PAYMENT = "Error confirm payment orderId = %s";
 
     private static final String ERROR_CREATE_BOOKING = "Error create book for room id = %s. Room is already occupied!";
+
+    private static final String ERROR_NOT_FOUND = "Order id = %s not found!";
 
     @Value("${ttl.not-paid-order.min}")
     private Long notPaidOrderTtl;
@@ -63,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order findByIdInternal(Long id) {
-        return orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(format(ERROR_NOT_FOUND, id)));
     }
 
     @Transactional
@@ -103,7 +107,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<LocalDate> findOccupiedDates(Long roomId) {
-        return orderRepository.findAll().stream()
+        return orderRepository.findAll()
+                .stream()
                 .filter(o -> o.getRoom().getId().equals(roomId) && o.getStatus() == PAID ||
                         o.getRoom().getId().equals(roomId) && o.getStatus() == PAYMENT_REQUEST)
                 .flatMap(order -> generateDateRangeStream(order.getBeginRent(), order.getEndRent()))
@@ -112,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findPaidLastDays(Integer numberDays){
-        return orderRepository.findByStatusAndCreatedAtLessThanEqual(
+        return orderRepository.findByStatusAndCreatedAtGreaterThanEqual(
                 PAID,
                 LocalDateTime.now().minusDays(numberDays));
     }
@@ -120,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
     private Stream<LocalDate> generateDateRangeStream(LocalDate start, LocalDate end) {
         return Stream.iterate(
                 start,
-                date -> !date.isAfter(end.minusDays(1)),
+                date -> !date.isAfter(end),
                 date -> date.plusDays(1));
     }
 

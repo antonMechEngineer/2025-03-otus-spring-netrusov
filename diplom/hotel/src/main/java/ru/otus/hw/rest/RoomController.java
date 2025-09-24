@@ -42,7 +42,8 @@ public class RoomController {
 
     @PostMapping("/api/rooms")
     public ResponseEntity<RoomDto> createRoom(@RequestBody @Valid RoomDto roomDto) {
-        RoomDto savedRoomDto = roomMapper.toDto(roomService.save(roomMapper.fromDto(roomDto)));
+        Room savedRoom = roomService.save(roomMapper.fromDto(roomDto));
+        RoomDto savedRoomDto = roomMapper.toDto(savedRoom);
         return ResponseEntity.status(HttpStatus.OK).body(savedRoomDto);
     }
 

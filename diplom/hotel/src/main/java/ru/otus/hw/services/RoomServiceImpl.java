@@ -1,20 +1,24 @@
 package ru.otus.hw.services;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Room;
 import ru.otus.hw.repositories.RoomRepository;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
+
+    private static final String ERROR_NOT_FOUND = "Room id = %s not found!";
 
     private final RoomRepository roomRepository;
 
@@ -28,7 +32,7 @@ public class RoomServiceImpl implements RoomService {
     @Cacheable(value = "rooms", key = "#id")
     @Override
     public Room findById(Long id) {
-        return roomRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return roomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(format(ERROR_NOT_FOUND, id)));
     }
 
     @CachePut(value = "rooms", key = "#result.id")
@@ -42,7 +46,7 @@ public class RoomServiceImpl implements RoomService {
     @CacheEvict(value = "rooms", allEntries = true)
     @Override
     public Room update(Long id, Room room) {
-        Room existingRoom = roomRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Room existingRoom = findById(id);
         existingRoom.setRoomNumber(room.getRoomNumber());
         existingRoom.setType(room.getType());
         existingRoom.setPricePerDay(room.getPricePerDay());

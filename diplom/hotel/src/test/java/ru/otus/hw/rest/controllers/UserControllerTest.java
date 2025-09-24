@@ -1,57 +1,100 @@
-//package ru.otus.hw.rest.controllers;
-//
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.context.annotation.Import;
-//import org.springframework.http.MediaType;
-//import org.springframework.test.web.servlet.MockMvc;
-//import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-//import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-//import ru.otus.hw.rest.UserController;
-//import ru.otus.hw.rest.GlobalExceptionHandler;
-//
-//import java.util.Collections;
-//import java.util.List;
-//
-//import static org.mockito.Mockito.when;
-//import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//@WebMvcTest(controllers = UserController.class)
-//@Import(GlobalExceptionHandler.class)
-//class UserControllerTest {
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @MockBean
-//    private AuthorService authorService;
-//
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//
-//    @Test
-//    void testGetAllAuthorsWithExistingAuthors() throws Exception {
-//        List<AuthorDto> expectedAuthors = Collections.singletonList(new AuthorDto(1L, "a"));
-//        when(authorService.findAll()).thenReturn(expectedAuthors.stream().map(AuthorDto::toDomainObject).toList());
-//        mockMvc.perform(MockMvcRequestBuilders.get("/api/authors"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(1L))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].fullName").value("a"));
-//    }
-//
-//    @Test
-//    void testGetAllAuthorsWhenNoAuthorsExist() throws Exception {
-//        when(authorService.findAll()).thenReturn(Collections.emptyList());
-//        mockMvc.perform(MockMvcRequestBuilders.get("/api/authors"))
-//                .andDo(print())
-//                .andExpect(status().isNotFound());
-//    }
-//}
+package ru.otus.hw.rest.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ru.otus.hw.mapper.UserMapper;
+import ru.otus.hw.mapper.UserMapperImpl;
+import ru.otus.hw.models.User;
+import ru.otus.hw.rest.GlobalExceptionHandler;
+import ru.otus.hw.rest.UserController;
+import ru.otus.hw.rest.dto.UserDto;
+import ru.otus.hw.services.UserService;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+@SuppressWarnings("unused")
+@DisplayName("Контроллер пользователей")
+@WebMvcTest(controllers = UserController.class)
+@Import({GlobalExceptionHandler.class,
+        UserMapperImpl.class})
+class UserControllerTest {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @TestConfiguration
+    static class MockConfig {
+
+        @Bean
+        UserService userService() {
+            return mock(UserService.class);
+        }
+    }
+
+    @Autowired
+    private UserService userService;
+
+    @DisplayName("Положительный сценарий. Получение информации о профиле.")
+    @Test
+    @WithMockUser
+    void findCurrent() throws Exception {
+        User user = new User(1L, "username", "pwd", "ROLE_USER", List.of());
+        when(userService.findByUsername(any())).thenReturn(user);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/profile"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("username"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("pwd"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.role").value("ROLE_USER"));
+    }
+
+
+    @DisplayName("Положительный сценарий. Редактирование информации о профиле.")
+    @Test
+    @WithMockUser
+    void edit() throws Exception {
+        String usernameDto = "usernameFromDto";
+        String pwdDto = "pwdFromDto";
+        String roleDto = "ROLE_USER";
+        User userFromService = new User(1L, "user", "pwd", "ROLE_USER", List.of());
+        User userModified = new User(1L, usernameDto, pwdDto, "ROLE_USER", List.of());
+        UserDto userDto = new UserDto(1L, usernameDto, pwdDto, roleDto, List.of());
+        when(userService.findByUsername(any())).thenReturn(userFromService);
+        when(userService.edit(any())).thenReturn(userModified);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/profile")
+                        .content(OBJECT_MAPPER.writeValueAsBytes(userDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(usernameDto))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value(pwdDto));
+    }
+}
