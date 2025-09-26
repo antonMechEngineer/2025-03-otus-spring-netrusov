@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.hw.mapper.RoomMapper;
 import ru.otus.hw.mapper.RoomMapperImpl;
 import ru.otus.hw.models.Room;
@@ -28,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.otus.hw.models.Room.Type.LUX;
@@ -78,7 +77,7 @@ class RoomControllerTest {
     void findAll() throws Exception {
         List<Room> expectedRooms = List.of(ROOM_LUX, ROOM_STANDARD);
         when(roomService.findAll()).thenReturn(expectedRooms);
-        mvc.perform(MockMvcRequestBuilders.get("/api/rooms"))
+        mvc.perform(get("/api/rooms"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -97,7 +96,7 @@ class RoomControllerTest {
     @Test
     void findById() throws Exception {
         when(roomService.findById(anyLong())).thenReturn(ROOM_LUX);
-        mvc.perform(MockMvcRequestBuilders.get("/api/rooms/1"))
+        mvc.perform(get("/api/rooms/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -116,7 +115,7 @@ class RoomControllerTest {
         Room roomModified = new Room(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
         RoomDto roomDto = new RoomDto(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
         when(roomService.update(any(), any())).thenReturn(roomModified);
-        mvc.perform(MockMvcRequestBuilders.put("/api/rooms/1")
+        mvc.perform(put("/api/rooms/1")
                         .content(OBJECT_MAPPER.writeValueAsBytes(roomDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -136,7 +135,7 @@ class RoomControllerTest {
         Room savedRoom = new Room(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
         RoomDto roomDto = new RoomDto(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
         when(roomService.save(any())).thenReturn(savedRoom);
-        mvc.perform(MockMvcRequestBuilders.post("/api/rooms")
+        mvc.perform(post("/api/rooms")
                         .content(OBJECT_MAPPER.writeValueAsBytes(roomDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

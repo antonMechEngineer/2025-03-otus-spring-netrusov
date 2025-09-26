@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.otus.hw.models.Room.Type.LUX;
 
 @SuppressWarnings("unused")
-@DisplayName("Security-тесты для эндпоинтов")
+@DisplayName("Security-тесты для эндпоинтов Hotel")
 @WebMvcTest
 @Import({SecurityConfiguration.class,
         GlobalExceptionHandler.class,

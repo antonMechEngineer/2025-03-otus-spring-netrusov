@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.otus.hw.mapper.UserMapper;
 import ru.otus.hw.mapper.UserMapperImpl;
 import ru.otus.hw.models.User;
@@ -27,9 +25,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("unused")
 @DisplayName("Контроллер пользователей")
@@ -64,14 +62,14 @@ class UserControllerTest {
     void findCurrent() throws Exception {
         User user = new User(1L, "username", "pwd", "ROLE_USER", List.of());
         when(userService.findByUsername(any())).thenReturn(user);
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/profile"))
+        mockMvc.perform(get("/api/profile"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("username"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("pwd"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.role").value("ROLE_USER"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.username").value("username"))
+                .andExpect(jsonPath("$.password").value("pwd"))
+                .andExpect(jsonPath("$.role").value("ROLE_USER"));
     }
 
 
@@ -87,14 +85,14 @@ class UserControllerTest {
         UserDto userDto = new UserDto(1L, usernameDto, pwdDto, roleDto, List.of());
         when(userService.findByUsername(any())).thenReturn(userFromService);
         when(userService.edit(any())).thenReturn(userModified);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/profile")
+        mockMvc.perform(put("/api/profile")
                         .content(OBJECT_MAPPER.writeValueAsBytes(userDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(usernameDto))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value(pwdDto));
+                .andExpect(jsonPath("$.username").value(usernameDto))
+                .andExpect(jsonPath("$.password").value(pwdDto));
     }
 }
