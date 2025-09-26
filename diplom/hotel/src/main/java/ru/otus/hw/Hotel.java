@@ -1,4 +1,3 @@
-//todo: переписать тесты
 package ru.otus.hw;
 
 import org.springframework.boot.SpringApplication;

@@ -24,7 +24,7 @@ public class PaymentController {
     private final PaymentMapper paymentMapper;
 
     @GetMapping("/api/payments")
-    public ResponseEntity<List<PaymentDto>> findUserPayments(Authentication authentication) {
+    public ResponseEntity<List<PaymentDto>> findClientPayments(Authentication authentication) {
         List<PaymentDto> paymentDtos = paymentService.findByUsername(authentication.getName())
                 .stream()
                 .map(paymentMapper::toDto)

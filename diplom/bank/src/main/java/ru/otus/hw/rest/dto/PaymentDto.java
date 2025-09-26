@@ -1,12 +1,16 @@
 package ru.otus.hw.rest.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.otus.hw.models.Payment;
 
 import java.math.BigDecimal;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentDto {
 
     private Long id;

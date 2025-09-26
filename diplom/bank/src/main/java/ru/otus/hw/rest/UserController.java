@@ -31,6 +31,6 @@ public class UserController {
         User currentUser = userService.findByUsername(authentication.getName());
         currentUser.setUsername(userDto.getUsername());
         currentUser.setPassword(userDto.getPassword());
-        return userMapper.toDto(userService.editInfo(currentUser));
+        return userMapper.toDto(userService.edit(currentUser));
     }
 }

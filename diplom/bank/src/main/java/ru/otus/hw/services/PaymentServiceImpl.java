@@ -1,6 +1,6 @@
 package ru.otus.hw.services;
 
-import jakarta.persistence.EntityNotFoundException;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,12 +16,17 @@ import ru.otus.hw.repositories.UserRepository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static java.lang.String.format;
 import static ru.otus.hw.models.Payment.Status.CANCEL;
 import static ru.otus.hw.models.Payment.Status.PAID;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
+
+    private static final String ERROR_USER_NOT_FOUND = "User name = %s not found and payment respectively!";
+
+    private static final String ERROR_PAYMENT_NOT_FOUND = "Payment with id = %d not found!";
 
     private final PaymentRepository paymentRepository;
 
@@ -41,13 +46,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> findByUsernameInternal(String username) {
-        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new).getPayments();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(format(ERROR_USER_NOT_FOUND, username)))
+                .getPayments();
     }
 
     @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Payment', 'READ')")
     @Override
     public Payment findById(Long id) {
-        return paymentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(format(ERROR_PAYMENT_NOT_FOUND, id)));
     }
 
     @Transactional
