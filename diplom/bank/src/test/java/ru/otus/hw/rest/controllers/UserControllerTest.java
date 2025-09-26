@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
 import ru.otus.hw.mapper.UserMapper;
 import ru.otus.hw.mapper.UserMapperImpl;
 import ru.otus.hw.models.User;
@@ -26,10 +25,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("unused")
@@ -63,7 +61,7 @@ class UserControllerTest {
     @Test
     @WithMockUser
     void findCurrent() throws Exception {
-        User user = new User(1L, "username", "pwd", "ROLE_USER", List.of(), null);
+        var user = new User(1L, "username", "pwd", "ROLE_USER", List.of(), null);
         when(userService.findByUsername(any())).thenReturn(user);
         mockMvc.perform(get("/api/profile"))
                 .andDo(print())
@@ -79,12 +77,12 @@ class UserControllerTest {
     @Test
     @WithMockUser
     void edit() throws Exception {
-        String usernameDto = "usernameFromDto";
-        String pwdDto = "pwdFromDto";
-        String roleDto = "ROLE_USER";
-        User userFromService = new User(1L, "user", "pwd", "ROLE_USER", List.of(), null);
-        User userModified = new User(1L, usernameDto, pwdDto, "ROLE_USER", List.of(), null);
-        UserDto userDto = new UserDto(1L, usernameDto, pwdDto);
+        var usernameDto = "usernameFromDto";
+        var pwdDto = "pwdFromDto";
+        var roleDto = "ROLE_USER";
+        var userFromService = new User(1L, "user", "pwd", "ROLE_USER", List.of(), null);
+        var userModified = new User(1L, usernameDto, pwdDto, "ROLE_USER", List.of(), null);
+        var userDto = new UserDto(1L, usernameDto, pwdDto);
         when(userService.findByUsername(any())).thenReturn(userFromService);
         when(userService.edit(any())).thenReturn(userModified);
         mockMvc.perform(put("/api/profile")

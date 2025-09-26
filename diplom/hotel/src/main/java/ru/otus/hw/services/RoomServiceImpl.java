@@ -46,7 +46,7 @@ public class RoomServiceImpl implements RoomService {
     @CacheEvict(value = "rooms", allEntries = true)
     @Override
     public Room update(Long id, Room room) {
-        Room existingRoom = findById(id);
+        var existingRoom = findById(id);
         existingRoom.setRoomNumber(room.getRoomNumber());
         existingRoom.setType(room.getType());
         existingRoom.setPricePerDay(room.getPricePerDay());
@@ -56,7 +56,7 @@ public class RoomServiceImpl implements RoomService {
     @CacheEvict(value = "rooms", key = "#id", allEntries = true)
     @Override
     public void deleteById(Long id) {
-        Room room = findById(id);
+        var room = findById(id);
         roomRepository.delete(room);
     }
 }

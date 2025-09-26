@@ -10,9 +10,7 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.models.Payment;
@@ -27,9 +25,9 @@ public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
 
     @Override
     public void createPaymentPermission(Payment payment) {
-        Authentication systemAuth = new UsernamePasswordAuthenticationToken(
+        var systemAuth = new UsernamePasswordAuthenticationToken(
                 "system", "N/A", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        var securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(systemAuth);
         SecurityContextHolder.setContext(securityContext);
         ObjectIdentity oid = new ObjectIdentityImpl(payment);

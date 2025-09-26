@@ -57,14 +57,14 @@ public class JpaOrderRepositoryTest {
     @DisplayName("Положительный сценарий. Найти заказы по определенному статусу и созданных раньше определенного времени")
     @Test
     void findAuthorByStatusAndLessDateTimePositive() {
-        LocalDateTime actualTimestamp = LocalDateTime.now().minusMinutes(2);
-        LocalDateTime rangeForSeekingTimestamp = LocalDateTime.now().minusMinutes(1);
+        var actualTimestamp = LocalDateTime.now().minusMinutes(2);
+        var rangeForSeekingTimestamp = LocalDateTime.now().minusMinutes(1);
         expectedOrder.setCreatedAt(actualTimestamp);
         testEntityManager.persist(room);
         testEntityManager.persist(user);
         testEntityManager.persist(expectedOrder);
         testEntityManager.persist(additionalOrder);
-        List<Order> actualOrders = jpaOrderRepository.findByStatusAndCreatedAtLessThanEqual(SPECIFIC_STATUS, rangeForSeekingTimestamp);
+        var actualOrders = jpaOrderRepository.findByStatusAndCreatedAtLessThanEqual(SPECIFIC_STATUS, rangeForSeekingTimestamp);
         assertFalse(actualOrders.isEmpty());
         assertEquals(EXPECTED_ORDER_SIZE, actualOrders.size());
         assertEquals(room.getRoomNumber(), actualOrders.getFirst().getRoom().getRoomNumber());
@@ -74,16 +74,16 @@ public class JpaOrderRepositoryTest {
     @DisplayName("Положительный сценарий. Найти заказы по определенному статусу и созданных позже определенного времени")
     @Test
     void findAuthorByStatusAndGreaterDateTimePositive() {
-        LocalDateTime actualTimestamp = LocalDateTime.now().minusMinutes(1);
-        LocalDateTime rangeForSeekingTimestamp = LocalDateTime.now().minusMinutes(2);
-        LocalDateTime additionalOrderTimestamp = LocalDateTime.now().minusMinutes(3);
+        var actualTimestamp = LocalDateTime.now().minusMinutes(1);
+        var rangeForSeekingTimestamp = LocalDateTime.now().minusMinutes(2);
+        var additionalOrderTimestamp = LocalDateTime.now().minusMinutes(3);
         expectedOrder.setCreatedAt(actualTimestamp);
         additionalOrder.setCreatedAt(additionalOrderTimestamp);
         testEntityManager.persist(room);
         testEntityManager.persist(user);
         testEntityManager.persist(expectedOrder);
         testEntityManager.persist(additionalOrder);
-        List<Order> actualOrders = jpaOrderRepository.findByStatusAndCreatedAtGreaterThanEqual(SPECIFIC_STATUS, rangeForSeekingTimestamp);
+        var actualOrders = jpaOrderRepository.findByStatusAndCreatedAtGreaterThanEqual(SPECIFIC_STATUS, rangeForSeekingTimestamp);
         assertFalse(actualOrders.isEmpty());
         assertEquals(EXPECTED_ORDER_SIZE, actualOrders.size());
         assertEquals(room.getRoomNumber(), actualOrders.getFirst().getRoom().getRoomNumber());
@@ -93,7 +93,7 @@ public class JpaOrderRepositoryTest {
     @DisplayName("Положительный сценарий. Проверка, что комната свободна.")
     @Test
     void roomIsEmpty() {
-        Room savedRoom = testEntityManager.persistAndFlush(room);
+        var savedRoom = testEntityManager.persistAndFlush(room);
         testEntityManager.persist(user);
         testEntityManager.persist(expectedOrder);
         testEntityManager.persist(additionalOrder);
@@ -108,7 +108,7 @@ public class JpaOrderRepositoryTest {
     @DisplayName("Отрицательный сценарий. Проверка, что комната занята.")
     @Test
     void roomIsBooked() {
-        Room savedRoom = testEntityManager.persist(room);
+        var savedRoom = testEntityManager.persist(room);
         testEntityManager.persist(user);
         testEntityManager.persist(expectedOrder);
         testEntityManager.persist(additionalOrder);

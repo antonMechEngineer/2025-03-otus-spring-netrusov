@@ -29,11 +29,10 @@ public class JpaRoomRepositoryTest {
     @DisplayName("Положительный сценарий. Поиск комнаты по ее номеру.")
     @Test
     void findRoomByRoomNumber(){
-        Integer expectedRoomNumber = 999;
-        Room room = new Room(null, expectedRoomNumber, Room.Type.LUX, new BigDecimal("1000.0"), List.of());
-        Room expectedRoom = testEntityManager.persist(room);
-        Room actualRoom = jpaRoomRepository.findByRoomNumber(expectedRoomNumber).orElseThrow();
-        System.out.println(jpaRoomRepository.findAll().size());
+        var expectedRoomNumber = 999;
+        var room = new Room(null, expectedRoomNumber, Room.Type.LUX, new BigDecimal("1000.0"), List.of());
+        var expectedRoom = testEntityManager.persist(room);
+        var actualRoom = jpaRoomRepository.findByRoomNumber(expectedRoomNumber).orElseThrow();
         Assertions.assertEquals(expectedRoom, actualRoom);
     }
 }

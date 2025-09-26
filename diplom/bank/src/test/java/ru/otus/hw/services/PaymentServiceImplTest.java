@@ -21,7 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static ru.otus.hw.models.Payment.Status.*;
 
@@ -76,7 +77,7 @@ class PaymentServiceImplTest {
     void findByUsernamePositive() {
         user.setPayments(List.of(payment));
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        List<Payment> result = paymentService.findByUsernameInternal("testUser");
+        var result = paymentService.findByUsernameInternal("testUser");
         assertEquals(1, result.size());
         assertEquals(payment, result.get(0));
     }
@@ -92,7 +93,7 @@ class PaymentServiceImplTest {
     @Test
     void findByIdPositive() {
         when(paymentRepository.findById(1L)).thenReturn(Optional.of(payment));
-        Payment result = paymentService.findById(1L);
+        var result = paymentService.findById(1L);
         assertEquals(payment, result);
     }
 
@@ -108,7 +109,7 @@ class PaymentServiceImplTest {
     @Test
     void payPositive() {
         when(paymentRepository.save(any())).thenReturn(payment);
-        Payment result = paymentService.pay(payment);
+        var result = paymentService.pay(payment);
         assertEquals(PAID, result.getStatus());
         assertEquals(new BigDecimal("800.00"), account.getBalance());
         verify(accountRepository, times(1)).save(account);
@@ -120,7 +121,7 @@ class PaymentServiceImplTest {
     @Test
     void cancelPositive() {
         when(paymentRepository.save(any())).thenReturn(payment);
-        Payment result = paymentService.cancel(payment);
+        var result = paymentService.cancel(payment);
         assertEquals(CANCEL, result.getStatus());
         verify(paymentRepository, times(1)).save(payment);
         verify(paymentProducer, times(1)).send(payment);

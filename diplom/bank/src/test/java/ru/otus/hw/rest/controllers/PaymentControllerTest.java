@@ -60,9 +60,9 @@ class PaymentControllerTest {
     @Test
     @WithMockUser
     void findClientPayments() throws Exception {
-        User user = new User(1L, "username", "pwd", "ROLE_USER", List.of(), null);
-        Payment p1 = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), NOT_PAID, now());
-        Payment p2 = new Payment(2L, "buy2", 2L, user, new BigDecimal(2), NOT_PAID, now());
+        var user = new User(1L, "username", "pwd", "ROLE_USER", List.of(), null);
+        var p1 = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), NOT_PAID, now());
+        var p2 = new Payment(2L, "buy2", 2L, user, new BigDecimal(2), NOT_PAID, now());
         when(paymentService.findByUsername(any())).thenReturn(List.of(p1, p2));
         mockMvc.perform(get("/api/payments"))
                 .andExpect(status().isOk())
@@ -85,8 +85,8 @@ class PaymentControllerTest {
     @WithMockUser
     void pay() throws Exception {
         User user = new User(1L, "user", "pwd", "ROLE_USER", List.of(), null);
-        Payment notPaidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), NOT_PAID, now());
-        Payment paidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), PAID, now());
+        var notPaidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), NOT_PAID, now());
+        var paidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), PAID, now());
         when(paymentService.findById(any())).thenReturn(notPaidPayment);
         when(paymentService.pay(any())).thenReturn(paidPayment);
         mockMvc.perform(put("/api/payments/1")
@@ -105,8 +105,8 @@ class PaymentControllerTest {
     @WithMockUser
     void cancel() throws Exception {
         User user = new User(1L, "user", "pwd", "ROLE_USER", List.of(), null);
-        Payment notPaidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), NOT_PAID, now());
-        Payment paidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), CANCEL, now());
+        var notPaidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), NOT_PAID, now());
+        var paidPayment = new Payment(1L, "buy1", 1L, user, new BigDecimal(1), CANCEL, now());
         when(paymentService.findById(any())).thenReturn(notPaidPayment);
         when(paymentService.pay(any())).thenReturn(paidPayment);
         mockMvc.perform(put("/api/payments/1")

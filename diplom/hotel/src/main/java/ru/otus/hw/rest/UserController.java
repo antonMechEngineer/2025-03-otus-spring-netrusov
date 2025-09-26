@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.otus.hw.mapper.UserMapper;
-import ru.otus.hw.models.User;
 import ru.otus.hw.rest.dto.UserDto;
 import ru.otus.hw.services.UserService;
 
@@ -28,10 +27,10 @@ public class UserController {
 
     @PutMapping("/api/profile")
     public UserDto editUser(Authentication authentication, @Valid @RequestBody UserDto userDto) {
-        User currentUser = userService.findByUsername(authentication.getName());
+        var currentUser = userService.findByUsername(authentication.getName());
         currentUser.setUsername(userDto.getUsername());
         currentUser.setPassword(userDto.getPassword());
-        User updatedUser = userService.edit(currentUser);
+        var updatedUser = userService.edit(currentUser);
         return userMapper.toDto(updatedUser);
     }
 }

@@ -1,19 +1,17 @@
 package ru.otus.hw.services;
 
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.kafka.PaymentProducer;
-import ru.otus.hw.models.Account;
 import ru.otus.hw.models.Payment;
 import ru.otus.hw.repositories.AccountRepository;
 import ru.otus.hw.repositories.PaymentRepository;
 import ru.otus.hw.repositories.UserRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -61,7 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public void create(Payment payment) {
-        Payment createdPayment = paymentRepository.save(payment);
+        var createdPayment = paymentRepository.save(payment);
         aclServiceWrapperService.createPaymentPermission(createdPayment);
     }
 
@@ -69,12 +67,12 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public Payment pay(Payment payment) {
-        Account account = payment.getUser().getAccount();
-        BigDecimal updatedBalance = account.getBalance().subtract(payment.getPrice());
+        var account = payment.getUser().getAccount();
+        var updatedBalance = account.getBalance().subtract(payment.getPrice());
         account.setBalance(updatedBalance);
         accountRepository.save(account);
         payment.setStatus(PAID);
-        Payment confirmedPayment = paymentRepository.save(payment);
+        var confirmedPayment = paymentRepository.save(payment);
         paymentProducer.send(confirmedPayment);
         return confirmedPayment;
     }
@@ -89,5 +87,3 @@ public class PaymentServiceImpl implements PaymentService {
         return canceledPayment;
     }
 }
-
-

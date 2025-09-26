@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.otus.hw.mapper.PaymentMapper;
-import ru.otus.hw.models.Payment;
 import ru.otus.hw.rest.dto.PaymentDto;
 import ru.otus.hw.services.PaymentService;
 
@@ -25,7 +24,7 @@ public class PaymentController {
 
     @GetMapping("/api/payments")
     public ResponseEntity<List<PaymentDto>> findClientPayments(Authentication authentication) {
-        List<PaymentDto> paymentDtos = paymentService.findByUsername(authentication.getName())
+        var paymentDtos = paymentService.findByUsername(authentication.getName())
                 .stream()
                 .map(paymentMapper::toDto)
                 .toList();
@@ -34,17 +33,17 @@ public class PaymentController {
 
     @PutMapping("/api/payments/{id}")
     public ResponseEntity<PaymentDto> pay(@PathVariable("id") long id) {
-        Payment payment = paymentService.findById(id);
-        Payment finishedPayment = paymentService.pay(payment);
-        PaymentDto finishedPaymentDto = paymentMapper.toDto(finishedPayment);
+        var payment = paymentService.findById(id);
+        var finishedPayment = paymentService.pay(payment);
+        var finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }
 
     @PutMapping("/api/payments/{id}/cancel")
     public ResponseEntity<PaymentDto> cancel(@PathVariable("id") long id) {
-        Payment payment = paymentService.findById(id);
-        Payment finishedPayment = paymentService.cancel(payment);
-        PaymentDto finishedPaymentDto = paymentMapper.toDto(finishedPayment);
+        var payment = paymentService.findById(id);
+        var finishedPayment = paymentService.cancel(payment);
+        var finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }
 }

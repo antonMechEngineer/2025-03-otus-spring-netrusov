@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
         ) {
             throw new BookingProcessException(format(ERROR_CREATE_BOOKING, order.getRoom().getId()));
         }
-        Order createdOrder = orderRepository.save(order);
+        var createdOrder = orderRepository.save(order);
         aclServiceWrapperService.createPermission(createdOrder);
         return createdOrder;
     }
@@ -132,7 +132,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Scheduled(cron = "${ttl.not-paid-order.checking-cron}")
     public void cancelNotPaidOrders() {
-        List<Order> ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
+        var ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 NOT_PAID,
                 LocalDateTime.now().minusMinutes(notPaidOrderTtl)
         );
@@ -144,7 +144,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void cancelPayRequestedOrders() {
-        List<Order> ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
+        var ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 PAYMENT_REQUEST,
                 LocalDateTime.now().minusMinutes(requestedPaymentOrderTtl)
         );

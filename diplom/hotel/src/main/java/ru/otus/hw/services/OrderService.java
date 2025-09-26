@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import ru.otus.hw.models.Order;
 
 import java.time.LocalDate;

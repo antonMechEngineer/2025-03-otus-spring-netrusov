@@ -31,15 +31,14 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        SimpleCacheManager manager = new SimpleCacheManager();
-
-        CaffeineCache roomsCache = new CaffeineCache("rooms",
+        var manager = new SimpleCacheManager();
+        var roomsCache = new CaffeineCache("rooms",
                 Caffeine.newBuilder()
                         .expireAfterWrite(roomsTtl, TimeUnit.MINUTES)
                         .maximumSize(roomsMaxSize)
                         .build());
 
-        CaffeineCache aclCache = new CaffeineCache("aclCache",
+        var aclCache = new CaffeineCache("aclCache",
                 Caffeine.newBuilder()
                         .expireAfterWrite(aclTtl, TimeUnit.MINUTES)
                         .maximumSize(aclMaxSize)

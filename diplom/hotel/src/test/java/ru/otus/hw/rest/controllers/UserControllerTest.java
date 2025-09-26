@@ -25,7 +25,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -60,7 +61,7 @@ class UserControllerTest {
     @Test
     @WithMockUser
     void findCurrent() throws Exception {
-        User user = new User(1L, "username", "pwd", "ROLE_USER", List.of());
+        var user = new User(1L, "username", "pwd", "ROLE_USER", List.of());
         when(userService.findByUsername(any())).thenReturn(user);
         mockMvc.perform(get("/api/profile"))
                 .andDo(print())
@@ -77,12 +78,12 @@ class UserControllerTest {
     @Test
     @WithMockUser
     void edit() throws Exception {
-        String usernameDto = "usernameFromDto";
-        String pwdDto = "pwdFromDto";
-        String roleDto = "ROLE_USER";
-        User userFromService = new User(1L, "user", "pwd", "ROLE_USER", List.of());
-        User userModified = new User(1L, usernameDto, pwdDto, "ROLE_USER", List.of());
-        UserDto userDto = new UserDto(1L, usernameDto, pwdDto, roleDto, List.of());
+        var usernameDto = "usernameFromDto";
+        var pwdDto = "pwdFromDto";
+        var roleDto = "ROLE_USER";
+        var userFromService = new User(1L, "user", "pwd", "ROLE_USER", List.of());
+        var userModified = new User(1L, usernameDto, pwdDto, "ROLE_USER", List.of());
+        var userDto = new UserDto(1L, usernameDto, pwdDto, roleDto, List.of());
         when(userService.findByUsername(any())).thenReturn(userFromService);
         when(userService.edit(any())).thenReturn(userModified);
         mockMvc.perform(put("/api/profile")

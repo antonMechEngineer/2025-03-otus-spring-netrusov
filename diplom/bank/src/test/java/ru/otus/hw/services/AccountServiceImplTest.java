@@ -50,7 +50,7 @@ class AccountServiceImplTest {
     void findByUsernamePositive() {
         user.setAccount(account);
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        Account result = accountService.findByUsername("testUser");
+        var result = accountService.findByUsername("testUser");
         assertEquals(account, result);
     }
 
@@ -65,7 +65,7 @@ class AccountServiceImplTest {
     @Test
     void findByIdPositive() {
         when(accountRepository.findAll()).thenReturn(List.of(account));
-        List<Account> result = accountService.findAll();
+        var result = accountService.findAll();
         assertEquals(account, result.getFirst());
     }
 }

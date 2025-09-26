@@ -2,7 +2,6 @@ package ru.otus.hw.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.otus.hw.kafka.dto.PaymentReq;
 import ru.otus.hw.kafka.dto.PaymentResp;
 import ru.otus.hw.models.Payment;
 import ru.otus.hw.rest.dto.PaymentDto;

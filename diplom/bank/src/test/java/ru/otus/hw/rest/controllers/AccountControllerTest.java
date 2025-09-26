@@ -56,8 +56,8 @@ class AccountControllerTest {
     @Test
     @WithMockUser
     void findClientBalance() throws Exception {
-        User user = new User(1L, "user", "pwd", "ROLE_USER", List.of(), null);
-        Account account = new Account(1L, new BigDecimal("1000.0"), user);
+        var user = new User(1L, "user", "pwd", "ROLE_USER", List.of(), null);
+        var account = new Account(1L, new BigDecimal("1000.0"), user);
         when(accountService.findByUsername(any())).thenReturn(account);
         mockMvc.perform(get("/api/balance"))
                 .andExpect(status().isOk())

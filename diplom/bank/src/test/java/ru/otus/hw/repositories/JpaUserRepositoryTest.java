@@ -29,9 +29,10 @@ public class JpaUserRepositoryTest {
     @DisplayName("Положительный кейс. Поиск пользователя по его имени")
     @Test
     void findUserByUsername() {
-        String expectedUsername = "testUsername";
-        User expectedUser = testEntityManager.persist(new User(null, expectedUsername, "testPassword", "ROLE_USER", List.of(), null));
-        User actualUser = jpaUserRepository.findByUsername(expectedUsername).orElseThrow();
+        var expectedUsername = "testUsername";
+        var savedUser = new User(null, expectedUsername, "test", "ROLE_USER", List.of(), null);
+        var expectedUser = testEntityManager.persist(savedUser);
+        var actualUser = jpaUserRepository.findByUsername(expectedUsername).orElseThrow();
         assertEquals(expectedUser, actualUser);
     }
 }

@@ -54,7 +54,7 @@ public class OrderServiceImplTest {
     @BeforeEach
     void setUp() {
         room = new Room(1L, 999, Room.Type.LUX, new BigDecimal("1000.0"), List.of());
-        User user = new User(null, "testUsername", "testPassword", "ROLE_USER", List.of());
+        var user = new User(null, "testUsername", "testPassword", "ROLE_USER", List.of());
         notPaidOrder = new Order(now(), now().plusDays(1), user, room);
         paidOrder = new Order(now().plusDays(2), now().plusDays(3), user, room);
         paidOrder.setStatus(PAID);
@@ -111,8 +111,7 @@ public class OrderServiceImplTest {
     @DisplayName("Положительный сценарий. Найдены занятые даты для комнаты")
     @Test
     void findOccupiedDatesPositive() {
-        List<LocalDate> expectedDates = List.of(
-                paidOrder.getBeginRent(), paidOrder.getEndRent(),
+        var expectedDates = List.of(paidOrder.getBeginRent(), paidOrder.getEndRent(),
                 paymentRequestOrder.getBeginRent(), paymentRequestOrder.getEndRent());
         when(orderRepository.findAll()).thenReturn(List.of(notPaidOrder, paidOrder, paymentRequestOrder));
         List<LocalDate> actualDates = orderService.findOccupiedDates(room.getId());

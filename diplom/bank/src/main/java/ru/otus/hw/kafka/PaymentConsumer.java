@@ -9,7 +9,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.kafka.dto.PaymentReq;
 import ru.otus.hw.models.Payment;
-import ru.otus.hw.models.User;
 import ru.otus.hw.services.PaymentService;
 import ru.otus.hw.services.UserService;
 
@@ -28,7 +27,7 @@ public class PaymentConsumer {
     @KafkaListener(topics = "payment-request", containerFactory = "listenerContainerFactory")
     public void listen(@Payload PaymentReq paymentReq, Acknowledgment acknowledgment) {
         log.info("Received paymentReq!");
-        User currentUser = userService.findByUsername(paymentReq.getUsername());
+        var currentUser = userService.findByUsername(paymentReq.getUsername());
         paymentService.create(new Payment(null,
                 paymentReq.getBuy(),
                 paymentReq.getBuyId(),

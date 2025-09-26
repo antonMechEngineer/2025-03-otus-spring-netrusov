@@ -16,13 +16,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
 import ru.otus.hw.mapper.*;
 import ru.otus.hw.models.Order;
 import ru.otus.hw.models.Room;
 import ru.otus.hw.models.User;
 import ru.otus.hw.rest.GlobalExceptionHandler;
-
 import ru.otus.hw.services.OrderService;
 import ru.otus.hw.services.RoomService;
 import ru.otus.hw.services.UserService;
@@ -89,7 +87,7 @@ class EndPointSecurityTest {
 
         @Bean
         public ObjectMapper objectMapper() {
-            ObjectMapper mapper = new ObjectMapper();
+            var mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             return mapper;

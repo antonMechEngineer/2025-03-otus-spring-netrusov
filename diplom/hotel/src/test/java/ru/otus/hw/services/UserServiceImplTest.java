@@ -50,7 +50,7 @@ public class UserServiceImplTest {
     @DisplayName("Отрицательный сценарий. Поиск несуществующего пользователя по имени.")
     @Test
     void findByUsernameNegativeNotFound() {
-        String notExistenceUsername = "any";
+        var notExistenceUsername = "any";
         when(userRepository.findByUsername(notExistenceUsername)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> userService.findByUsername(notExistenceUsername));
         verify(userRepository, times(1)).findByUsername(notExistenceUsername);
@@ -59,10 +59,10 @@ public class UserServiceImplTest {
     @DisplayName("Положительный сценарий. Редактирование информации пользователя с шифрованием пароля.")
     @Test
     void editPositive() {
-        User updatedUser = new User(null, "test", "test", "ROLE_USER", List.of());
+        var updatedUser = new User(null, "test", "test", "ROLE_USER", List.of());
         when(bCryptPasswordEncoder.encode(updatedUser.getPassword())).thenReturn("encryptedPassword");
         when(userRepository.save(updatedUser)).thenReturn(updatedUser);
-        User result = userService.edit(updatedUser);
+        var result = userService.edit(updatedUser);
         assertEquals("encryptedPassword", result.getPassword());
         verify(bCryptPasswordEncoder, times(1)).encode("test");
         verify(userRepository, times(1)).save(updatedUser);

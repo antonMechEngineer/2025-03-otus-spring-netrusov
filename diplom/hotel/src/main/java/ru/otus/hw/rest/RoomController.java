@@ -7,12 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.mapper.RoomMapper;
-import ru.otus.hw.models.Room;
 import ru.otus.hw.rest.dto.RoomDto;
 import ru.otus.hw.services.OrderService;
 import ru.otus.hw.services.RoomService;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -34,23 +32,23 @@ public class RoomController {
 
     @GetMapping("/api/rooms/{id}")
     public ResponseEntity<RoomDto> findById(@PathVariable("id") Long id) {
-        List<LocalDate> occupiedDates = orderService.findOccupiedDates(id);
-        RoomDto roomDto = roomMapper.toDto(roomService.findById(id));
+        var occupiedDates = orderService.findOccupiedDates(id);
+        var roomDto = roomMapper.toDto(roomService.findById(id));
         roomDto.setOccupiedDates(occupiedDates);
         return ResponseEntity.status(HttpStatus.OK).body(roomDto);
     }
 
     @PostMapping("/api/rooms")
     public ResponseEntity<RoomDto> createRoom(@RequestBody @Valid RoomDto roomDto) {
-        Room savedRoom = roomService.save(roomMapper.fromDto(roomDto));
-        RoomDto savedRoomDto = roomMapper.toDto(savedRoom);
+        var savedRoom = roomService.save(roomMapper.fromDto(roomDto));
+        var savedRoomDto = roomMapper.toDto(savedRoom);
         return ResponseEntity.status(HttpStatus.OK).body(savedRoomDto);
     }
 
     @PutMapping("/api/rooms/{id}")
     public ResponseEntity<RoomDto> updateRoom(@PathVariable("id") Long id, @RequestBody @Valid RoomDto roomDto) {
-        Room updatedRoom = roomMapper.fromDto(roomDto);
-        RoomDto savedRoomDto = roomMapper.toDto(roomService.update(id, updatedRoom));
+        var updatedRoom = roomMapper.fromDto(roomDto);
+        var savedRoomDto = roomMapper.toDto(roomService.update(id, updatedRoom));
         return ResponseEntity.ok(savedRoomDto);
     }
 

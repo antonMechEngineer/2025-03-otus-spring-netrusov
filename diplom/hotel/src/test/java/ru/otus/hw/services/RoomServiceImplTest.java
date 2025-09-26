@@ -68,14 +68,14 @@ public class RoomServiceImplTest {
     @DisplayName("Положительный сценарий. Проверка редактирования команты.")
     @Test
     void updatePositive() {
-        Long updatedId = 1L;
-        Room.Type updatedType = STANDARD;
-        BigDecimal updatedPrice = new BigDecimal("1500.0");
-        Integer updatedRoomNumber = 2;
-        Room updatedRoom = new Room(updatedId, updatedRoomNumber, updatedType, updatedPrice, List.of());
+        var updatedId = 1L;
+        var updatedType = STANDARD;
+        var updatedPrice = new BigDecimal("1500.0");
+        var updatedRoomNumber = 2;
+        var updatedRoom = new Room(updatedId, updatedRoomNumber, updatedType, updatedPrice, List.of());
         when(roomRepository.findById(updatedId)).thenReturn(Optional.of(room));
         when(roomRepository.save(any(Room.class))).thenReturn(updatedRoom);
-        Room result = roomService.update(updatedId, updatedRoom);
+        var result = roomService.update(updatedId, updatedRoom);
         verify(roomRepository, times(1)).findById(updatedId);
         verify(roomRepository, times(1)).save(room);
         assertEquals(updatedPrice, result.getPricePerDay());
@@ -87,7 +87,7 @@ public class RoomServiceImplTest {
     @DisplayName("Положительный сценарий. Проверка удаления комнаты по id.")
     @Test
     void deletePositive() {
-        Long deletedRoomId = 1L;
+        var deletedRoomId = 1L;
         when(roomRepository.findById(deletedRoomId)).thenReturn(Optional.of(room));
         roomService.deleteById(deletedRoomId);
         verify(roomRepository, times(1)).findById(deletedRoomId);

@@ -75,7 +75,7 @@ class RoomControllerTest {
     @DisplayName("Положительный сценарий. Получение информации о комнатах.")
     @Test
     void findAll() throws Exception {
-        List<Room> expectedRooms = List.of(ROOM_LUX, ROOM_STANDARD);
+        var expectedRooms = List.of(ROOM_LUX, ROOM_STANDARD);
         when(roomService.findAll()).thenReturn(expectedRooms);
         mvc.perform(get("/api/rooms"))
                 .andDo(print())
@@ -109,11 +109,11 @@ class RoomControllerTest {
     @DisplayName("Положительный сценарий. Редактирование информации о комнате.")
     @Test
     void update() throws Exception {
-        Integer roomNumberDto = 10;
-        Room.Type typeDto = STANDARD;
-        BigDecimal pricePerDayDto = new BigDecimal(20);
-        Room roomModified = new Room(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
-        RoomDto roomDto = new RoomDto(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
+        var roomNumberDto = 10;
+        var typeDto = STANDARD;
+        var pricePerDayDto = new BigDecimal(20);
+        var roomModified = new Room(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
+        var roomDto = new RoomDto(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
         when(roomService.update(any(), any())).thenReturn(roomModified);
         mvc.perform(put("/api/rooms/1")
                         .content(OBJECT_MAPPER.writeValueAsBytes(roomDto))
@@ -129,11 +129,11 @@ class RoomControllerTest {
     @DisplayName("Положительный сценарий. Создание комнаты.")
     @Test
     void create() throws Exception {
-        Integer roomNumberDto = 10;
-        Room.Type typeDto = STANDARD;
-        BigDecimal pricePerDayDto = new BigDecimal(20);
-        Room savedRoom = new Room(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
-        RoomDto roomDto = new RoomDto(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
+        var roomNumberDto = 10;
+        var typeDto = STANDARD;
+        var pricePerDayDto = new BigDecimal(20);
+        var savedRoom = new Room(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
+        var roomDto = new RoomDto(1L, roomNumberDto, typeDto, pricePerDayDto, List.of());
         when(roomService.save(any())).thenReturn(savedRoom);
         mvc.perform(post("/api/rooms")
                         .content(OBJECT_MAPPER.writeValueAsBytes(roomDto))

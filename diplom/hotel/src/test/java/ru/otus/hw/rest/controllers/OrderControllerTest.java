@@ -20,7 +20,6 @@ import ru.otus.hw.models.Room;
 import ru.otus.hw.models.User;
 import ru.otus.hw.rest.GlobalExceptionHandler;
 import ru.otus.hw.rest.OrderController;
-import ru.otus.hw.rest.dto.OrderDto;
 import ru.otus.hw.services.OrderService;
 import ru.otus.hw.services.RoomService;
 import ru.otus.hw.services.UserService;
@@ -80,7 +79,7 @@ class OrderControllerTest {
 
         @Bean
         public ObjectMapper objectMapper() {
-            ObjectMapper mapper = new ObjectMapper();
+            var mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             return mapper;
@@ -103,7 +102,7 @@ class OrderControllerTest {
     @WithMockUser
     @Test
     void findAll() throws Exception {
-        List<Order> expectedOrders = List.of(NOT_PAID_ORDER, PAID_ORDER);
+        var expectedOrders = List.of(NOT_PAID_ORDER, PAID_ORDER);
         when(orderService.findByUsername(any())).thenReturn(expectedOrders);
         mvc.perform(get("/api/orders"))
                 .andDo(print())
@@ -144,7 +143,7 @@ class OrderControllerTest {
     @WithMockUser
     @Test
     void create() throws Exception {
-        OrderDto orderDto = orderMapper.toDto(NOT_PAID_ORDER);
+        var orderDto = orderMapper.toDto(NOT_PAID_ORDER);
         when(orderService.create(any())).thenReturn(NOT_PAID_ORDER);
         when(roomService.findById(any())).thenReturn(ROOM_LUX);
         when(userService.findCurrent()).thenReturn(USER);

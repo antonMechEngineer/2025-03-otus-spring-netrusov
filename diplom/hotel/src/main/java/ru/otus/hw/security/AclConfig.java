@@ -7,11 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionEvaluator;
-import org.springframework.security.acls.domain.AclAuthorizationStrategy;
-import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
-import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
-import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
-import org.springframework.security.acls.domain.ConsoleAuditLogger;
+import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.model.MutableAclService;
@@ -63,7 +59,7 @@ public class AclConfig {
 
     @Bean
     public MethodSecurityExpressionHandler methodSecurityExpressionHandler(AclPermissionEvaluator evaluator) {
-        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
+        var handler = new DefaultMethodSecurityExpressionHandler();
         handler.setPermissionEvaluator(evaluator);
         return handler;
     }

@@ -1,12 +1,11 @@
 package ru.otus.hw.services;
 
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.User;
 import ru.otus.hw.repositories.UserRepository;
 
@@ -30,14 +29,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User edit(User user) {
-        String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        var encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
         return userRepository.save(user);
     }
 
     @Override
     public User findCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return findByUsername(userDetails.getUsername());
     }

@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import ru.otus.hw.models.Payment;
 
 import java.util.List;
