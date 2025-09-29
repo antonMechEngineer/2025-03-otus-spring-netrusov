@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.kafka.dto.PaymentResp;
-import ru.otus.hw.mapper.PaymentMapper;
+import ru.otus.hw.mappers.PaymentMapper;
 import ru.otus.hw.models.Payment;
 
 @Component

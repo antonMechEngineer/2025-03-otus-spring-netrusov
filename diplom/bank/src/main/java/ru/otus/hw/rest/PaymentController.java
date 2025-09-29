@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.otus.hw.mapper.PaymentMapper;
+import ru.otus.hw.mappers.PaymentMapper;
 import ru.otus.hw.rest.dto.PaymentDto;
 import ru.otus.hw.services.PaymentService;
 

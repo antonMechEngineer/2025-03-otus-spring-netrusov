@@ -35,7 +35,9 @@ class AccountServiceImplTest {
     private AccountServiceImpl accountService;
 
     private User user;
+
     private Account account;
+
     @BeforeEach
     void setUp() {
         account = new Account();

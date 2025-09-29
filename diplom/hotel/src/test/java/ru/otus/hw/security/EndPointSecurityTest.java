@@ -16,7 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.mapper.*;
+import ru.otus.hw.mappers.*;
 import ru.otus.hw.models.Order;
 import ru.otus.hw.models.Room;
 import ru.otus.hw.models.User;

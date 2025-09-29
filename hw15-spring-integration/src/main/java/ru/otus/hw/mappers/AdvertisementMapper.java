@@ -1,4 +1,4 @@
-package ru.otus.hw.mapper;
+package ru.otus.hw.mappers;
 
 import org.springframework.stereotype.Component;
 import ru.otus.hw.domain.Advertisement;

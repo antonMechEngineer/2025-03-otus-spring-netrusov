@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.otus.hw.mapper.AccountMapper;
+import ru.otus.hw.mappers.AccountMapper;
 import ru.otus.hw.rest.dto.AccountDto;
 import ru.otus.hw.services.AccountService;
 

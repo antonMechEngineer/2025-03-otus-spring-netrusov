@@ -1,6 +1,8 @@
 package ru.otus.hw.indicators;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -14,6 +16,8 @@ import java.math.BigDecimal;
 @SuppressWarnings("unused")
 @Component
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class RentabilityIndicator implements HealthIndicator {
 
     private static final Integer RENTABILITY_PERIOD = 1;

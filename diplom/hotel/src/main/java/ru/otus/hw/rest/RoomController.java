@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.otus.hw.mapper.RoomMapper;
+import ru.otus.hw.mappers.RoomMapper;
 import ru.otus.hw.rest.dto.RoomDto;
 import ru.otus.hw.services.OrderService;
 import ru.otus.hw.services.RoomService;
