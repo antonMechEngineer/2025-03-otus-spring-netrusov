@@ -8,6 +8,10 @@ ttl:
     checking-cron: 0 */5 * * * *
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        name: HOTEL_SESSION
 spring:
   liquibase:
     enabled: true
