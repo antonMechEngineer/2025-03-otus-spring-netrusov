@@ -26,7 +26,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(GET,"/login", "/rooms", "/api/rooms").permitAll()
-                        .requestMatchers("/createRoom", "/editRoom").hasRole("ADMIN")
+                        .requestMatchers("/createRoom", "/editRoom", "/actuator/**").hasRole("ADMIN")
                         .requestMatchers(POST, "/api/rooms").hasRole("ADMIN")
                         .requestMatchers(PUT, "/api/rooms/{id}").hasRole("ADMIN")
                         .requestMatchers(DELETE, "/api/rooms/{id}").hasRole("ADMIN")
