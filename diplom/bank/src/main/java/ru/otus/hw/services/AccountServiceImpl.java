@@ -24,7 +24,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(()-> new EntityNotFoundException(format(ERROR_USER_NOT_FOUND, username))).getAccount();
+                .orElseThrow(() -> new EntityNotFoundException(format(ERROR_USER_NOT_FOUND, username))).getAccount();
     }
 
     @Override

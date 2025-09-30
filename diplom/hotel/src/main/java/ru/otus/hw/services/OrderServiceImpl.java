@@ -116,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findPaidLastDays(Integer numberDays){
+    public List<Order> findPaidLastDays(Integer numberDays) {
         return orderRepository.findByStatusAndCreatedAtGreaterThanEqual(
                 PAID,
                 LocalDateTime.now().minusDays(numberDays));
@@ -150,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
         orderRepository.saveAll(ordersToCancel);
-        ordersToCancel.forEach(o-> paymentProducer.send(o, CANCEL));
+        ordersToCancel.forEach(o -> paymentProducer.send(o, CANCEL));
     }
 }
 

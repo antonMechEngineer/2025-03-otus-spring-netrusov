@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "begin_rent")
@@ -45,12 +45,15 @@ public class Order {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public enum Status {NOT_PAID, PAID, CANCEL, PAYMENT_REQUEST, AUTO_CANCEL}
+    public enum Status {
+        NOT_PAID,
+        PAID,
+        CANCEL,
+        PAYMENT_REQUEST,
+        AUTO_CANCEL
+    }
 
-    public Order(LocalDate beginRent,
-                 LocalDate endRent,
-                 User user,
-                 Room room){
+    public Order(LocalDate beginRent, LocalDate endRent, User user, Room room) {
         this.beginRent = beginRent;
         this.endRent = endRent;
         this.user = user;

@@ -33,7 +33,7 @@ public class OrderDto {
 
 
     @Positive(message = "Total price must be positive")
-    @Digits(integer = 17, fraction = 2, message = "Total price must have maximum 17 integer digits and 2 fractional digits")
+    @Digits(integer = 17, fraction = 2, message = "Price must have max 17 integer digits and 2 fractional digits")
     private BigDecimal totalPrice;
 
     private Order.Status status;

@@ -11,7 +11,7 @@ import ru.otus.hw.models.Payment;
 @RequiredArgsConstructor
 public class PaymentProducer {
 
-    private final static String TOPIC_RESP = "payment-response";
+    private static final String TOPIC_RESP = "payment-response";
 
     private final KafkaTemplate<String, PaymentResp> kafkaTemplate;
 

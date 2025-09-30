@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "buy")
@@ -39,6 +39,10 @@ public class Payment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public enum Status {NOT_PAID, PAID, CANCEL, UNSUCCESSFUL}
-
+    public enum Status {
+        NOT_PAID,
+        PAID,
+        CANCEL,
+        UNSUCCESSFUL
+    }
 }

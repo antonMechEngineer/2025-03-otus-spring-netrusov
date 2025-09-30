@@ -10,9 +10,9 @@ import ru.otus.hw.models.Order;
 @RequiredArgsConstructor
 public class PaymentProducer {
 
-    private final static String TOPIC_REQ = "payment-request";
+    private static final String TOPIC_REQ = "payment-request";
 
-    private final static String BUY = "Hotel";
+    private static final String BUY = "Hotel";
 
     private final KafkaTemplate<String, PaymentReq> kafkaTemplate;
 

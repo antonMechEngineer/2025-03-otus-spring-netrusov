@@ -28,7 +28,7 @@ public class RoomDto {
 
     @NotNull(message = "Price per day cannot be null")
     @Positive(message = "Price per day must be positive")
-    @Digits(integer = 17, fraction = 2, message = "Price per day must have maximum 17 integer digits and 2 fractional digits")
+    @Digits(integer = 17, fraction = 2, message = "Price must have maximum 17 integer digits and 2 fractional digits")
     private BigDecimal pricePerDay;
 
     private List<LocalDate> occupiedDates;

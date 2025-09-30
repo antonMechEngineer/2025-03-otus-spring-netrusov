@@ -18,7 +18,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 @RequiredArgsConstructor
 @RestController
-public class   OrderController {
+public class OrderController {
 
     private final RoomService roomService;
 
@@ -54,7 +54,7 @@ public class   OrderController {
     }
 
     @PutMapping("/api/orders/{id}/pay")
-    public ResponseEntity<Void> pay( @PathVariable("id") long id) {
+    public ResponseEntity<Void> pay(@PathVariable("id") long id) {
         var order = orderService.findById(id);
         orderService.updateStatus(order, Order.Status.PAYMENT_REQUEST);
         return ResponseEntity.noContent().build();
