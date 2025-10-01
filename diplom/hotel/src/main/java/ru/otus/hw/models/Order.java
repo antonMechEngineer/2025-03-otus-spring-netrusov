@@ -3,6 +3,7 @@ package ru.otus.hw.models;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -21,27 +22,34 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "begin_rent")
     private LocalDate beginRent;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "end_rent")
     private LocalDate endRent;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
+    @EqualsAndHashCode.Exclude
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
