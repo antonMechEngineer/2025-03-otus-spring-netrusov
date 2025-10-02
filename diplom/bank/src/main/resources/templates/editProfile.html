@@ -32,12 +32,15 @@
             const response = await fetch('/api/profile');
             if (!response.ok) throw new Error('Ошибка загрузки профиля');
             const user = await response.json();
-            document.getElementById('username-input').value = user.username;
+            const usernameInput = document.getElementById('username-input');
+            usernameInput.value = user.username;
+            usernameInput.disabled = true;
             document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const userDto = {
                     username: document.getElementById('username-input').value,
-                    password: document.getElementById('password-input').value
+                    password: document.getElementById('password-input').value,
+                    role: user.role
                 };
                 const putResponse = await fetch('/api/profile', {
                     method: 'PUT',
@@ -45,7 +48,7 @@
                     body: JSON.stringify(userDto)
                 });
                 if (putResponse.ok) {
-                    alert('Профиль успешно обновлён! Пройдите аутентификацию заново!');
+                    alert('Profile is updated successfully! Please authenticate!');
                     window.location.href = "/login";
                 } else {
                     alert('Ошибка обновления профиля');
