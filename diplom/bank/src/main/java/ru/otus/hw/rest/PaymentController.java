@@ -33,16 +33,14 @@ public class PaymentController {
 
     @PutMapping("/api/payments/{id}")
     public ResponseEntity<PaymentDto> pay(@PathVariable("id") long id) {
-        var payment = paymentService.findById(id);
-        var finishedPayment = paymentService.pay(payment);
+        var finishedPayment = paymentService.pay(id);
         var finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }
 
     @PutMapping("/api/payments/{id}/cancel")
     public ResponseEntity<PaymentDto> cancel(@PathVariable("id") long id) {
-        var payment = paymentService.findById(id);
-        var finishedPayment = paymentService.cancel(payment);
+        var finishedPayment = paymentService.cancel(id);
         var finishedPaymentDto = paymentMapper.toDto(finishedPayment);
         return ResponseEntity.ok(finishedPaymentDto);
     }

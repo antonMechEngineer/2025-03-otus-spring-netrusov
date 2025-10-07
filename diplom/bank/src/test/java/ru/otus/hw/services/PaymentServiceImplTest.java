@@ -108,8 +108,9 @@ class PaymentServiceImplTest {
     @DisplayName("Положительный сценарий. Оплата платежа")
     @Test
     void payPositive() {
+        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
         when(paymentRepository.save(any())).thenReturn(payment);
-        var result = paymentService.pay(payment);
+        var result = paymentService.pay(payment.getId());
         assertEquals(PAID, result.getStatus());
         assertEquals(new BigDecimal("800.00"), account.getBalance());
         verify(accountRepository, times(1)).save(account);
@@ -120,8 +121,9 @@ class PaymentServiceImplTest {
     @DisplayName("Положительный сценарий. Отмена платежа")
     @Test
     void cancelPositive() {
+        when(paymentRepository.findById(payment.getId())).thenReturn(Optional.of(payment));
         when(paymentRepository.save(any())).thenReturn(payment);
-        var result = paymentService.cancel(payment);
+        var result = paymentService.cancel(payment.getId());
         assertEquals(CANCEL, result.getStatus());
         verify(paymentRepository, times(1)).save(payment);
         verify(paymentProducer, times(1)).send(payment);

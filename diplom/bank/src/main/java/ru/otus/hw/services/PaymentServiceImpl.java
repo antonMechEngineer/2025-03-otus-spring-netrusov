@@ -66,7 +66,8 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasPermission(#payment, 'WRITE')")
     @Transactional
     @Override
-    public Payment pay(Payment payment) {
+    public Payment pay(Long id) {
+        var payment = findById(id);
         var account = payment.getUser().getAccount();
         var updatedBalance = account.getBalance().subtract(payment.getPrice());
         account.setBalance(updatedBalance);
@@ -80,7 +81,8 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasPermission(#payment, 'WRITE')")
     @Transactional
     @Override
-    public Payment cancel(Payment payment) {
+    public Payment cancel(Long id) {
+        var payment = findById(id);
         payment.setStatus(CANCEL);
         Payment canceledPayment = paymentRepository.save(payment);
         paymentProducer.send(canceledPayment);

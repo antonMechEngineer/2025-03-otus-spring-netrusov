@@ -14,8 +14,8 @@ public interface PaymentService {
 
     void create(Payment payment);
 
-    Payment pay(Payment payment);
+    Payment pay(Long id);
 
-    Payment cancel(Payment payment);
+    Payment cancel(Long id);
 
 }
