@@ -1,11 +1,9 @@
 rentability-threshold: 1000
+scheduled-tasks:
+  cron: 0 * * * * *
 ttl:
-  not-paid-order:
-    min: 2
-    checking-cron: 0 * * * * *
-  requested-payment-order:
-    min: 5
-    checking-cron: 0 */5 * * * *
+  not-paid-order: 2
+  requested-payment-order: 5
 server:
   port: 8080
   servlet:

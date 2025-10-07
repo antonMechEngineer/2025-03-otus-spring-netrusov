@@ -1,8 +1,6 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +12,7 @@ import ru.otus.hw.exceptions.PaymentProcessException;
 import ru.otus.hw.kafka.PaymentProducer;
 import ru.otus.hw.models.Order;
 import ru.otus.hw.models.Order.Status;
+import ru.otus.hw.provider.OrderTtlProvider;
 import ru.otus.hw.repositories.OrderRepository;
 import ru.otus.hw.repositories.UserRepository;
 
@@ -27,10 +26,8 @@ import static ru.otus.hw.kafka.dto.PaymentReq.ActionType.CANCEL;
 import static ru.otus.hw.kafka.dto.PaymentReq.ActionType.PAY;
 import static ru.otus.hw.models.Order.Status.*;
 
-
 @Service
 @RequiredArgsConstructor
-@Setter
 public class OrderServiceImpl implements OrderService {
 
     private static final String ERROR_CONFIRM_PAYMENT = "Error confirm payment orderId = %s";
@@ -39,11 +36,7 @@ public class OrderServiceImpl implements OrderService {
 
     private static final String ERROR_NOT_FOUND = "Order id = %s not found!";
 
-    @Value("${ttl.not-paid-order.min}")
-    private Long notPaidOrderTtl;
-
-    @Value("${ttl.requested-payment-order.min}")
-    private Long requestedPaymentOrderTtl;
+    private final OrderTtlProvider orderTtlProvider;
 
     private final OrderRepository orderRepository;
 
@@ -130,23 +123,23 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Scheduled(cron = "${ttl.not-paid-order.checking-cron}")
+    @Scheduled(cron = "${scheduled-tasks.cron}")
     public void cancelNotPaidOrders() {
         var ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 NOT_PAID,
-                LocalDateTime.now().minusMinutes(notPaidOrderTtl)
+                LocalDateTime.now().minusMinutes(orderTtlProvider.getNotPaidOrder())
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
         orderRepository.saveAll(ordersToCancel);
     }
 
-    @Scheduled(cron = "${ttl.requested-payment-order.checking-cron}")
+    @Scheduled(cron = "${scheduled-tasks.cron}")
     @Override
     @Transactional
     public void cancelPayRequestedOrders() {
         var ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 PAYMENT_REQUEST,
-                LocalDateTime.now().minusMinutes(requestedPaymentOrderTtl)
+                LocalDateTime.now().minusMinutes(orderTtlProvider.getRequestedPaymentOrder())
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
         orderRepository.saveAll(ordersToCancel);

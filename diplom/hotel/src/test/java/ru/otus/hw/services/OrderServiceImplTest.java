@@ -13,6 +13,7 @@ import ru.otus.hw.kafka.PaymentProducer;
 import ru.otus.hw.models.Order;
 import ru.otus.hw.models.Room;
 import ru.otus.hw.models.User;
+import ru.otus.hw.provider.OrderTtlProvider;
 import ru.otus.hw.repositories.OrderRepository;
 
 import java.math.BigDecimal;
@@ -39,6 +40,9 @@ public class OrderServiceImplTest {
 
     @Mock
     private PaymentProducer paymentProducer;
+
+    @Mock
+    private OrderTtlProvider orderTtlProvider;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -129,7 +133,7 @@ public class OrderServiceImplTest {
     @Test
     void cancelNotPaidOrders() {
         when(orderRepository.findByStatusAndCreatedAtLessThanEqual(any(), any())).thenReturn(List.of(notPaidOrder));
-        orderService.setNotPaidOrderTtl(5L);
+        when(orderTtlProvider.getNotPaidOrder()).thenReturn(5L);
         orderService.cancelNotPaidOrders();
         assertEquals(AUTO_CANCEL, notPaidOrder.getStatus());
         verify(orderRepository, times(1)).saveAll(any());
@@ -140,7 +144,7 @@ public class OrderServiceImplTest {
     @Test
     void cancelPaymentRequestOrders() {
         when(orderRepository.findByStatusAndCreatedAtLessThanEqual(any(), any())).thenReturn(List.of(paymentRequestOrder));
-        orderService.setRequestedPaymentOrderTtl(5L);
+        when(orderTtlProvider.getRequestedPaymentOrder()).thenReturn(5L);
         orderService.cancelPayRequestedOrders();
         assertEquals(AUTO_CANCEL, paymentRequestOrder.getStatus());
         verify(orderRepository, times(1)).saveAll(any());
