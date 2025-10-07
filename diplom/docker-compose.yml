@@ -41,7 +41,7 @@ services:
   hotel:
     build:
       context: .
-      dockerfile: Dockerfile-hotel
+      dockerfile: hotel/Dockerfile
     container_name: hotel
     depends_on:
       - kafka
@@ -57,7 +57,7 @@ services:
   bank:
     build:
       context: .
-      dockerfile: Dockerfile-bank
+      dockerfile: bank/Dockerfile
     container_name: bank
     depends_on:
       - kafka

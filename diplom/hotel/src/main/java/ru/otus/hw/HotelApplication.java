@@ -2,10 +2,12 @@ package ru.otus.hw;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class Bank {
+@EnableScheduling
+public class HotelApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(Bank.class, args);
+		SpringApplication.run(HotelApplication.class, args);
 	}
 }
