@@ -34,7 +34,7 @@
             const user = await response.json();
             const usernameInput = document.getElementById('username-input');
             usernameInput.value = user.username;
-            usernameInput.disabled = true;
+            usernameInput.disabled = false;
             document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const userDto = {
