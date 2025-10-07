@@ -13,6 +13,7 @@ import org.springframework.boot.actuate.health.Health;
 import ru.otus.hw.models.Order;
 import ru.otus.hw.models.Room;
 import ru.otus.hw.models.User;
+import ru.otus.hw.provider.RentabilityProvider;
 import ru.otus.hw.services.OrderService;
 
 import java.math.BigDecimal;
@@ -32,6 +33,9 @@ public class RentabilityIndicatorTest {
     @Mock
     private OrderService orderService;
 
+    @Mock
+    private RentabilityProvider rentabilityProvider;
+
     @InjectMocks
     private RentabilityIndicator rentabilityIndicator;
 
@@ -47,12 +51,13 @@ public class RentabilityIndicatorTest {
         order1.setStatus(PAID);
         order2 = new Order(now().plusDays(2), now().plusDays(3), user, room);
         order2.setStatus(PAID);
-        rentabilityIndicator.setRentabilityThreshold(1999L);
     }
 
     @DisplayName("Положительный сценарий. Отель рентабелен")
     @Test
     void healthPositive(){
+        when(rentabilityProvider.threshold()).thenReturn(1999L);
+        when(rentabilityProvider.period()).thenReturn(1);
         when(orderService.findPaidLastDays(any())).thenReturn(List.of(order2, order1));
         Health actualHealth = rentabilityIndicator.health();
         Assertions.assertEquals(UP, actualHealth.getStatus());
@@ -61,6 +66,8 @@ public class RentabilityIndicatorTest {
     @DisplayName("Отрицательный сценарий. Отель не рентабелен")
     @Test
     void healthNegative(){
+        when(rentabilityProvider.threshold()).thenReturn(1999L);
+        when(rentabilityProvider.period()).thenReturn(1);
         when(orderService.findPaidLastDays(any())).thenReturn(List.of(order2));
         Health actualHealth = rentabilityIndicator.health();
         Assertions.assertEquals(DOWN, actualHealth.getStatus());

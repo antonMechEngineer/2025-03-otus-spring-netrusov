@@ -133,7 +133,7 @@ public class OrderServiceImplTest {
     @Test
     void cancelNotPaidOrders() {
         when(orderRepository.findByStatusAndCreatedAtLessThanEqual(any(), any())).thenReturn(List.of(notPaidOrder));
-        when(orderTtlProvider.getNotPaidOrder()).thenReturn(5L);
+        when(orderTtlProvider.notPaidOrder()).thenReturn(5L);
         orderService.cancelNotPaidOrders();
         assertEquals(AUTO_CANCEL, notPaidOrder.getStatus());
         verify(orderRepository, times(1)).saveAll(any());
@@ -144,7 +144,7 @@ public class OrderServiceImplTest {
     @Test
     void cancelPaymentRequestOrders() {
         when(orderRepository.findByStatusAndCreatedAtLessThanEqual(any(), any())).thenReturn(List.of(paymentRequestOrder));
-        when(orderTtlProvider.getRequestedPaymentOrder()).thenReturn(5L);
+        when(orderTtlProvider.requestedPaymentOrder()).thenReturn(5L);
         orderService.cancelPayRequestedOrders();
         assertEquals(AUTO_CANCEL, paymentRequestOrder.getStatus());
         verify(orderRepository, times(1)).saveAll(any());

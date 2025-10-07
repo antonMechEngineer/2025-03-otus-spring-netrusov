@@ -1,4 +1,6 @@
-rentability-threshold: 1000
+rentability:
+  period: 2
+  threshold: 1000
 scheduled-tasks:
   cron: 0 * * * * *
 ttl:

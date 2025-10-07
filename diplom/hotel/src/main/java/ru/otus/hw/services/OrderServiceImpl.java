@@ -127,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
     public void cancelNotPaidOrders() {
         var ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 NOT_PAID,
-                LocalDateTime.now().minusMinutes(orderTtlProvider.getNotPaidOrder())
+                LocalDateTime.now().minusMinutes(orderTtlProvider.notPaidOrder())
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
         orderRepository.saveAll(ordersToCancel);
@@ -139,7 +139,7 @@ public class OrderServiceImpl implements OrderService {
     public void cancelPayRequestedOrders() {
         var ordersToCancel = orderRepository.findByStatusAndCreatedAtLessThanEqual(
                 PAYMENT_REQUEST,
-                LocalDateTime.now().minusMinutes(orderTtlProvider.getRequestedPaymentOrder())
+                LocalDateTime.now().minusMinutes(orderTtlProvider.requestedPaymentOrder())
         );
         ordersToCancel.forEach(order -> order.setStatus(AUTO_CANCEL));
         orderRepository.saveAll(ordersToCancel);

@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties(prefix = "ttl")
-public record OrderTtlProviderImpl(
+@ConfigurationProperties("rentability")
+public record RentabilityProviderImpl(
+        @NotNull @Min(1)
+        Integer period,
         @NotNull @Min(1L)
-        Long notPaidOrder,
-        @NotNull @Min(1L)
-        Long requestedPaymentOrder
-) implements OrderTtlProvider {}
+        Long threshold
+) implements RentabilityProvider{}

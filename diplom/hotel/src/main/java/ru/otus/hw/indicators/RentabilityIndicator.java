@@ -1,48 +1,53 @@
 package ru.otus.hw.indicators;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.models.Order;
+import ru.otus.hw.provider.RentabilityProvider;
 import ru.otus.hw.services.OrderService;
 
 import java.math.BigDecimal;
 
 @SuppressWarnings("unused")
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Getter
-@Setter
 public class RentabilityIndicator implements HealthIndicator {
 
-    private static final Integer RENTABILITY_PERIOD = 1;
+    private static final String UP_MSG = "Rentability is ok.";
+
+    private static final String DOWN_MSG = "Rentability is bad!";
+
+    private static final String ERROR_MSG = "Balance indicator is unavailable!";
+
+    private final RentabilityProvider rentabilityProvider;
 
     private final OrderService orderService;
 
-    @Value("${rentability-threshold}")
-    private Long rentabilityThreshold;
-
     @Override
     public Health health() {
-        if (orderService
-                .findPaidLastDays(RENTABILITY_PERIOD)
-                .stream()
-                .map(Order::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .compareTo(BigDecimal.valueOf(rentabilityThreshold)) < 0) {
-            return Health.down()
-                    .status(Status.DOWN)
-                    .withDetail("message", "Rentability is bad.")
+        try {
+            if (orderService.findPaidLastDays(rentabilityProvider.period())
+                    .stream()
+                    .map(Order::getTotalPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .compareTo(BigDecimal.valueOf(rentabilityProvider.threshold())) < 0) {
+                return Health.down()
+                        .status(Status.DOWN)
+                        .withDetail("message", DOWN_MSG)
+                        .build();
+            }
+            return Health.up().withDetail("message", UP_MSG).build();
+        } catch (Exception exception) {
+            log.error(ERROR_MSG, exception);
+            return Health.unknown()
+                    .withDetail("message", ERROR_MSG)
                     .build();
-        } else {
-            return Health.up().withDetail("message", "Rentability is ok.").build();
+
         }
     }
-
-
 }

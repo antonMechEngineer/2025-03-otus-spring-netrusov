@@ -2,7 +2,7 @@ package ru.otus.hw.provider;
 
 public interface OrderTtlProvider {
 
-     Long getNotPaidOrder();
+     Long notPaidOrder();
 
-     Long getRequestedPaymentOrder();
+     Long requestedPaymentOrder();
 }
