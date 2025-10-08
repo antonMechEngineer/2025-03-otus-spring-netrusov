@@ -15,6 +15,7 @@
         <module>hw16-spring-ajax-monitoring</module>
         <module>hw17-spring-docker</module>
         <module>diplom</module>
+        <module>hw18-spring-resilience4j</module>
     </modules>
 
 </project>
