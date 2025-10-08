@@ -63,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
         aclServiceWrapperService.createPaymentPermission(createdPayment);
     }
 
-    @PreAuthorize("hasPermission(#payment, 'WRITE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Payment', 'WRITE')")
     @Transactional
     @Override
     public Payment pay(Long id) {
@@ -78,7 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
         return confirmedPayment;
     }
 
-    @PreAuthorize("hasPermission(#payment, 'WRITE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Payment', 'WRITE')")
     @Transactional
     @Override
     public Payment cancel(Long id) {
