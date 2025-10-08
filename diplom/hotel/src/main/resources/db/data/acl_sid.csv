@@ -1,0 +1,6 @@
+principal,sid
+true,a
+true,b
+true,admin
+false,ROLE_ADMIN
+false,ROLE_USER

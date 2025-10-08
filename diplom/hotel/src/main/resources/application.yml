@@ -1,0 +1,116 @@
+business:
+  rentability:
+    period: 2
+    threshold: 1000
+  ttl-minutes:
+    not-paid-order: 2
+    requested-payment-order: 5
+
+cache:
+  rooms:
+    ttl-minutes: 10
+    max-size: 100
+  acl:
+    ttl-minutes: 60
+    max-size: 5000
+logging:
+  config: classpath:logback-spring.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        register-health-indicator: true
+        timeout-duration: 100
+    instances:
+      roomsRateLimiter:
+        base-config: default
+        limit-for-period: 1000
+        limit-refresh-period: 1s
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 1s
+        failure-rate-threshold: 50
+        event-consumer-buffer-size: 3
+        record-exceptions:
+          - org.springframework.dao.DataAccessException
+          - java.sql.SQLException
+          - org.hibernate.exception.JDBCConnectionException
+          - java.net.ConnectException
+          - java.util.concurrent.TimeoutException
+        ignore-exceptions:
+          - ru.otus.hw.exceptions.EntityNotFoundException
+    instances:
+      dbBreaker:
+        base-config: default
+        sliding-window-size: 20
+        failure-rate-threshold: 10
+        wait-duration-in-open-state: 5s
+        slow-call-rate-threshold: 10
+        slow-call-duration-threshold: 20ms
+
+scheduled-tasks:
+  cron: 0 * * * * *
+
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        name: HOTEL_SESSION
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:maindb
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: hotel
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
+            trusted:
+              packages: "*"
+            value:
+              default:
+                type: ru.otus.hw.kafka.dto.PaymentResp
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false

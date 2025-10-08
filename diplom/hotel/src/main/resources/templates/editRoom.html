@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit Room</title>
+    <style>
+        nav {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: blue;
+            font-size: 18px;
+            margin-right: 15px;
+            text-decoration: underline;
+        }
+        nav a:visited {
+            color: purple;
+        }
+        nav a:hover {
+            color: red;
+        }
+
+        nav a.disabled {
+            color: #cccccc;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        nav a.disabled:hover {
+            color: #cccccc;
+        }
+
+        .sign-out-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .sign-out-btn:hover {
+            opacity: 0.9;
+        }
+
+        .sign-out-btn.disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        body { padding: 50px; font-family: Arial, sans-serif; }
+        h2 { margin-bottom: 20px; }
+
+        .form-container {
+            width: 400px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            width: 120px;
+            margin-right: 10px;
+            text-align: right;
+        }
+
+        .form-row input {
+            flex: 1;
+            padding: 5px;
+            width: 200px;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            margin-left: 130px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .update-btn {
+            background-color: #4CAF50;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/orders" id="orders-link" class="disabled">Orders</a>
+    <a href="/profile" id="profile-link" class="disabled">Profile</a>
+    <button id="sign-out-btn" class="sign-out-btn disabled">Sign Out</button>
+</nav>
+
+<h2>Edit Room</h2>
+<div class="form-container">
+    <form id="editForm">
+        <input type="hidden" name="id"/>
+
+        <div class="form-row">
+            <label for="roomNumber">Room Number:</label>
+            <input type="text" id="roomNumber" name="roomNumber" required/>
+        </div>
+
+        <div class="form-row">
+            <label for="type">Type:</label>
+            <input type="text" id="type" name="type" required/>
+        </div>
+
+        <div class="form-row">
+            <label for="pricePerDay">Price per day:</label>
+            <input type="number" id="pricePerDay" name="pricePerDay" step="0.01" required/>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="action-btn update-btn">Update</button>
+            <a href="/rooms" class="action-btn cancel-btn">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    async function loadUser() {
+        try {
+            const response = await fetch('/api/profile');
+            if (!response.ok) {
+                return { role: null, authenticated: false };
+            }
+            const userData = await response.json();
+            return { role: userData.role, authenticated: true };
+        } catch (err) {
+            return { role: null, authenticated: false };
+        }
+    }
+
+    async function signOut() {
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('You have been signed out successfully!');
+                window.location.href = '/rooms';
+            } else {
+                alert('Error signing out. Please try again.');
+            }
+        } catch (error) {
+            console.error('Sign out error:', error);
+            alert('Error signing out. Please try again.');
+        }
+    }
+
+    function updateNavigation(user) {
+        const ordersLink = document.getElementById('orders-link');
+        const profileLink = document.getElementById('profile-link');
+        const signOutBtn = document.getElementById('sign-out-btn');
+
+        if (user.authenticated) {
+            ordersLink.classList.remove('disabled');
+            ordersLink.href = "/orders";
+            profileLink.classList.remove('disabled');
+            profileLink.href = "/profile";
+
+            signOutBtn.classList.remove('disabled');
+            signOutBtn.onclick = signOut;
+        } else {
+            ordersLink.classList.add('disabled');
+            ordersLink.href = "javascript:void(0)";
+            profileLink.classList.add('disabled');
+            profileLink.href = "javascript:void(0)";
+
+            signOutBtn.classList.add('disabled');
+            signOutBtn.onclick = null;
+        }
+    }
+
+    async function loadRoom(id) {
+        const response = await fetch(`/api/rooms/${id}`);
+        if (response.ok) {
+            const room = await response.json();
+            document.getElementById('roomNumber').value = room.roomNumber;
+            document.getElementById('type').value = room.type;
+            document.getElementById('pricePerDay').value = room.pricePerDay;
+            document.querySelector('input[name="id"]').value = room.id;
+        } else {
+            alert("Ошибка загрузки комнаты");
+            window.location.href = "/rooms";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        let user = { role: null, authenticated: false };
+        try {
+            user = await loadUser();
+        } catch (err) {
+            console.error('Error loading user info:', err);
+        }
+
+        updateNavigation(user);
+
+        const params = new URLSearchParams(window.location.search);
+        const roomId = params.get("id");
+        if (roomId) {
+            loadRoom(roomId);
+        } else {
+            alert("Не указан ID комнаты");
+            window.location.href = "/rooms";
+        }
+    });
+
+    document.getElementById("editForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const payload = Object.fromEntries(formData.entries());
+
+        const response = await fetch(`/api/rooms/${payload.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            alert("Комната обновлена");
+            window.location.href = "/rooms";
+        } else {
+            alert("Ошибка при обновлении");
+        }
+    });
+</script>
+</body>
+</html>

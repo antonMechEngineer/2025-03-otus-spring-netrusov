@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Payments</title>
+    <style>
+        nav {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: blue;
+            font-size: 18px;
+            margin-right: 15px;
+            text-decoration: underline;
+        }
+        nav a:visited {
+            color: purple;
+        }
+        nav a:hover {
+            color: red;
+        }
+
+        body { padding: 50px; }
+        table { border: 1px solid steelblue; width: 500px; border-collapse: collapse; }
+        table tr td, th { padding: 5px; border: 1px solid steelblue; }
+        table td:first-child, table td:last-child { width: 100px; }
+
+        .action-btn {
+            padding: 3px 8px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .pay-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .action-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/profile">Profile</a>
+</nav>
+
+<div style="margin-bottom: 20px;">
+    <strong>Current Balance:</strong> <span id="balance"></span>
+</div>
+
+<h3>Payments:</h3>
+<table class="payments">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Item Name</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        async function loadBalance() {
+            try {
+                const response = await fetch('/api/balance');
+                if (!response.ok) throw new Error('Error loading balance.');
+                const data = await response.json();
+                document.getElementById('balance').innerText = data.balance.toFixed(2);
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function loadPayments() {
+            try {
+                const response = await fetch('/api/payments');
+                if (!response.ok) throw new Error('Error loading payments.');
+                const payments = await response.json();
+
+                const tbody = document.querySelector('.payments tbody');
+                tbody.innerHTML = '';
+                payments.forEach(p => {
+                    const isProcessed = p.status === 'CANCEL' || p.status === 'PAID';
+
+                    const actionsHtml = `
+                        <button class="action-btn pay-btn" onclick="payPayment('${p.id}')" ${isProcessed ? 'disabled' : ''}>
+                            Pay
+                        </button>
+                        <button class="action-btn cancel-btn" onclick="cancelPayment('${p.id}')" ${isProcessed ? 'disabled' : ''}>
+                            Cancel
+                        </button>
+                    `;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${p.id}</td>
+                        <td>${p.buy}</td>
+                        <td>${p.price.toFixed(2)}</td>
+                        <td>${p.status}</td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        window.payPayment = async (id) => {
+            try {
+                if (!confirm('Are you sure you want to pay this payment?')) return;
+
+                const response = await fetch(`/api/payments/${id}`, { method: 'PUT' });
+                if (!response.ok) throw new Error('Error paying payment.');
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+
+        window.cancelPayment = async (id) => {
+            try {
+                if (!confirm('Are you sure you want to cancel this payment?')) return;
+
+                const response = await fetch(`/api/payments/${id}/cancel`, { method: 'PUT' });
+                if (!response.ok) throw new Error('Error cancelling payment.');
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+
+        await Promise.all([loadBalance(), loadPayments()]);
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>My Orders</title>
+    <style>
+        nav {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: blue;
+            font-size: 18px;
+            margin-right: 15px;
+            text-decoration: underline;
+        }
+        nav a:visited {
+            color: purple;
+        }
+        nav a:hover {
+            color: red;
+        }
+
+        body { padding: 50px; }
+        .orders { border: 1px solid steelblue; width: 700px; border-collapse: collapse; }
+        .orders tr td, th { padding: 5px; border: 1px solid steelblue; }
+        .orders td:first-child, .orders td:last-child { width: 80px; }
+
+        .action-btn {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .pay-btn {
+            background-color: #4CAF50;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        .action-btn.disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/rooms">Rooms</a>
+    <a href="/profile">Profile</a>
+</nav>
+
+<h3>My Orders:</h3>
+<table class="orders">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Room</th>
+        <th>Check-in Date</th>
+        <th>Check-out Date</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function loadOrders() {
+        try {
+            const response = await fetch('/api/orders');
+            if (!response.ok) throw new Error('Error loading orders');
+            const orders = await response.json();
+            const tbody = document.querySelector('.orders tbody');
+            tbody.innerHTML = '';
+
+            orders.forEach(payment => {
+                const status = payment.status === 'NOT_PAID';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${payment.id}</td>
+                    <td>${payment.username || ''}</td>
+                    <td>${payment.roomNumber || ''}</td>
+                    <td>${payment.beginRent}</td>
+                    <td>${payment.endRent}</td>
+                    <td>${payment.totalPrice}</td>
+                    <td>${payment.status}</td>
+                    <td>
+                        <a href="#" class="action-btn pay-btn ${status ? '' : 'disabled'}"
+                           onclick="${status ? `payOrder(${payment.id})` : 'return false'}; return false;">
+                            Pay
+                        </a>
+                        <a href="#" class="action-btn cancel-btn ${status ? '' : 'disabled'}"
+                           onclick="${status ? `cancelOrder(${payment.id})` : 'return false'}; return false;">
+                            Cancel
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    async function payOrder(id) {
+        const result = confirm('Are you sure you want to pay for this order?');
+        if (!result) return;
+
+        const response = await fetch(`/api/orders/${id}/pay`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+            alert('Payment successful!');
+            loadOrders();
+        } else {
+            alert('Error processing payment');
+        }
+    }
+
+    async function cancelOrder(id) {
+        const result = confirm('Are you sure you want to cancel this order?');
+        if (!result) return;
+
+        const response = await fetch(`/api/orders/${id}/cancel`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+            alert('Order successfully cancelled!');
+            loadOrders();
+        } else {
+            alert('Error cancelling order');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOrders);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2025-09-19--insert-initial-data-1
+      author: your-name
+      changes:
+        - loadData:
+            tableName: users
+            file: db/data/users.csv
+            separator: ","
+        - loadData:
+            tableName: accounts
+            file: db/data/accounts.csv
+            separator: ","
+        - loadData:
+            tableName: acl_sid
+            file: db/data/acl_sid.csv
+            separator: ","
+        - loadData:
+            tableName: acl_class
+            file: db/data/acl_class.csv
+            separator: ","

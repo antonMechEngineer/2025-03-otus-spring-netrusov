@@ -8,7 +8,7 @@ import org.springframework.integration.dsl.MessageChannelSpec;
 import org.springframework.integration.dsl.MessageChannels;
 import ru.otus.hw.domain.Advertisement;
 import ru.otus.hw.domain.PathType;
-import ru.otus.hw.mapper.AdvertisementMapper;
+import ru.otus.hw.mappers.AdvertisementMapper;
 import ru.otus.hw.services.AdvertisementService;
 import ru.otus.hw.services.FilterReceiptService;
 

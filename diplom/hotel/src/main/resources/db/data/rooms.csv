@@ -1,0 +1,4 @@
+room_number,type,price_per_day
+101,STANDARD,50.00
+102,PREMIUM,80.00
+103,LUX,150.00
