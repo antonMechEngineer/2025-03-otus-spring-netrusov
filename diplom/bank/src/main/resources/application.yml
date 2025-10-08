@@ -1,9 +1,30 @@
+cache:
+  acl:
+    ttl-minutes: 60
+    max-size: 5000
+
+logging:
+  config: classpath:logback-spring.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+
 server:
   port: 8081
   servlet:
     session:
       cookie:
         name: BANK_SESSION
+
 spring:
   kafka:
     security:
@@ -36,16 +57,3 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-  health:
-    defaults:
-      enabled: true
-logging:
-  config: classpath:logback-spring.xml

@@ -1,51 +1,21 @@
-rentability:
-  period: 2
-  threshold: 1000
-scheduled-tasks:
-  cron: 0 * * * * *
-ttl:
-  not-paid-order: 2
-  requested-payment-order: 5
-server:
-  port: 8080
-  servlet:
-    session:
-      cookie:
-        name: HOTEL_SESSION
-spring:
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+business:
+  rentability:
+    period: 2
+    threshold: 1000
+  ttl-minutes:
+    not-paid-order: 2
+    requested-payment-order: 5
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      group-id: hotel
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      enable-auto-commit: false
-      auto-offset-reset: latest
-      properties:
-        spring:
-          json:
-            use:
-              type:
-                headers: false
-            trusted:
-              packages: "*"
-            value:
-              default:
-                type: ru.otus.hw.kafka.dto.PaymentResp
-  datasource:
-    url: jdbc:h2:mem:maindb
-  jpa:
-    generate-ddl: false
-    hibernate:
-      ddl-auto: none
-    show-sql: true
+cache:
+  rooms:
+    ttl-minutes: 10
+    max-size: 100
+  acl:
+    ttl-minutes: 60
+    max-size: 5000
+logging:
+  config: classpath:logback-spring.xml
+
 management:
   endpoints:
     web:
@@ -57,15 +27,7 @@ management:
   health:
     defaults:
       enabled: true
-logging:
-  config: classpath:logback-spring.xml
-cache:
-  rooms:
-    ttl-minutes: 10
-    max-size: 100
-  acl:
-    ttl-minutes: 60
-    max-size: 5000
+
 resilience4j:
   ratelimiter:
     configs:
@@ -103,3 +65,47 @@ resilience4j:
         wait-duration-in-open-state: 5s
         slow-call-rate-threshold: 10
         slow-call-duration-threshold: 20ms
+
+scheduled-tasks:
+  cron: 0 * * * * *
+
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        name: HOTEL_SESSION
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: hotel
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
+            trusted:
+              packages: "*"
+            value:
+              default:
+                type: ru.otus.hw.kafka.dto.PaymentResp
+  datasource:
+    url: jdbc:h2:mem:maindb
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true

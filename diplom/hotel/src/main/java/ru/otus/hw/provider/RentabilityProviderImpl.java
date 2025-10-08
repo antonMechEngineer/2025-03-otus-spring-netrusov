@@ -5,8 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+@SuppressWarnings("unused")
 @Validated
-@ConfigurationProperties("rentability")
+@ConfigurationProperties("business.rentability")
 public record RentabilityProviderImpl(
         @NotNull @Min(1)
         Integer period,

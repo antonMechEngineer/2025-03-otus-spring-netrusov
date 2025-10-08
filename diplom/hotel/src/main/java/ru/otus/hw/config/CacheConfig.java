@@ -37,13 +37,11 @@ public class CacheConfig {
                         .expireAfterWrite(roomsTtl, TimeUnit.MINUTES)
                         .maximumSize(roomsMaxSize)
                         .build());
-
         var aclCache = new CaffeineCache("aclCache",
                 Caffeine.newBuilder()
                         .expireAfterWrite(aclTtl, TimeUnit.MINUTES)
                         .maximumSize(aclMaxSize)
                         .build());
-
         manager.setCaches(Arrays.asList(roomsCache, aclCache));
         return manager;
     }
