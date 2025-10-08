@@ -32,7 +32,7 @@ public class User {
     private String role;
 
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Payment> payments;
 
     @EqualsAndHashCode.Exclude

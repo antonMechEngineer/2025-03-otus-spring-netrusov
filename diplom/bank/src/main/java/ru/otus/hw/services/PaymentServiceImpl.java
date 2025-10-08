@@ -26,9 +26,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     private static final String ERROR_PAYMENT_NOT_FOUND = "Payment with id = %d not found!";
 
-    private final PaymentRepository paymentRepository;
-
     private final UserRepository userRepository;
+
+    private final PaymentRepository paymentRepository;
 
     private final AccountRepository accountRepository;
 
@@ -44,9 +44,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> findByUsernameInternal(String username) {
-        return userRepository.findByUsername(username)
+        Long userId = userRepository
+                .findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(format(ERROR_USER_NOT_FOUND, username)))
-                .getPayments();
+                .getId();
+        return paymentRepository.findByUserId(userId);
     }
 
     @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Payment', 'READ')")
