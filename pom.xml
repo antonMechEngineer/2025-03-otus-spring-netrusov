@@ -10,6 +10,19 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>hw01</module>
+        <module>hw02</module>
+        <module>hw03-spring-boot</module>
+        <module>hw04</module>
+        <module>hw05-jdbc-simple</module>
+        <module>hw06-jpa</module>
+        <module>hw07-spring-data-jpa</module>
+        <module>hw08-spring-mongo</module>
+        <module>hw09-spring-mvc-view</module>
+        <module>hw10-spring-ajax</module>
+        <module>hw11-spring-webflux</module>
+        <module>hw12-spring-security</module>
+        <module>hw13-spring-acl</module>
         <module>hw14-spring-batch</module>
         <module>hw15-spring-integration</module>
         <module>hw16-spring-ajax-monitoring</module>
