@@ -1,0 +1,22 @@
+# Build artifacts
+target/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS junk
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Docker
+docker-compose.yml
+
+# Env files
+.env
+*.local.properties
